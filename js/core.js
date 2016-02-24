@@ -1303,7 +1303,7 @@ Core.prototype.initPushwoosh = function(){
     function(status) {
       var deviceToken = status['deviceToken'];
       console.log('registerDevice: ' + deviceToken);
-      setTagsFunc(email)
+      //setTagsFunc(email)
     },
     function(status) {
       navigator.notification.alert('Connection error', null, 'Error', 'Continue')
