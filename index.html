@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, target-densitydpi=medium-dpi, user-scalable=0" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/ralewayFont.css" />
+        <link rel="stylesheet" type="text/css" href="css/animation.css" />
+        <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+        <title>AppleGotchi</title>
+    </head>
+    <body>
+        <!-- Default Loaded Panel -->
+        <div class="fullHeightPanel loadingPanel">
+          <H1>*Insert loading screen here*</H1>
+          <a href="#" class="button skipLoading">SKIP LOADING</a>
+          <a href="#" class="button creationBypass">JUMP TO CREATION</a>
+        </div>
+        <audio src="NeckPillow.mp3" class="menuMusic" type="audio/mpeg"></audio>
+        <audio src="KawaiKitsune.mp3" class="gameMusic" type="audio/mpeg"></audio>
+
+        <!-- Panels -->
+        <div class="fullHeightPanel registerLoginPanel"></div>
+        <div class="fullHeightPanel storyboardPanel"></div>
+        <div class="fullHeightPanel mainPanel"></div>
+        <div class="fullHeightPanel menuPanel"></div>
+        <div class="fullHeightPanel contactDetailsPanel"></div>
+        <div class="fullHeightPanel levelupPanel"></div>
+        <div class="fullHeightPanel leaderboardPanel"></div>
+
+
+        <script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+        <script src="cordova.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+
+        <!--  -->
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+    </body>
+</html>

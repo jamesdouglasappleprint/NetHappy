@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <widget xmlns = "http://www.w3.org/ns/widgets"
+
+       xmlns:gap   = "http://phonegap.com/ns/1.0"
+       xmlns:android ="http://schemas.android.com/apk/res/android"
+       id          = "com.applegotchi"
+       version     = "2.0.0">
+
+  <name>NetHappy</name>
+
+  <!--<preference name="phonegap-version" value="4.0.0" /> -->
+
+  <description>NetHappy</description>
+
+  <author href="http://yoursite.com" email="you@youremail.com">Your Name</author>
+
+  <access origin="*"/> <!-- allow all pages, use for development -->
+  <allow-navigation href="http://*/*" />
+  <access origin="*.pushwoosh.com"/> <!-- allow pushwoosh service -->
+  <access origin="*.phonegap.com"/> <!-- allow phonegap service -->
+
+  <platform name="ios" >
+    <preference name="orientation" value="portrait" /><!--force portrait orientation-->
+  </platform>
+
+  <platform name="android" >
+    <preference name="orientation" value="portrait" /><!--force portrait orientation-->
+    <preference name="android-build-tool" value="gradle" /><!--Android build gradle-->
+  </platform>
+
+  <preference name="DisallowOverscroll" value="true" /><!--disable overflow to stop window bounce-->
+
+  <gap:plugin name="cordova-plugin-dialogs" source="pgb" /><!--Internal notifications -->
+  <gap:plugin name="cordova-plugin-network-information" source="pgb" /><!-- Celluar info (offline//online) -->
+  <gap:plugin name="com.indigoway.cordova.whitelist.whitelistplugin" version="1.1.1" source="pgb"/><!-- needed for Android Whitelisting -->
+  <gap:plugin name="de.appplant.cordova.plugin.hidden-statusbar-overlay" /><!-- hide status bar in app -->
+  <gap:plugin name="pushwoosh-pgb-plugin" source="npm" /><!--Pushwoosh plugin-->
+  <gap:plugin name="nl.x-services.plugins.socialsharing" /><!-- Social Sharing -->
+  <gap:plugin name="it.zerob.cordova.screenshot" spec="0.1.3" source="pgb" /><!-- Saves screenshots -->
+  <gap:plugin name="de.appplant.cordova.plugin.badge" source="pgb" />
+
+  <icon src="icon/icon-36-ldpi.png"         gap:platform="android"  gap:qualifier="ldpi"/>
+  <icon src="icon/icon-48-mdpi.png"         gap:platform="android"  gap:qualifier="mdpi"/>
+  <icon src="icon/icon-72-hdpi.png"         gap:platform="android"  gap:qualifier="hdpi"/>
+  <icon src="icon/icon-96-xhdpi.png"        gap:platform="android"  gap:qualifier="xhdpi"/>
+
+  <icon src="Icon.png"                      gap:platform="ios" width="57" height="57"/>
+  <icon src="icons/ios/icon-2x.png"         gap:platform="ios" width="114" height="114"/>
+  <icon src="icons/ios/icon-40-2x.png"      gap:platform="ios" width="80" height="80"/>
+  <icon src="icons/ios/icon-40.png"         gap:platform="ios" width="40" height="40"/>
+  <icon src="icons/ios/icon-50-2x.png"      gap:platform="ios" width="100" height="100"/>
+  <icon src="icons/ios/icon-50.png"         gap:platform="ios" width="50" height="50"/>
+  <icon src="icons/ios/icon-60-2x.png"      gap:platform="ios" width="120" height="120"/>
+  <icon src="icons/ios/icon-60-3x.png"      gap:platform="ios" width="180" height="180"/>
+  <icon src="icons/ios/icon-60.png"         gap:platform="ios" width="120" height="120"/>
+  <icon src="icons/ios/icon-72-2x.png"      gap:platform="ios" width="144" height="144"/>
+  <icon src="icons/ios/icon-72.png"         gap:platform="ios" width="72" height="72"/>
+  <icon src="icons/ios/Icon-76@2x.png"      gap:platform="ios" width="152" height="152"/>
+  <icon src="icons/ios/icon-76.png"         gap:platform="ios" width="76" height="76"/>
+  <icon src="icons/ios/icon-small-2x.png"   gap:platform="ios" width="58" height="58"/>
+  <icon src="icons/ios/icon-small.png"      gap:platform="ios" width="29" height="29"/>
+
+  <gap:splash src="screen/screen-ldpi-portrait.png"   gap:platform="android"  gap:qualifier="port-ldpi" />
+  <gap:splash src="screen/screen-mdpi-portrait.png"   gap:platform="android"  gap:qualifier="port-mdpi" />
+  <gap:splash src="screen/screen-hdpi-portrait.png"   gap:platform="android"  gap:qualifier="port-hdpi" />
+  <gap:splash src="screen/screen-xhdpi-portrait.png"  gap:platform="android"  gap:qualifier="port-xhdpi" />
+
+  <gap:splash src="splash.png"                            gap:role="default"/>
+  <gap:splash src="Default.png"                           gap:platform="ios" width="320" height="480" />
+  <gap:splash src="Default-568h.png"                      gap:platform="ios" width="320" height="480" />
+  <gap:splash src="Default-568h2.png"                     gap:platform="ios" width="320" height="568" />
+  <gap:splash src="screen-iphone-portrait.png"            gap:platform="ios" width="320" height="480" />
+  <gap:splash src="screen-iphone-portrait-2x.png"         gap:platform="ios" width="640" height="960" />
+  <gap:splash src="screen-iphone-portrait-568h-2x.png"    gap:platform="ios" width="640" height="1136" />
+  <gap:splash src="screen-iphone-portrait-667h.png"       gap:platform="ios" width="750" height="1334" />
+  <gap:splash src="screen-iphone-portrait-736h.png"       gap:platform="ios" width="1242" height="2208" />
+
+</widget>
