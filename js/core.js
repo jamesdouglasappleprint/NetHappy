@@ -30,6 +30,9 @@ function Core(){
   self.appCoreClickEvents();
   self.loadCoreData();
 
+  self.initPushwoosh()
+  window.plugin.notification.badge.clear(); //clear badge notifications
+
 }
 
 //Initialiser
@@ -66,9 +69,6 @@ Core.prototype.init = function (x) {
   //TODO: this probably refers to the device plugin we're NOT using?
   // var string = device.uuid;
   // createPushRegister(string)
-
-  //self.initPushwoosh()
-  window.plugin.notification.badge.clear(); //clear badge notifications
 
 };
 
@@ -1272,7 +1272,7 @@ Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,
 
 Core.prototype.initPushwoosh = function(){
   var self = this
-
+  console.log('PUSHWOOSH INIT')
   //navigator.notification.alert('Success!', null, 'Pushwoosh CORE Initialised', 'ok')
 
   var pushNotification = cordova.require("com.pushwoosh.plugins.pushwoosh.PushNotification");
@@ -1307,7 +1307,6 @@ Core.prototype.initPushwoosh = function(){
     },
     function(status) {
       navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-
       console.log('failed to register : ' + JSON.stringify(status));
       alert(JSON.stringify(['failed to register ', status]));
     }
