@@ -67,8 +67,8 @@ Core.prototype.init = function (x) {
   // var string = device.uuid;
   // createPushRegister(string)
 
-  self.initPushwoosh()
-  window.plugin.notification.badge.clear(); //clear badge notifications
+  // self.initPushwoosh()
+  // window.plugin.notification.badge.clear(); //clear badge notifications
 
 };
 
