@@ -62,9 +62,9 @@ Core.prototype.init = function (x) {
   })
 
 
-  //TODO: this probably refers to the device plugin we're NOT using?
-  var string = device.uuid;
-  createPushRegister(string)
+  // //TODO: this probably refers to the device plugin we're NOT using?
+  // var string = device.uuid;
+  // createPushRegister(string)
 
   self.initPushwoosh()
   window.plugin.notification.badge.clear(); //clear badge notifications
