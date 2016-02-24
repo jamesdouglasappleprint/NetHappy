@@ -10,31 +10,109 @@
         <link rel="stylesheet" type="text/css" href="css/ralewayFont.css" />
         <link rel="stylesheet" type="text/css" href="css/animation.css" />
         <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
-        <title>AppleGotchi</title>
+        <title>NetHappy</title>
     </head>
     <body>
-        <!-- Default Loaded Panel -->
-        <div class="fullHeightPanel loadingPanel">
-          <H1>*Insert loading screen here*</H1>
-          <a href="#" class="button skipLoading">SKIP LOADING</a>
-          <a href="#" class="button creationBypass">JUMP TO CREATION</a>
+      <header>
+        <div class="navigationButtons">
+            <div class="menuButton">
+                <a href="#"><i class="fa fa-bars"></i></a>
+            </div>
+            <img class="netHappyLogo" src="img/nethappy_h.png">
+            <div class="settings">
+                <a href="#"><i class="fa fa-cog"></i></a>
+            </div>
         </div>
-        <audio src="NeckPillow.mp3" class="menuMusic" type="audio/mpeg"></audio>
-        <audio src="KawaiKitsune.mp3" class="gameMusic" type="audio/mpeg"></audio>
+        <div class="prelaunchButtons">
+            <a href="#" class="navigateBack" data-location="login"><i class="fa fa-chevron-left"></i></a>
+            <div class="appLogos">
+                <img class="contactLogo" src="./img/netAppLogo.png">
+                <img class="contactLogo" src="./img/arrowLogo.png">
+            </div>
+        </div>
+      </header>
+      <div class="appContainer"></div>
+      <div class="contentContainer"></div>
+      <div class="thirdLevelContainer"></div>
+      <div class="fourthLevelContainer"></div>
+      <div class="postContainer"></div>
+      <div class="settingsMenu">
+          <h2>My Details</h2>
+          <p>Name <span class="settingsUserName"></span></p>
+          <p>Email Address <span class="settingsEmailAddress"></span></p>
+          <h2>My BDM</h2>
+          <p>Name <span class="myBdmName"></span></p>
+          <p>Email Address <span class="myBdmEmail"></span></p>
+          <div class=""><a class="loadMyBdm" href="#">View profile</a></div>
+          <h2>Settings</h2>
+         <!--  <div class=""><a class="notificationToggle" data-notif="off" hrefy="#">Turn off notifications</a></div> -->
+          <div class=""><a class="logOff" href="#">Log Off</a></div>
+          <h2>Help</h2>
+          <div class="appError">
+              <p>App not working? <a href="mailto:laura.stewart@arrow.com">Contact us</a></p>
+          </div>
 
-        <!-- Panels -->
-        <div class="fullHeightPanel registerLoginPanel"></div>
-        <div class="fullHeightPanel storyboardPanel"></div>
-        <div class="fullHeightPanel mainPanel"></div>
-        <div class="fullHeightPanel menuPanel"></div>
-        <div class="fullHeightPanel contactDetailsPanel"></div>
-        <div class="fullHeightPanel levelupPanel"></div>
-        <div class="fullHeightPanel leaderboardPanel"></div>
+          <!-- <div class=""><a class="push" href="#">PUSH</a></div> -->
+      </div>
+      <div class="myBdmMenu">
+        <ul class="listParentReturn">
+          <li class="listParent">
+              <a href="#" class="listGrandParentAnchor" data-target="9"><div class="menuIcon"><i class="fa fa-phone"></i></div><h2 class="menuTitleSpacing">Contact Us</h2><i class="fa fa-chevron-left"></i></a>
+          </li>
+        </ul>
+        <div class="postInner">
+          <div class="postThumbnail" style=""></div>
+          <div class="postContactHeadshot"></div>
+          <div class="postContactName">
+              <h4></h4>
+              <p></p>
+          </div>
+          <div class="bdmFullInfo"></div>
+        </div>
+      </div>
+      <div class="socialStrip">
+        <a href="#" class="linkedIn"><i class="fa fa-linkedin-square"></i></a>
+        <a href="#" class="twitter"><i class="fa fa-twitter-square "></i></a>
+        <a href="#" class="facebook"><i class="fa fa-facebook-square "></i></a>
+        <a href="mailto:netappteam.ecs.uk@arrow.com" class="mailUs"><i class="fa fa-envelope-square "></i></a>
+      </div>
+      <div class="actions">
+        <a href="#" class="downloadItem"><i class="fa fa-download "></i></a>
+        <a href="#" class="shareThis"><i class="fa fa-share-alt-square "></i></a>
+        <a href="#" class="externalLink"><i class="fa fa-sign-in"></i></a>
+        <a href="#" class="addEventToCalender addPostEvent"><i class="fa fa-calendar"></i></a>
+      </div>
+      <footer>
+        <div class="alert">
+          <div class="flexAlignCenter">
+            <div class="alertContainer">
+              <div class="alertIcon"></div>
+              <div class="alertText"></div>
+              <div class="actionButtons">
+                <button class="cancelButton"></button>
+                <button class="actionButton"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="socialModal">
+          <a href="#" class="closeSocialModal"><i class="fa fa-times"></i></a>
+          <p>Share this on...</p>
+          <div class="socialModalIcons">
+              <a href="#" class="shareOnFacebook" data-link=""><i class="fa fa-facebook-square "></i></a>
+              <a href="#" class="shareOnTwitter" data-link=""><i class="fa fa-twitter-square"></i></a>
+              <a href="#" class="shareOnLinkedin" data-link=""><i class="fa fa-linkedin-square"></i></a>
+          </div>
+        </div>
+    </footer>
+
+
 
 
         <script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
         <script src="cordova.js"></script>
         <script type="text/javascript" src="js/core.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js"></script>
 
         <!--  -->
         <script type="text/javascript">

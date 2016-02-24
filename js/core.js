@@ -15,1064 +15,1305 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 
+// navigator.notification.alert('Thanks for registering! You can now log in using your email and password', null, 'Registration Success!', 'Continue')
+//navigator.notification.confirm('User not found. Please check your login details and try again!', loginFailure, 'Login failure', ['Retry','Cancel'])
+//localStorage.clear();
+//Call unregister
+//self.initPushwoosh(null, null, false, true)
+
 function Core(){
   console.log('Core Loaded');
   var self = this;
 
+  self.init();
+  self.logIn();
+  self.appCoreClickEvents();
 
-  self.currentMood = 'happy';
-  self.petNamedType = ""; //current pet type as a name
-  self.petLevel = 1; //current pet type as a name
-  self.userID = 0; //Pet Name
-
-  self.loadPanelContent();//Load panels with content
-  self.loginOrRegister(); //Load form options
-  self.buildFunctionsDelete(); //Load temp files +++ DELETE THIS +++
-  self.init();//Initial load checks
-  self.logOut()
-  self.initPushwoosh()
-  window.plugin.notification.badge.clear(); //clear badge notifications
 }
 
 //Initialiser
 Core.prototype.init = function (x) {
   var self = this
 
-  if (localStorage.getItem("remainLoggedIn") == 'true' && localStorage.getItem("userID") !== null){
-    console.log('remain logged in is true')
-    //get up to date pet data
-    self.loadPet(localStorage.getItem("userID"))
-  }else{
+  var value = window.localStorage.getItem("stayloggedon")
 
+  if( value == 1){
+    $('.appContainer').load("home.html")
+    $('.navigateBack').hide()
+    $('.prelaunchButtons').hide()
+    $('.socialStrip').show()
+    //BDM Data load
+    getBdmData()
+    //User Data
+
+  }else{
+    $('.navigateBack').hide()
+    $('.prelaunchButtons').show()
+    $('.socialStrip').hide()
+    $('.appContainer').load("login.html")
   }
+
+  //I HAVE NO IDEA WHAT THIS IS IS - it seems to boot pushregister, but i dont know what for...
+  $(document).on("click",".push",function(e){
+    e.preventDefault
+    var string = device.uuid;
+    createPushRegister(string)
+    initPushwoosh()
+  })
+
+
+  //TODO: this probably refers to the device plugin we're NOT using?
+  var string = device.uuid;
+  createPushRegister(string)
+
+  self.initPushwoosh()
+  window.plugin.notification.badge.clear(); //clear badge notifications
 
 };
 
-//Load HTML into panels
-Core.prototype.loadPanelContent = function(){
-  var self = this
-  console.log('Loading Panel Content')
-
-  $('.registerLoginPanel').load("registerlogin.html")
-  $('.storyboardPanel').load("storyboard.html")
-  $('.mainPanel').load("main.html")
-  $('.menuPanel').load("menu.html")
-  $('.levelupPanel').load("levelup.html")
-  $('.contactDetailsPanel').load("contactdetails.html")
-  $('.leaderboardPanel').load("leaderboard.html")
-
-  $(document).on('click',".buttonPhoto", function(e){
-    e.preventDefault()
-
-    // navigator.screenshot.save(function(error,res){
-    //   if(error){
-    //     console.error(error);
-    //   }else{
-    //     window.plugins.socialsharing.share('Message and image', null, 'file://'+res.filePath, null)
-    //     console.log(res.filePath);
-    //   }
-    // },'jpg',100,'myPet');
-
-    localStorage.setItem('isKill', 1)
-    self.currentMood = 'dead';
-
-
-  })
-
-  //Click to feed!
-  $(document).on("click",".buttonFeed",function(e){
-    e.preventDefault()
-    self.actionFeed(localStorage.getItem('petLevel'))
-  })
-
-  //Click to feed!
-  $(document).on("click",".buttonClean",function(e){
-    e.preventDefault()
-    self.actionClean(localStorage.getItem('petLevel'))
-  })
-
-  //Click to Entertain!
-  $(document).on("click",".buttonEntertain",function(e){
-    e.preventDefault()
-    self.actionEntertain(localStorage.getItem('petLevel'))
-  })
-
-  //Click to open contact details menu
-  $(document).on("click",".updateContactDeets",function(e){
-    e.preventDefault()
-    $('.contactDetailsPanel').show()
-    $('#updateContactDetailsForm #userID').val(localStorage.getItem('userID'))
-    $('#updateContactDetailsForm #forename').val(localStorage.getItem('firstName'))
-    $('#updateContactDetailsForm #surname').val(localStorage.getItem('lastName'))
-    $('#updateContactDetailsForm #email').val(localStorage.getItem('emailaddress'))
-    $('#updateContactDetailsForm #a1').val(localStorage.getItem('AddressLine1'))
-    $('#updateContactDetailsForm #a2').val(localStorage.getItem('AddressLine2'))
-    $('#updateContactDetailsForm #a3').val(localStorage.getItem('AddressLine3'))
-    $('#updateContactDetailsForm #t').val(localStorage.getItem('town'))
-    $('#updateContactDetailsForm #pc').val(localStorage.getItem('postcode'))
-    $('#updateContactDetailsForm #password').val(localStorage.getItem('password'))
-  })
-
-  //Update contact Details after filling in
-  $(document).on("click",".submitUpdate",function(e){
-    e.preventDefault()
-
-    console.log('Submit Update has been clicked')
-  	var postData = $('form#updateContactDetailsForm').serialize();
-    var fakeDetailsRemoved = postData.replace('&fakeusernameremembered=&fakepasswordremembered=','');
-  	$.ajax({
-  		type: 'POST',
-  		data: fakeDetailsRemoved,
-      dataType:'jsonp',
-      jsonp: 'callback',
-  		url: 'http://applegotchi.co.uk/Ajax/ghUpdateUser.ashx',
-  		success: function(data){
-        console.log('Success! User updated.')
-        console.log(data)
-        navigator.notification.alert('Thanks for updating! Your details are now updated.', null, 'Details updated!', 'Continue')
-
-        localStorage.setItem('firstName',$('#updateContactDetailsForm #forename').val())
-        localStorage.setItem('lastName',$('#updateContactDetailsForm #surname').val())
-        localStorage.setItem('emailaddress',$('#updateContactDetailsForm #email').val())
-        localStorage.setItem('AddressLine1',$('#updateContactDetailsForm #a1').val())
-        localStorage.setItem('AddressLine2',$('#updateContactDetailsForm #a2').val())
-        localStorage.setItem('AddressLine3',$('#updateContactDetailsForm #a3').val())
-        localStorage.setItem('town',$('#updateContactDetailsForm #t').val())
-        localStorage.setItem('postcode',$('#updateContactDetailsForm #pc').val())
-        localStorage.setItem('password',$('#updateContactDetailsForm #password').val())
-  		},
-  		error: function(){
-        console.log('Error registering user.')
-        navigator.notification.alert('Oops! It looks like something went wrong...', null, 'Details not updated :(', 'ok')
-  		}
-    });
-
-  })
-
-  //Kill your pet
-  $(document).on("click",".petMurder",function(e){
-    e.preventDefault()
-    self.petMurder()
-  })
-
-  //Show Leaderboard
-  $(document).on("click",".leaderBoardButton",function(e){
-    e.preventDefault()
-    $('.menuPanel').hide()
-    $('.leaderboardPanel').show()
-    $('.leaderboardData').html('')
-
-    $.ajax({
-      type: 'POST',
-      data: 't=5',
-      async: false,
-      dataType:'jsonp',
-      jsonp: 'callback',
-      url: 'http://applegotchi.co.uk/Ajax/ghLeaderboard.ashx',
-      success: function(data){
-        console.log(data);
-
-        $.each(data, function(e){
-          var petTypeName = ''
-
-          if (data[e].pt == 2){
-            petTypeName = 'ringo'
-          }else if (data[e].pt == 1){
-            petTypeName = 'insatsu'
-          }else{
-            petTypeName = 'noneSpecified'
-          }
-
-          $('.leaderboardData').append('<li><div class="leaderboardEntryContainer"><img src="img/Leaderboard/leaderboardPetIMG_'+petTypeName+'_'+data[e].pl+'.png"><div class="leaderboardDetails"><p class="leaderboardBold">'+data[e].pos+'.'+data[e].pname+'</p><p>Owner: '+data[e].name+'</p></div><div class="leaderboardScore">'+data[e].p+'</div></div></li>')
-
-          // console.log(data[e].name) //user
-          // console.log(data[e].p) //score
-          // console.log(data[e].pl) //Pet level
-          // console.log(data[e].pname) //Pet name
-          // console.log(data[e].pos) //leaderboard position
-          // console.log(data[e].pt) //pet type
-        })
-
-      },
-      error: function(){
-        console.log('Error registering user.')
-      }
-    });
-
-  })
-
-  //Click to close contact details menu
-  $(document).on("click",".closeleaderboard",function(e){
-    e.preventDefault()
-    $('.leaderboardPanel').hide()
-    $('.menuPanel').show()
-  })
-
-
-  //Click to close contact details menu
-  $(document).on("click",".closeContactDetails",function(e){
-    e.preventDefault()
-    $('.contactDetailsPanel').hide()
-  })
-
-  //Click to close contact details menu
-  $(document).on("click",".closeLevelUp",function(e){
-    e.preventDefault()
-    $('.levelupPanel').hide()
-  })
-
-  //Click to close contact details menu
-  $(document).on("click",".toggleMusic",function(e){
-    e.preventDefault()
-    console.log('toggling')
-    $('.toggleMusic').toggleClass('disabledAudio')
-
-
-    if (localStorage.getItem('music') == '1'){
-      $('.menuMusic').get(0).pause()
-      $('.gameMusic').get(0).pause()
-       window.localStorage.setItem('music', '0')
-    }else if (localStorage.getItem('music') == '0'){
-       window.localStorage.setItem('music', '1')
-      $('.menuMusic').get(0).pause()
-      $('.gameMusic').get(0).play()
-    }else{
-      $('.menuMusic').get(0).pause()
-      $('.gameMusic').get(0).pause()
-    }
-
-  })
-
-  //Click to close contact details menu
-  $(document).on("click",".toggleSound",function(e){
-    e.preventDefault()
-    console.log('toggling')
-    $('.toggleSound').toggleClass('disabledAudio')
-
-    if (localStorage.getItem('sound') == '1'){
-       window.localStorage.setItem('sound', '0')
-    }else{
-       window.localStorage.setItem('sound', '1')
-    }
-
-
-  })
-
-
-
-  //Click to Entertain!
-  $(document).on("click",".menuTrigger",function(e){
-    e.preventDefault()
-
-    $('.accountDeetsFirstName>span').html(localStorage.getItem('firstName'))
-    $('.accountDeetsLastName>span').html(localStorage.getItem('lastName'))
-    $('.accountDeetsAddressLine1>span').html(localStorage.getItem('AddressLine1'))
-    $('.accountDeetsAddressLine2>span').html(localStorage.getItem('AddressLine2'))
-    $('.accountDeetsAddressLine3>span').html(localStorage.getItem('AddressLine3'))
-    $('.accountDeetsTown>span').html(localStorage.getItem('town'))
-    $('.accountDeetsPostcode>span').html(localStorage.getItem('postcode'))
-    $('.accountDeetsEmailAddress>span').html(localStorage.getItem('emailaddress'))
-
-    $('.menuPanel').show()
-  })
-
-  //Click to close contact details menu
-  $(document).on("click",".closeMenu",function(e){
-    e.preventDefault()
-    $('.menuPanel').hide()
-  })
-}
-
-//Log out and clear all local data
-Core.prototype.logOut = function(){
-  var self = this
-  var save = localStorage.getItem('music')
-  //Click to Entertain!
-  $(document).on("click",".logOut",function(e){
-    e.preventDefault()
-    localStorage.clear();
-    $('.menuPanel').hide()
-    $('.mainPanel').hide()
-    $('.storyboardPanel').hide()
-    $('.registerLoginPanel').removeClass('displaceBackgroundLogin')
-    $('.registerLoginContainer').removeClass('registerLoginReduce')
-    $('.slideLogin').hide()
-
-    //1 == play
-    //0  == stop
-    //if music is set to on, play
-    if (save == '1'){
-      $('.menuMusic').get(0).play()
-      $('.gameMusic').get(0).pause()
-      localStorage.setItem('music', "1")
-
-    //else if music is set to off, pause both
-    }else if (save == '0'){
-      $('.menuMusic').get(0).pause()
-      $('.gameMusic').get(0).pause()
-      $('.toggleMusic').addClass('disabledAudio')
-      localStorage.setItem('music', "0")
-    }else{
-      $('.menuMusic').get(0).pause()
-      $('.gameMusic').get(0).pause()
-    }
-
-
-    //Call unregister
-    self.initPushwoosh(null, null, false, true)
-  })
-}
-
-//Login and Register Functions
-Core.prototype.loginOrRegister = function(){
-  var self = this
-  console.log('Loading Panel Content')
-
-  //If remmber me button clicked
-  $(document).on("click",".rememberMeButton",function(e){
-    if ($(this).data('status') == 'forget'){
-      console.log('toggling to remember')
-      $(this).addClass('statusRemember')
-      $(this).data('status', 'remember')
-      localStorage.setItem("remainLoggedIn", "true");
-    }else{
-      $(this).data('status', 'forget')
-      $(this).removeClass('statusRemember')
-      console.log('toggle to forget')
-      localStorage.removeItem("remainLoggedIn", "true");
-    }
-  })
-
-  //Login Opened
-  $(document).on("click",".loginButton",function(e){
-    $('.registerLoginContainer').addClass('registerLoginReduce')
-    $('.slideLogin').show()
-    $('.slideRegister').hide()
-    $('.registerLoginPanel').addClass('displaceBackgroundLogin')
-  })
-
-  //Login closed
-  $(document).on("click",".hideSlideLogin",function(e){
-    $('.registerLoginContainer').removeClass('registerLoginReduce')
-    $('.slideLogin').hide()
-    $('.registerLoginPanel').removeClass('displaceBackgroundLogin')
-  })
-
-  //Login Opened
-  $(document).on("click",".registerButton",function(e){
-    $('.registerLoginContainer').addClass('registerLoginReduceMax')
-    $('.slideRegister').show()
-    $('.slideLogin').hide()
-    $('.registerLoginPanel').addClass('displaceBackgroundRegister')
-  })
-
-  //Login closed
-  $(document).on("click",".hideSlideRegister",function(e){
-    $('.registerLoginContainer').removeClass('registerLoginReduceMax')
-    $('.slideRegister').hide()
-    $('.registerLoginPanel').removeClass('displaceBackgroundRegister')
-  })
-
-  //REGISTER USER
-  $(document).on("click",".submitRegister",function(e){
-  	e.preventDefault()
-    localStorage.clear();
-  	console.log('Submit Register has been clicked')
-  	var postData = $('form#registerForm').serialize();
-    var fakeDetailsRemoved = postData.replace('&fakeusernameremembered=&fakepasswordremembered=','');
-  	$.ajax({
-  		type: 'POST',
-  		data: fakeDetailsRemoved,
-      dataType:'jsonp',
-      jsonp: 'callback',
-  		url: 'http://applegotchi.co.uk/Ajax/ghRegister.ashx',
-  		success: function(data){
-        console.log('Success! User registered.')
-        localStorage.setItem("userID", data.userID);
-        navigator.notification.alert('Thanks for registering! You can now log in using your email and password', null, 'Registration Success!', 'Continue')
-
-        $('.registerLoginContainer').removeClass('registerLoginReduceMax')
-        $('.slideRegister').hide()
-        $('.registerLoginPanel').removeClass('displaceBackgroundRegister')
-  		},
-  		error: function(){
-        console.log('Error registering user.')
-        navigator.notification.alert('Oops! It looks like something went wrong...', null, 'Registration Failure :(', 'ok')
-  		}
-    });
-
-  });
-
-  //USER LOGIN
-  $(document).on("click",".submitLogin",function(e){
-  	e.preventDefault()
-  	console.log('Submit Login has been clicked')
-  	var postData = $('form#loginForm').serialize();
-    var fakeDetailsRemoved = decodeURIComponent(postData.replace('fakeusernameremembered=&fakepasswordremembered=&',''));
-  	$.ajax({
-  		type: 'POST',
-  		data: fakeDetailsRemoved,
-      dataType:'jsonp',
-      jsonp: 'callback',
-  		url: 'http://applegotchi.co.uk/Ajax/ghLogon.ashx',
-  		success: function(data){
-  			console.log(data);
-
-        function loginFailure(buttonIndex) {
-          console.log('login failure loop'+buttonIndex)
-          if (buttonIndex == 1){
-            $('.submitLogin').trigger('click')
-          }
-        }
-
-        if (data.error == "user not found"){
-          console.log('user not found')
-          navigator.notification.confirm('User not found. Please check your login details and try again!', loginFailure, 'Login failure', ['Retry','Cancel'])
-        }else{
-          console.log('user found')
-          self.userID = data.uid
-
-          localStorage.setItem('userID', data.uid)
-          localStorage.setItem('firstName', data.firstname)
-          localStorage.setItem('lastName', data.lastname)
-          localStorage.setItem('postcode', data.postcode)
-          localStorage.setItem('AddressLine1', data.add1)
-          localStorage.setItem('AddressLine2', data.add2)
-          localStorage.setItem('AddressLine3', data.add3)
-          localStorage.setItem('emailaddress', data.emailaddress)
-          localStorage.setItem('town', data.town)
-          localStorage.setItem('password', data.password)
-
-          //TODO:: renable
-          self.initPushwoosh(data.emailaddress, null, false)
-
-          if (localStorage.getItem("hasPet") != 'true'){
-            console.log('No local storage hasPet, either user hasn\t got a pet or they\'e got one but had deleted the app')
-
-            //Check to see if user already has login, but has cleared localstorage
-            $.ajax({
-              type: 'POST',
-              data: 'uid='+data.uid,
-              dataType:'jsonp',
-              jsonp: 'callback',
-              url: 'http://applegotchi.co.uk/Ajax/ghPets.ashx',
-              success: function(data){
-                console.log(data);
-
-                //If pet data exists
-                if (data.length == 1){
-                  console.log('No localstorage was present, but the user has a pet. Loading Pet...')
-                  self.loadPet(self.userID)
-                }else{
-                  //Start creation story
-                  self.creationStory();
-                  $('.storyboardPanel').show()
-                }
-
-
-
-              },
-              error: function(){
-                console.log('Error registering user.')
-              }
-            });
-          }else{
-            console.log('You have signed in and already have a pet!')
-            //skip to creature
-            self.loadPet(self.userID)
-          }
-        }
-  		},
-  		error: function(){
-        console.log('Error registering user.')
-  		}
-    });
-
-  });
-}//END
-
-//Assigns global mood to whatever you feed it
-Core.prototype.assignMood = function(mood){
+Core.prototype.GoogleMap = function () {
   var self = this;
-  var thisMood = mood;
-  self.currentMood = thisMood;
+
+  this.initialize = function(coords){
+    var splitCoord = coords.split(',')
+    var firstCoord = splitCoord[0]
+    var secondCoord = splitCoord[1]
+    //console.log(firstCoord,secondCoord)
+    //console.log('running map',coords)
+    var myLatlng = new google.maps.LatLng(firstCoord,secondCoord);
+    var mapOptions = {
+      zoom: 16,
+      center: myLatlng,
+      disableDefaultUI: true
+    }
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+    var marker = new google.maps.Marker({
+        position: myLatlng,
+        map: map,
+        title: 'Location'
+    });
+  }
 }
 
-//All code for creation story, including assigning which pet you've picked
-Core.prototype.creationStory = function(){
-  //this code is probably temporary...
-  var self = this
-  var flag1 = ''; //first stage check
-  var flag2 = ''; //second stage check
-  var flag3 = ''; //third stage check
+Core.prototype.appCoreClickEvents = function () {
+  var self = this;
 
-  $(document).on("click",".option_a",function(e){
-    e.preventDefault()
-    console.log('option A')
-    $('.storyboardContainer').css({left:'0'})
-    flag1 = 'insatsu'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //Refire the getcalenderdata if the user clicks previous or next, so we can repopulate the calender with attached events for the month
+  $(document).on("click",".ui-datepicker-prev",function(e){
+    self.getCalenderData()
   })
 
-  $(document).on("click",".option_b",function(e){
-    e.preventDefault()
-    console.log('option B')
-    $('.storyboardContainer').css({left:'-200%'})
-    flag1 = 'ringo'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  $(document).on("click",".ui-datepicker-next",function(e){
+    self.getCalenderData()
   })
 
-  //Create Ringo
-  $(document).on("click",".option_c",function(e){
-    e.preventDefault()
-    console.log('option C')
-    $('.storyboardContainer').css({left:'0', top:'-100%'})
-    flag2 = 'insatsu'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //get category
+  $(document).on("click",".listGrandParentAnchor",function(e){
+    //console.log('grandparent clicked')
+    var category = $(this).data('target')
+    var trigger = $(this).parent().html().replace('listGrandParentAnchor','listGrandParentAnchorReturn')
+    $('.appContainer').fadeOut('fast')
+    self.getCategory(category,trigger)
+    $('.contentContainer').show()
+    $('.actions').hide()
+    $('.menuButton').show()
+    $('.myBdmMenu').hide()
+    $('.fourthLevelContainer').hide()
   })
 
-  //Create Ringo
-  $(document).on("click",".option_d",function(e){
-    e.preventDefault()
-    console.log('option d')
-    $('.storyboardContainer').css({left:'0', top:'-100%'})
-    flag2 = 'ringo'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //Return to parent item
+  $(document).on("click",".listGrandParentAnchorReturn",function(e){
+    $('.appContainer').fadeIn('fast')
+    $('.contentContainer').hide()
+    $('.actions').hide()
+    $('.menuButton').hide()
   })
 
-  //Create Ringo
-  $(document).on("click",".option_e",function(e){
-    e.preventDefault()
-    console.log('option e')
-    $('.storyboardContainer').css({left:'-200%', top:'-100%'})
-    flag2 = 'insatsu'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //Return to parent item
+  $(document).on("click",".listChild",function(e){
+    $('.contentContainer').fadeIn('fast')
+    $('.postContainer').hide()
+    $('.actions').hide()
   })
 
-  //Create Ringo
-  $(document).on("click",".option_f",function(e){
-    e.preventDefault()
-    console.log('option f')
-    $('.storyboardContainer').css({left:'-200%', top:'-100%'})
-    flag2 = 'ringo'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //Return to parent item
+  $(document).on("click",".menuButton",function(e){
+    $('.appContainer').toggle()
+    $('.myBdmMenu').hide()
   })
 
-  //Create insatsu
-  $(document).on("click",".option_g",function(e){
-    e.preventDefault()
-    console.log('option g')
-    flag3 = 'insatsu'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //REVEAL SOCIAL MODAL ON CLICK
+  $(document).on("click",".shareThis",function(e){
+    $('.socialModal').show()
   })
 
-  //Create Ringo
-  $(document).on("click",".option_h",function(e){
-    e.preventDefault()
-    console.log('option h')
-    flag3 = 'ringo'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //SHARE LINK OF SINGLE POST ON FACEBOOK
+  $(document).on("click",".shareOnFacebook",function(e){
+    var link = $(this).data('link')
+    window.open('http://www.facebook.com/sharer.php?u='+link, '_system')
+    $('.socialModal').hide()
   })
 
-  //Create insastsu
-  $(document).on("click",".option_i",function(e){
-    e.preventDefault()
-    console.log('option i')
-    flag3 = 'insatsu'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //SHARE LINK OF SINGLE POST ON TWITTER
+  $(document).on("click",".shareOnTwitter",function(e){
+    var link = $(this).data('link')
+    window.open('https://twitter.com/intent/tweet?url='+link, '_system')
+    $('.socialModal').hide()
   })
 
-  //Create Ringo
-  $(document).on("click",".option_j",function(e){
-    e.preventDefault()
-    console.log('option j')
-    flag3 = 'ringo'
-    console.log('Flag1: '+flag1+' Flag2: '+flag2+' Flag3: '+flag3)
+  //SHARE LINK OF SINGLE POST ON LINKED IN
+  $(document).on("click",".shareOnLinkedin",function(e){
+    var link = $(this).data('link')
+    window.open('https://www.linkedin.com/shareArticle?url='+link, '_system')
+    $('.socialModal').hide()
   })
 
+  //CLOSE SOCIAL MODAL BOX
+  $(document).on("click",".closeSocialModal",function(e){
+    $('.socialModal').hide()
+  })
 
+  $(document).on("click",".thirdLevelReturn",function(e){
+    $('.contentContainer').hide()
+  })
 
-  function createPet(petType){
-    console.log('Create Pet function Firing')
-    var nameofpet = ''
-    $('.petname').each(function(){
-      console.log($(this).val())
-      if ($(this).val() == ''){
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // GENERATE SINGLE ARTICLE /////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  $(document).on("click",".listParentAnchor",function(e){
+    self.areWeConnected()
+    $('.actions').fadeIn('fast')
+    $('.externalLink').show()
+    $('.shareThis').show()
+    $('.downloadItem').show()
 
-      }else{
-        nameofpet = $(this).val()
-        return false;
+    //console.log('parent clicked')
+    var that = $(this).html()
+    var parentCat = $(this).parent().parent().attr('data-category')
+    var img = $(this).parent().parent().find('.listParent>.listGrandParentAnchorReturn>img').attr('src')
+    var data = JSON.parse(window.localStorage.getItem('category'+parentCat))
+    var postRef = $(this).parent().data('post')
+    var itemTitle = data.posts[postRef].title
+
+    //Check to see if the data we're pulling per post has been defined, if it hasn't been defined set the variable as false so we can dump a blank string into the append
+    if (data.posts[postRef].thumbnail_images != undefined){var thumbnail = data.posts[postRef].thumbnail_images.full.url}else{var thumbnail = false}
+    ///////////////
+    if (data.posts[postRef].custom_fields.Link != undefined){
+      var link = data.posts[postRef].custom_fields.Link[0]
+      //add button to post if we do have a link
+      $('.externalLink').show()
+      $('.shareThis').show()
+      var siteLink = '<a href="#" class="visitSiteLink externalLink"><i class="fa fa-sign-in"></i> Visit Website</a>'
+    }else{
+      $('.externalLink').hide()
+      $('.shareThis').hide()
+      var siteLink = ''
+    }
+    ///////////////
+    if (data.posts[postRef].custom_fields.Download != undefined){
+      var download = data.posts[postRef].custom_fields.Download[0]
+    }else{
+      $('.downloadItem').hide()
+    }
+    ///////////////
+    if (data.posts[postRef].custom_fields.Event != undefined){
+      var events = data.posts[postRef].custom_fields.Event[0]
+      $('.addEventToCalender').show()
+      var eventLink = '<a href="#" class="addPostEvent"><i class="fa fa-calendar"></i> Add to Calendar</a>'
+    }else{
+      $('.addEventToCalender').hide()
+      var eventLink = ''
+    }
+    ///////////////
+    if (data.posts[postRef].custom_fields.Event_Start_Date != undefined){
+      var eventStart = data.posts[postRef].custom_fields.Event_Start_Date[0]
+      $('.actions').hide()
+      var eventFullLink = '<a href="#" class="addFullEvent"><i class="fa fa-calendar"></i> Add to Calendar</a>'
+      var firstdate = returnDayMonth(data.posts[postRef].custom_fields.Event_Start_Date[0])
+      var lastdate = returnDayMonth(data.posts[postRef].custom_fields.Event_End_Date[0])
+      var completeddatestring = firstdate+' - '+lastdate
+    }else{
+      var eventFullLink = ''
+    }
+    ///////////////
+    if (data.posts[postRef].custom_fields.Event_End_Date != undefined){var eventEnd = data.posts[postRef].custom_fields.Event_End_Date[0]}else{var eventEnd = false}
+    ///////////////
+    if (data.posts[postRef].custom_fields.Event_Registration_Link != undefined){
+      var register = data.posts[postRef].custom_fields.Event_Registration_Link[0]
+      var registerLink = '<a href="#" class="registerForEvent"><i class="fa fa-check"></i> Register</a>'
+    }else{
+      var registerLink = ''
+    }
+    if (data.posts[postRef].custom_fields.Google_Maps_Coordinates != undefined){var coords = data.posts[postRef].custom_fields.Google_Maps_Coordinates[0]}else{var coords = false}
+    ///////////////
+    if (data.posts[postRef].custom_fields.Collateral_data_sheets != undefined){
+      var datasheets = ''
+      for (i = 0; i < data.posts[postRef].custom_fields.Collateral_data_sheets.length; i++) {
+        var array = data.posts[postRef].custom_fields.Collateral_data_sheets[i].split(",");
+        datasheets+= '<li><p>'+array[0]+'</p><a href="#" class="dataSheetAnchor" data-url="'+array[1]+'"><i class="fa fa-eye"></i></a><a href="#" class="dataSheetShareAnchor" data-url="'+array[1]+'"><i class="fa fa-share-alt"></i></a></li>'
       }
+      datasheet = "<ul class='customFieldDatasheets'>"+datasheets+"</ul>"
+    }else{
+      var datasheets = ''
+    }
+    ///////////////
+    if (data.posts[postRef].custom_fields.Collateral_case_study != undefined){
+      var casestudies = ''
+      for (i = 0; i < data.posts[postRef].custom_fields.Collateral_case_study.length; i++) {
+        var array = data.posts[postRef].custom_fields.Collateral_case_study[i].split(",");
+        casestudies+= '<li><p>'+array[0]+'</p><a href="#" class="dataSheetAnchor" data-url="'+array[1]+'"><i class="fa fa-eye"></i></a><a href="#" class="dataSheetShareAnchor" data-url="'+array[1]+'"><i class="fa fa-share-alt"></i></a></li>'
+      }
+      casestudy = "<ul class='customFieldDatasheets'>"+casestudies+"</ul>"
+    }else{
+      var casestudies = ''
+    }
+    ///////////////
+    if (data.posts[postRef].custom_fields.Collateral_white_paper != undefined){
+      var whitepapers = ''
+      for (i = 0; i < data.posts[postRef].custom_fields.Collateral_white_paper.length; i++) {
+        var array = data.posts[postRef].custom_fields.Collateral_white_paper[i].split(",");
+        whitepapers+= '<li><p>'+array[0]+'</p><a href="#" class="dataSheetAnchor" data-url="'+array[1]+'"><i class="fa fa-eye"></i></a><a href="#" class="dataSheetShareAnchor" data-url="'+array[1]+'"><i class="fa fa-share-alt"></i></a></li>'
+      }
+      whitepaper = "<ul class='customFieldDatasheets'>"+whitepapers+"</ul>"
+    }else{
+      var whitepapers = ''
+    }
+
+    //console.log('line 206 index.js',data.posts[postRef])
+
+    //Convert the dates to the day-month format used in the single-page event
+    function returnDayMonth(str){
+      var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+      var eventDay    = str.substr(0, 2);
+      var eventMonth  = (str.substr(2, 3).replace('/0','').replace('/1','1'))-1;
+      return eventDay+' '+months[eventMonth]
+    }
+
+    $('.shareOnFacebook').attr('data-link',link)
+    $('.shareOnTwitter').attr('data-link',link)
+    $('.shareOnLinkedin').attr('data-link',link)
+    $('.contentContainer').fadeOut('fast')
+    //Check which type of post we're generating
+    if (parentCat == 4){
+    //Events
+      $('.postContainer').html('<div class="postInner"><div class="tabTitle tabSelected" data-tab="1"><p>Info</p></div><div class="tabTitle googleMapTab" data-tab="2"><p>Location</p></div><div class="tabPanel tab1"><h5>'+completeddatestring+'</h5><h6>'+data.posts[postRef].custom_fields.Event_Location[0]+'</h6>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+registerLink+eventFullLink+'</div></div><div class="tabPanel tab2"><div id="map-canvas"></div><p>'+data.posts[postRef].custom_fields.Event_Location[0]+'</p></div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('<i class="fa fa-calendar-o listCalendarIcon"></i>','').replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+    }else if (parentCat == 7){
+      $('.actions').hide()
+    //Collateral
+      $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabTitle tabSelected" data-tab="1"><p>Info</p></div><div class="tabTitle" data-tab="2"><p>Case Studies</p></div><div class="tabTitle" data-tab="3"><p>Data Sheets</p></div><div class="tabTitle" data-tab="4"><p>White Papers</p></div><div class="tabPanel tab1">'+data.posts[postRef].content+'</div><div class="tabPanel tab2">'+casestudy+'</div><div class="tabPanel tab3">'+datasheet+'</div><div class="tabPanel tab4">'+whitepaper+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+    }else if (parentCat == 2){
+      //eShot / recent communications
+      $('.postContainer').html('<div class="postInner eshot"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-envelope-square'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      $('.socialStrip').show()
+      $('.actions').hide()
+    }else if (parentCat == 9){
+      //Contact
+      $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div><div class="postContactHeadshot"><img src="'+data.posts[postRef].custom_fields.Contact_Avatar[0]+'"></div><div class="postContactName"><h4>'+data.posts[postRef].title+'</h4><p>'+data.posts[postRef].custom_fields.Contact_Job_Title[0]+'</p></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-phone'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+    }else if (parentCat == 6){
+      //Quick Enablement
+      $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div>'+data.posts[postRef].content+'</div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-graduation-cap'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+    }else if (parentCat == 3){
+      //Promotions
+      var link = ""
+       if (data.posts[postRef].custom_fields.Promotion_link == undefined ){
+        link =  ""
+      }else{
+        link = '<a class="promotionsFindOutMore" href="'+data.posts[postRef].custom_fields.Promotion_link[0]+'">Find out more</a>'
+      }
+
+      $('.postContainer').html('<div class="postInner"><div class="promotionsTopBar"><div class="promotionsAvTo"><p class="promotionsTitles">Available To</p>'+data.posts[postRef].custom_fields.Promotion_availableto[0]+'</div><div class="promotionsValFrom"><p class="promotionsTitles">Valid From</p>'+data.posts[postRef].custom_fields.Promotion_valid_from[0]+'</div><div class="promotionsValTo"><p class="promotionsTitles">Valid To</p>'+data.posts[postRef].custom_fields.Promotion_valid_to[0]+'</div></div><div class="promotionsDetails">'+data.posts[postRef].custom_fields.Promotion_details[0]+'</div>'+data.posts[postRef].content+link+'</div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      $('.socialStrip').show()
+      $('.actions').hide()
+    }else{
+      $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+    }
+
+
+
+    $('.postContainer').show()
+    $('.postThumbnail').css({background:'url('+thumbnail+')','background-size':'cover', 'background-position':'center'})
+    $('.externalLink').click(function(){
+      window.open(link, '_system')
     })
 
-    $.ajax({
-  		type: 'POST',
-  		data: 'uid='+localStorage.getItem("userID")+'&pn='+nameofpet+'&pt='+petType,
-      dataType:'jsonp',
-      jsonp: 'callback',
-      async: false,
-  		url: 'http://applegotchi.co.uk/Ajax/ghCreatePet.ashx',
-  		success: function(data){
-  			console.log(data);
-        console.log('pet created')
-        localStorage.setItem("petName", nameofpet);
-        localStorage.setItem("petType", petType);
-        localStorage.setItem("hasPet", true);
-        self.loadPet(localStorage.getItem("userID"))
-  		},
-  		error: function(){
-        console.log('Error creating pet.')
-  		}
+    $('.promotionsFindOutMore').click(function(e){
+      e.preventDefault()
+      var link = $(this).attr('href')
+      window.open(link, '_system')
+
+    })
+
+    $('.downloadItem').click(function(e){
+      //console.log('Downloading Item...')
+      window.open(download, '_system')
     });
 
+    $('.dataSheetAnchor').click(function(){
+      var url = $(this).data('url')
+      window.open(url, '_system')
+    });
+
+    $('.dataSheetShareAnchor').click(function(){
+      var url = $(this).data('url')
+      $('.shareOnFacebook').attr('data-link',url)
+      $('.shareOnTwitter').attr('data-link',url)
+      $('.shareOnLinkedin').attr('data-link',url)
+      $('.socialModal').show()
+    });
+
+    $('.tabTitle').click(function(){
+      var target = $(this).data('tab')
+      $('.tabPanel').hide()
+      $('.tab'+target).show()
+      $('.tabTitle').removeClass('tabSelected')
+      $(this).addClass('tabSelected')
+    })
+
+    $('.googleMapTab').click(function(){
+      var map = new self.GoogleMap();
+          map.initialize(coords);
+    })
+
+    $('.registerForEvent').click(function(){
+      var url = data.posts[postRef].custom_fields.Event_Registration_Link[0]
+      window.open(url, '_system')
+    });
+
+    $('.addFullEvent').click(function(){
+      //console.log('Creating quick calendar event')
+      var eventDay    = eventStart.substr(0, 2);
+      var eventMonth  = (eventStart.substr(2, 3).replace('/0','').replace('/1','1'))-1;
+      var eventYear   = eventStart.substr(6, 4);
+
+      var endDay    = eventEnd.substr(0, 2);
+      var endMonth  = (eventEnd.substr(2, 3).replace('/0','').replace('/1','1'))-1;
+      var endYear   = eventEnd.substr(6, 4);
+
+      var startDate = new Date(eventYear,eventMonth,eventDay,12,00,0,0,0); // beware: month 0 = january, 11 = december
+      var endDate = new Date(endYear,endMonth,endDay,12,00,0,0,0);
+      //console.log('startdate'+startDate, 'endDate'+endDate)
+      var title = itemTitle;
+      var eventLocation = "";
+      var notes = "";
+      var success = function(message) { triggerAlert('<i class="fa fa-calendar"></i>','The event has been added to your calendar','Ok','');};
+      var error = function(message) { triggerAlert('<i class="fa fa-calendar"></i>','An Error has occured!','Ok','');};
+      //Add the event
+      self.addDirectEvent(startDate,endDate,title,eventLocation,notes,success,error)
+    })
+
+    //Add quick event from post (click the button, calendar event dumped straight into calendar)
+    $('.addPostEvent').click(function(){
+     // console.log('Creating quick calendar event')
+      var eventDay    = events.substr(0, 2);
+      var eventMonth  = (events.substr(2, 3).replace('/0','').replace('/1','1'))-1;
+      var eventYear   = events.substr(6, 4);
+      var startDate = new Date(eventYear,eventMonth,eventDay,12,00,0,0,0); // beware: month 0 = january, 11 = december
+      var endDate = new Date(eventYear,eventMonth,eventDay,12,00,0,0,0);
+      //console.log('startdate'+startDate, 'endDate'+endDate)
+      var title = itemTitle;
+      var eventLocation = data.posts[postRef].custom_fields.Event_Location;
+      var notes = "";
+      var success = function(message) { triggerAlert('<i class="fa fa-calendar"></i>','The event has been added to your calendar','Ok','');};
+      var error = function(message) { triggerAlert('<i class="fa fa-calendar"></i>','An Error has occured!','Ok','');};
+      //Add the event
+      self.addDirectEvent(startDate,endDate,title,eventLocation,notes,success,error)
+    })
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  })///END OF CLICK FOR POST GENERATION //////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  self.setContainerHeight()
+
+
+
+
+}
+Core.prototype.setContainerHeight = function(){
+  var self = this
+ // console.log('setting container height')
+  var docHeight = $(document).height()
+  var maths = docHeight-120
+  $('.appContainer').css({height:maths+"px"})
+  $('.contentContainer').css({height:maths+"px"})
+  $('.postContainer').css({height:maths+"px"})
+  $('.thirdLevelContainer').css({height:maths+"px"})
+  $('.fourthLevelContainer').css({height:maths+"px"})
+  $('.settingsMenu').css({height:maths+"px"})
+  $('.myBdmMenu').css({height:maths+"px"})
+}
+
+//third level menu generated for contacts list
+Core.prototype.getContacts = function(category,triggerElement,contact,team){
+  var self = this;
+
+  var data = JSON.parse(window.localStorage.getItem('category'+category))
+  //console.log(data)
+  self.$renderList = $('<div/>')
+
+  if (contact == 'mybdm'){
+    $('.myBdmMenu').show()
+    $('.fourthLevelContainer').hide()
   }
 
-  //Create Ringo
-  $(document).on("click",".createPet",function(e){
-    e.preventDefault()
-    if (flag1 == 'insatsu' && flag2 == 'insatsu' && flag3 == 'insatsu'){
-      console.log('Create Pet INSATSU //')
-      createPet(1)
-    }else if (flag1 == 'insatsu' && flag2 == 'insatsu' && flag3 == 'ringo'){
-      console.log('Create Pet INSATSU //')
-      createPet(1)
-    }else if (flag1 == 'insatsu' && flag2 == 'ringo' && flag3 == 'insatsu'){
-      console.log('Create Pet INSATSU //')
-      createPet(1)
-    }else if (flag1 == 'insatsu' && flag2 == 'ringo' && flag3 == 'ringo'){
-      console.log('Create Pet RINGO //')
-      createPet(2)
-    }else if (flag1 == 'ringo' && flag2 == 'ringo' && flag3 == 'ringo'){
-      console.log('Create Pet RINGO //')
-      createPet(2)
-    }else if (flag1 == 'ringo' && flag2 == 'insatsu' && flag3 == 'ringo'){
-      console.log('Create Pet RINGO //')
-      createPet(2)
-    }else if (flag1 == 'ringo' && flag2 == 'insatsu' && flag3 == 'insatsu'){
-      console.log('Create Pet INSATSU //')
-      createPet(1)
-    }else if (flag1 == 'ringo' && flag2 == 'ringo' && flag3 == 'insatsu'){
-      console.log('Create Pet RINGO')
-      createPet(2)
-    }else{
-      console.log('error, you\'ve somehow chosen an option I didn\'t think of.')
+  for (i = 0; i < data.count; i++) {
+    if (data.posts[i].custom_fields.Contact_NetApp_or_Arrow[0] == contact && data.posts[i].tags[0].title == team){
+      self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2><p>'+data.posts[i].custom_fields.Contact_Job_Title[0]+'</p><i class="fa fa-chevron-right"></i></a>')
+      self.$renderList.append(self.$listParent)
     }
+  }
+
+  self.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+  self.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor">'+self.$grandparentReturn.html()+'</li>'+self.$renderList.html()+'<li class="listParent mybdmlistlauncher"><a href="#" class=""><h2 class="menuTitleSpacing">My BDM</h2><i class="fa fa-chevron-right"></i></a></li>');
+  $('.thirdLevelContainer').html(self.$childSections).show()
+  $('.contentContainer').hide()
+  $('.fourthLevelContainer').hide()
+
+  $('.thirdLevelAnchor').click(function(){
+    $('.thirdLevelContainer').hide()
+    $('.contentContainer').show()
+    $('.fourthLevelContainer').hide()
   })
 }
 
-//Load pet data
-Core.prototype.loadPet = function(uid){
-  var self = this
+//Fourth level menu generated for contacts list
+Core.prototype.getContactTeam = function(category,triggerElement,contact){
+  var self= this;
 
-  console.log('Loading Pet')
+  var data = JSON.parse(window.localStorage.getItem('category'+category))
+  if (contact == 'mybdm'){
+    $('.myBdmMenu').show()
+  }
+  self.$renderList = $('<div/>')
+  var teamArr = []
+  for (i = 0; i < data.count; i++) {
+    if ($.inArray(data.posts[i].tags[0].title, teamArr) >= 0){
+      //onsole.log('in')
+    }else if ($.inArray(data.posts[i].tags[0].title, teamArr) < 0 && data.posts[i].custom_fields.Contact_NetApp_or_Arrow[0] == contact){
+      teamArr.push(data.posts[i].tags[0].title)
+    }
 
-  $.ajax({
-    type: 'POST',
-    data: 'uid='+uid,
-    async: false,
-    dataType:'jsonp',
-    jsonp: 'callback',
-    url: 'http://applegotchi.co.uk/Ajax/ghPets.ashx',
-    success: function(data){
-      console.log(data);
-      if (data.length == 1){
-        if (data[0].pt == 2){
-          //Ringo
-          self.petNamedType = 'ringo'
-          localStorage.setItem("petNamedType", "ringo")
-        }else{
-          //Insatsu
-          localStorage.setItem("petNamedType", "insatsu")
-          self.petNamedType = 'insatsu'
+  }
+
+  //console.log(teamArr)
+  for (i = 0; i < teamArr.length; i++) {
+    //console.log('looping')
+    self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="generateThirdLevelFromFourth" data-contact="'+contact+'" data-team="'+teamArr[i]+'"><h2 class="menuTitleSpacing">'+teamArr[i]+'</h2><i class="fa fa-chevron-right"></i></a>')
+    self.$renderList.append(self.$listParent)
+  }
+
+  self.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+  self.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent fourthLevelAnchor">'+self.$grandparentReturn.html()+'</li>'+self.$renderList.html());
+  $('.fourthLevelContainer').html(self.$childSections).show()
+  $('.contentContainer').hide()
+
+  $('.fourthLevelAnchor').click(function(){
+    $('.fourthLevelContainer').hide()
+    $('.contentContainer').show()
+  })
+
+  $('.generateThirdLevelFromFourth').click(function(){
+    var contact = $(this).data('contact')
+    var team = $(this).data('team')
+    self.getContacts(category,triggerElement,contact,team)
+  })
+}
+
+//third level menu generated for contacts list
+Core.prototype.getEnablements = function(category,triggerElement,topic){
+  var self = this;
+  //console.log('getting enablements...')
+  var data = JSON.parse(window.localStorage.getItem('category'+category))
+  //console.log(data)
+  self.$renderList = $('<div/>')
+
+  for (i = 0; i < data.count; i++) {
+    if (data.posts[i].tags[0].title == topic){
+      self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+      self.$renderList.append(self.$listParent)
+    }
+  }
+  self.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+  self.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-graduation-cap"></i></div>'+self.$grandparentReturn.html()+'</a></li>'+self.$renderList.html());
+  $('.thirdLevelContainer').html(self.$childSections).show()
+  $('.contentContainer').hide()
+
+  $('.thirdLevelAnchor').click(function(){
+    $('.thirdLevelContainer').hide()
+    $('.contentContainer').show()
+  })
+
+}
+
+Core.prototype.getCategory = function(category,triggerElement){
+  var self = this;
+ // console.log('getting the category...')
+  $('.postContainer').hide()
+  var data = JSON.parse(window.localStorage.getItem('category'+category))
+  //console.log('category: '+category)
+  //console.log(data)
+  self.$renderList = $('<div/>')
+  $('.thirdLevelContainer').hide()
+  //Remove any additional styling classes added to content container before we possibly add new ones.
+  $('.contentContainer').removeClass('calendarContainer')
+
+  //If events calendar, append large calendar as first list element after the parent return
+  if (category == 4){
+    $('.contentContainer').addClass('calendarContainer')
+
+    self.$renderList.prepend('<li class="listCalendar"><div id="interactiveCalendar"></li>')
+    for (i = 0; i < data.count; i++) {
+      //console.log(data.posts[i].custom_fields.Event_Start_Date)
+      var startConvertDate = '/'+data.posts[i].custom_fields.Event_Start_Date.toString()
+      var startEventDay    = startConvertDate.substr(0, 3).replace('/0','').replace('/1','1').replace('/2','2').replace('/3','3')
+      var startEventMonth  = startConvertDate.substr(3, 3).replace('/0','').replace('/1','1')
+      var startEventYear   = startConvertDate.substr(7, 4);
+      //var startdate = new Date(startEventMonth+'/'+startEventDay+'/'+startEventYear) //As date
+      var endConvertDate = '/'+data.posts[i].custom_fields.Event_End_Date.toString()
+      var endEventDay    = endConvertDate.substr(0, 3).replace('/0','').replace('/1','1').replace('/2','2').replace('/3','3')
+      var endEventMonth  = endConvertDate.substr(3, 3).replace('/0','').replace('/1','1')
+      var endEventYear   = endConvertDate.substr(7, 4);
+      //var enddate = new Date(endEventMonth+'/'+endEventDay+'/'+endEventYear) //As date
+      //console.log(startEventMonth,endEventMonth)
+      self.$listParent = $('<li/>', {
+        'class':'listParent calDate hidden',
+        'data-post':i,
+        'data-startday':startEventDay,
+        'data-startmonth':startEventMonth,
+        'data-startyear':startEventYear,
+        'data-endday':endEventDay,
+        'data-endmonth':endEventMonth,
+        'data-endyear':endEventYear,
+         }).append('<a href="#" class="listParentAnchor"><i class="fa fa-calendar-o listCalendarIcon"></i><h2>'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+      self.$renderList.append(self.$listParent)
+    }
+  //Contact
+  }else if(category == 9){
+    self.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>My Arrow contacts</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>My NetApp contacts </h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>My BDM contact</h2><i class="fa fa-chevron-right"></i></a></li>')
+  //Quick Enablement
+  }else if(category == 6){
+    var firstLevelItems = []
+    var firstLevelDescription = []
+    //console.log(data)
+    for (i = 0; i < data.count; i++) {
+      var title = data.posts[i].tags[0].title
+      var description = data.posts[i].tags[0].description
+      if ($.inArray(title,firstLevelItems) == -1){
+        firstLevelItems.push(title)
+        firstLevelDescription.push(description)
+      }
+    }
+    for (x = 0; x < firstLevelItems.length; x++) {
+      self.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>'+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
+      self.$renderList.append(self.$listParent)
+    }
+
+  }else if(category == 3){
+    for (i = 0; i < data.count; i++) {
+      self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2 class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+      self.$renderList.append(self.$listParent)
+    }
+  }else{
+    for (i = 0; i < data.count; i++) {
+      self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2>'+data.posts[i].excerpt+'<i class="fa fa-chevron-right"></i></a>')
+      self.$renderList.append(self.$listParent)
+    }
+  }
+
+  self.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+  self.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent listParentReturn">'+self.$grandparentReturn.html()+'</li>'+self.$renderList.html());
+  $('.contentContainer').html(self.$childSections)
+
+  //go to quick enablement third level menu
+  $('.enableAnchor').click(function(){
+    var topic = $(this).find('h2').text()
+    var newtrigger = $(this).html()
+    self.getEnablements(category,newtrigger,topic)
+  })
+
+  //go to third level menu
+  $('.contactAnchor').click(function(){
+    var contact = $(this).data('contact')
+    var newtrigger = $(this).html()
+    self.getContactTeam(category,newtrigger,contact)
+  })
+
+  $('#interactiveCalendar').datepicker({
+    inline: true,
+    hideIfNoPrevNext: true,
+    prevText: "Previous",
+    nextText: "Next",
+    firstDay: 1,
+    showOtherMonths: true,
+    dayNamesMin: ['Su', 'M', 'T', 'W', 'T', 'F', 'S'],
+    monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
+    onSelect: function(date, inst) {
+      inst.inline = false;
+      self.getCalenderData()
+
+      //Function to check the days an event spans over
+      function isiInRange(startday,endday,current){
+        for (i = 0; i < 10; i++) {
+            //Code to span multiple days
+            // if(startday+i<endday && startday+i == current || current == startday || current == endday){
+            //   return true;
+            // }
+            //Only use start day
+            if(current == startday){
+              return true;
+            }
         }
-
-
-        $('.speechBubble').attr('src','img/'+self.petNamedType+'-speech.png')
-        $('.petName').html(data[0].pn)
-
-        $('.mainPanel').show().removeClass('insatsuBackground').removeClass('ringoBackground').addClass(self.petNamedType+'Background')
-
-        $('.petMain').removeClass('stage1').removeClass('stage2').removeClass('stage3').removeClass('stage4').removeClass('stage5').removeClass('stage6')
-        $('.petMain').attr('src', 'img/'+self.petNamedType+'/'+self.petNamedType+'-'+self.currentMood+'-stage'+data[0].pl+'.png').addClass('stage'+data[0].pl)
-
-        $('.petStage6ArmLeft').attr('src','img/'+self.petNamedType+'/'+self.petNamedType+'-leftarm.png')
-        $('.petStage6ArmLeft').removeClass('petStage6ArmLeft_insatsu').removeClass('petStage6ArmLeft_ringo').addClass('petStage6ArmLeft_'+self.petNamedType)
-
-        $('.petStage6ArmRight').attr('src','img/'+self.petNamedType+'/'+self.petNamedType+'-rightarm.png')
-        $('.petStage6ArmRight').removeClass('petStage6ArmRight_insatsu').removeClass('petStage6ArmRight_ringo').addClass('petStage6ArmRight_'+self.petNamedType)
-
-        console.log(data[0].pl, self.petNamedType)
-        if (data[0].pl == 6 && self.petNamedType == 'insatsu'){
-          $('.petStage6ArmLeft_insatsu').show()
-          $('.petStage6ArmRight_insatsu').show()
-          $('.petStage6ArmLeft_ringo').hide()
-          $('.petStage6ArmRight_ringo').hide()
-
-        }else if (data[0].pl == 6 && self.petNamedType == 'ringo'){
-          $('.petStage6ArmLeft_insatsu').hide()
-          $('.petStage6ArmRight_insatsu').hide()
-          $('.petStage6ArmLeft_ringo').show()
-          $('.petStage6ArmRight_ringo').show()
-        }else{
-
-        }
-
-        //1 == play
-        //0  == stop
-        if (localStorage.getItem('music') == '1'){
-          $('.menuMusic').get(0).pause()
-          $('.gameMusic').get(0).play()
-
-        }else if (localStorage.getItem('music') == '0'){
-          $('.menuMusic').get(0).pause()
-          $('.gameMusic').get(0).pause()
-          $('.toggleMusic').addClass('disabledAudio')
-        }else{
-          localStorage.setItem('music', "1")
-          $('.menuMusic').get(0).pause()
-          $('.gameMusic').get(0).play()
-        }
-
-        if (localStorage.getItem('sound') == '1'){
-          window.localStorage.setItem('sound', '0')
-        }else{
-          window.localStorage.setItem('sound', '1')
-        }
-
-        self.updateActionLevels(uid,'firstload')
-      }else{
-        console.log('retreievePetData has been fired, but there\'s no pet data to recall')
-        localStorage.clear();
       }
 
-    },
-    error: function(){
-      console.log('Error registering user.')
-    }
+      //counts days in a month, used for events that cross over the end of a month..
+      function daysInMonth(month,year) {
+          return new Date(year, month, 0).getDate();
+      }
+
+      $('.calDate').each(function(){
+        var $that = $(this)
+        if ($that.data('startmonth') == $('.highlightCalDay').first().data('month')+1 && $that.data('startmonth') == $that.data('endmonth')){
+          var startday = $that.data('startday')
+          var endday = $that.data('endday')
+          var current = inst.currentDay
+
+          //Sketchy bodge for events that last longer than 1 day...hopefully they don't last more than 10 days
+          //because that's all this takes into account...
+          if (isiInRange(startday,endday,current) == true){
+            $that.slideDown()
+          }else{
+            $that.hide()
+          }
+        }else if($that.data('startmonth') != $that.data('endmonth') && $that.data('startmonth') == $('.highlightCalDay').first().data('month')+1){
+          var startday = $that.data('startday')
+          var endday = daysInMonth($that.data('startmonth'),$that.data('startyear'))
+          var current = inst.currentDay
+
+          if (isiInRange(startday,endday,current) == true){
+            $that.slideDown()
+          }else{
+            $that.hide()
+          }
+        }else{
+          $that.hide()
+        }
+      })
+
+    }//END ON SELECT
   });
+  //Click today by default so that we show todays events, otherwise we have a blank event box until something happens..
+  $('.ui-datepicker-current-day').trigger('click')
+
+  self.getCalenderData()
+}
+
+//Populate the calendar with related events
+Core.prototype.getCalenderData = function(){
+  var self = this;
+  $('.calDate').each(function(){
+
+    var startday = $(this).data('startday')
+    var startmonth = $(this).data('startmonth')-1
+    var startyear = $(this).data('startyear')
+    var endday = $(this).data('endday')
+    var endmonth = $(this).data('endmonth')-1
+    var endyear = $(this).data('endyear')
+    var differenceInDays = endday-startday
+
+    if ($('.ui-datepicker-title .ui-datepicker-year').text() == startyear){
+
+
+      //todo: hanging months - if a startdate is in this month, but the end date is in next month
+      //the end item doesn't fall anywhere. ie: it's not in this month on the hanging next month,
+      //and its not in next month when you switch using the next button. Figure that out?
+      $('td').each(function(){
+        if ($(this).data('month') == startmonth){
+          if ($(this).text() == startday){
+            //console.log(startmonth, endmonth)
+
+            $(this).addClass('highlightCalDay')
+
+            //also catches hangover events
+            // if (startmonth !=endmonth){
+            //   $(this).next().addClass('highlightCalDay')
+            // }
+            //$(this).nextAll(':lt('+differenceInDays+')').addClass('highlightCalDay')
+          }
+        }
+      })
+    }
+
+  })
 };
 
-//Update current action levels of pet (and score)
-Core.prototype.updateActionLevels = function(uid,firstLoad){
-  var self = this
-
-  var prevPetLevel = localStorage.getItem("petLevel")
-
-  $.ajax({
-    type: 'POST',
-    data: 'uid='+uid,
-    async: false,
-    dataType:'jsonp',
-    jsonp: 'callback',
-    url: 'http://applegotchi.co.uk/Ajax/ghPets.ashx',
-    success: function(data){
-      console.log(data);
-      if (data.length == 1){
-        localStorage.setItem("cleanStatus", data[0].cs)
-        localStorage.setItem("foodStatus", data[0].fs)
-        localStorage.setItem("funStatus", data[0].ps)
-        localStorage.setItem("petLevel", data[0].pl)
-        localStorage.setItem("petPoints", data[0].pp)
-        localStorage.setItem("petType", data[0].pt)
-        localStorage.setItem("petName", data[0].pn)
-        localStorage.setItem("petID", data[0].pid)
-        localStorage.setItem("userID", data[0].uid)
-        localStorage.setItem("hasPet", true);
-
-        //TODO: RENABLE
-        self.initPushwoosh(localStorage.getItem("emailaddress"),data[0].pl,true)
-        //console.log(firstLoad)
-
-        if (prevPetLevel != data[0].pl && data[0].pl > 1 && firstLoad != 'firstload'){
-          $('.levelupPanel').show()
+Core.prototype.logIn = function (x) {
+  var self = this;
+  //Submit login form
+      $(document).on("click",".submitLoginFormData",function(e){
+        self.areWeConnected()
+        var username = $('.loginForm #userName').val()
+        var password = $('.loginForm #password').val()
+        var keeploggedon = 0;
+        if ($('.fa-toggle-on').length){
+          keeploggedon = 1;
         }
+        self.generateAuthNonce(username, password,keeploggedon)
+      })
 
-        if(localStorage.getItem('isKill') == 1){
-          self.currentMood = 'dead';
-          $('.petStage6ArmLeft_insatsu').hide()
-          $('.petStage6ArmRight_insatsu').hide()
-          $('.petStage6ArmLeft_ringo').hide()
-          $('.petStage6ArmRight_ringo').hide()
-        }else if ((data[0].cs + data[0].fs + data[0].ps) >= 200){
-          self.currentMood = 'happy';
-        }else if ((data[0].cs + data[0].fs + data[0].ps) > 100 && (data[0].cs + data[0].fs + data[0].ps) < 200 ){
-          self.currentMood = 'meh';
+      //Load registration form
+      $(document).on("click",".createAccount",function(e){
+        //console.log('create account clicked')
+        $('.appContainer').load("register.html")
+        $('.navigateBack').show()
+        $('.appLogos').hide()
+      })
+
+      //Load Password Recovery form
+      $(document).on("click",".passwordRecover",function(e){
+        //console.log('Trying to recover password...')
+        $('.appContainer').load("recovery.html")
+        $('.navigateBack').show()
+        $('.appLogos').hide()
+      })
+
+      //Recover Password
+      $(document).on("click",".recoverYourPassword",function(e){
+        var user = $('.recoveryForm #email').val()
+        self.recoverPassword(user)
+        navigator.notification.alert('Password recovery email sent!', null, 'Email sent', 'Ok')
+      })
+
+       //'Navigate back buttons'
+      $(document).on("click",".navigateBack",function(e){
+        var location = $(this).data('location')
+        //console.log(location)
+        $('.appContainer').load(location+".html")
+        $('.navigateBack').hide()
+        $('.appLogos').show()
+      });
+
+
+      //Register User
+      $(document).on("click",".createAccountForm",function(e){
+        var firstname = $('.registerForm #firstName').val(),
+            lastname = $('.registerForm #lastName').val(),
+            password = $('.registerForm #password').val(),
+            email = $('.registerForm #email').val(),
+            username = email,
+            error = 0;
+
+        // if (email.toLowerCase().indexOf("hotmail") >= 0 || email.toLowerCase().indexOf("yahoo") >= 0 || email.toLowerCase().indexOf("sky") >= 0 || email.toLowerCase().indexOf("gmail") >= 0 || email.toLowerCase().indexOf("aol") >= 0 || email.toLowerCase().indexOf("zoho") >= 0 || email.toLowerCase().indexOf("lycos") >= 0 || email.toLowerCase().indexOf("btinternet") >= 0 || email.toLowerCase().indexOf("outlook") >= 0 || email.toLowerCase().indexOf("icloud") >= 0 || email.toLowerCase().indexOf("me") >= 0 || email.toLowerCase().indexOf("ntlworld") >= 0){
+        //   triggerAlert('<i class="fa fa-envelope-o"></i>','Unfortunately this email address is not allowed. Please re-register using your business email address. ','Cancel','');
+        // }else if (email.toLowerCase().indexOf("avnet") >= 0 || email.toLowerCase().indexOf("simplivity") >= 0 || email.toLowerCase().indexOf("simplicity") >= 0 || email.toLowerCase().indexOf("hammerplc") >= 0 || email.toLowerCase().indexOf("hammer") >= 0 || email.toLowerCase().indexOf("e92plus") >= 0 || email.toLowerCase().indexOf("westcoast") >= 0 || email.toLowerCase().indexOf("micro-p") >= 0 || email.toLowerCase().indexOf("interfacesolutions") >= 0){
+        //   triggerAlert('<i class="fa fa-envelope-o"></i>','Email Domain Not Allowed','Cancel','');
+        // }else{
+          $('input').each(function(){
+
+            if (!$(this).val()){
+              error++
+              $(this).css({border:"1px solid red"})
+            }
+          })
+
+          if (error>=1){
+            navigator.notification.alert('You must complete the registration form', null, 'Registration error', 'Cancel')
+          }else{
+            self.generateRegisterNonce(firstname,lastname,username,password,email)
+          }
+       // }
+
+
+
+      })
+
+      //KEEP USER LOGGED IN
+      $(document).on("click",".checkboxtoggle",function(e){
+        if ($(this).hasClass('fa-toggle-on')){
+          $(this).removeClass('fa-toggle-on').addClass('fa-toggle-off')
+          window.localStorage.removeItem("stayloggedon");
         }else{
-          self.currentMood = 'sad';
+          $(this).removeClass('fa-toggle-off').addClass('fa-toggle-on')
+          window.localStorage.setItem("stayloggedon", 1);
         }
+      })
 
-        $('.petMain').attr('src', 'img/'+localStorage.getItem("petNamedType")+'/'+localStorage.getItem("petNamedType")+'-'+self.currentMood+'-stage'+data[0].pl+'.png').addClass('stage'+data[0].pl)
-        $('.petMain').removeClass('stage'+(data[0].pl-1))
-        $('.petMain').removeClass('stage'+(data[0].pl-2))
-        $('.petMain').removeClass('stage'+(data[0].pl-3))
-        $('.petMain').removeClass('stage'+(data[0].pl-4))
-        $('.petMain').removeClass('stage'+(data[0].pl-5))
+      //Settings Button
+      $(document).on("click",".settings a",function(e){
+        e.preventDefault()
+        $('.settingsMenu').toggle();
+        $('.myBdmMenu').hide()
+      })
 
-        $('.statusFood>.statusLevel').css({height:data[0].fs+'%'})
-        $('.statusEntertain>.statusLevel').css({height:data[0].ps+'%'})
-        $('.statusClean>.statusLevel').css({height:data[0].cs+'%'})
-        $('.currentScore').html(data[0].pp)
+      $(document).on("click",".loadMyBdm",function(e){
+        $('.myBdmMenu').show()
+        $('.settingsMenu').hide()
+        $('.fourthLevelContainer').hide()
+      })
 
+      $(document).on("click",".mybdmlistlauncher",function(e){
+        $('.myBdmMenu').show()
+         $('.fourthLevelContainer').hide()
+      })
 
-      }else{
-        console.log('retreievePetData has been fired, but there\'s no pet data to recall')
-      }
+      $(document).on("click",".contactMyBdm",function(e){
+        $('.myBdmMenu').show()
+         $('.fourthLevelContainer').hide()
+      })
 
-    },
-    error: function(){
-      console.log('Error registering user.')
-    }
-  });
-}
+      $(document).on("click","a",function(e){
+        e.preventDefault()
+        var href = $(this).attr('href')
+        window.open(href, '_system')
+      });
 
-//Pet Action: Feeding
-Core.prototype.actionFeed = function(stage){
-  var self =  this
-  var petStage = stage
-  $('.buttonContainer a').addClass('killLink')
-  $('.petFood').show()
-  $('.petFood').addClass('stage'+petStage+'_foodDrop')
+      $(document).on("click",".dealreglink",function(e){
+        // var targetUser = Cookies.get('user')
+        // if (targetUser.indexOf("softcat") >= 0){
+        //   triggerAlert('<i class="fa fa-exclamation-triangle"></i>','Sorry, you are not able to submit a deal registration','Ok','');
+        // }else{
+        //   window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
+        //   $('.appContainer').show()
+        //   $('.contentContainer').hide()
+        // }
+        window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
+          $('.appContainer').show()
+          $('.contentContainer').hide()
+      })
 
-  //1 == play
-  //0  == stop
-  if (localStorage.getItem('sound') == '1'){
-    var audio = new Audio('audio/eat.mp3');
-    audio.play();
-  }else if (localStorage.getItem('sound') == '0'){
+      $(document).on("click",".twitter",function(e){
+        window.open('https://twitter.com/arrowecs_netapp', '_system')
+      })
 
-  }else{
-    localStorage.setItem('sound', "1")
-  }
+      $(document).on("click",".facebook",function(e){
+        window.open('https://www.facebook.com/arrowfiveyearsout', '_system')
+      })
 
-  setTimeout(function(){
-    $('.petFood').hide()
-    //$('.petFood').removeClass('stage'+petStage+'_foodDrop')
-    $('.buttonContainer a').removeClass('killLink')
+      $(document).on("click",".linkedIn",function(e){
+        window.open('https://www.linkedin.com/company/arrow-ecs-united-kingdom', '_system')
+      })
 
-    $.ajax({
-  		type: 'POST',
-  		data: 'pid='+localStorage.getItem('petID')+'&t=f',
-      dataType:'jsonp',
-      jsonp: 'callback',
-      async: false,
-  		url: 'http://applegotchi.co.uk/Ajax/ghAction.ashx',
-  		success: function(data){
-  			console.log(data);
-        self.updateActionLevels(localStorage.getItem('userID'),null)
-  		},
-  		error: function(){
-        console.log('Error creating pet.')
-  		}
-    });
+      //Log Off
+      $(document).on("click",".logOff",function(e){
+        e.preventDefault()
+        window.localStorage.removeItem('loggedIn');
+        $('.navigateBack').hide()
+        $('.socialStrip').hide()
+        window.localStorage.removeItem("stayloggedon");
+        window.localStorage.removeItem("auth");
+        window.localStorage.removeItem("email");
+        window.localStorage.removeItem("bdm");
+        window.localStorage.removeItem("mybdmdata");
+        window.localStorage.removeItem("userPass");
+        window.location.replace('index.html')
 
-  },2000)
+        //TODO: add this back in
+        //unregisterDevice()
 
-
-}
-
-//Pet Action: Cleaning
-Core.prototype.actionClean = function(stage){
-  var self =  this
-  var petStage = stage
-
-  //1 == play
-  //0  == stop
-  if (localStorage.getItem('sound') == '1'){
-    var audio = new Audio('audio/bubbles.mp3');
-    audio.play();
-  }else if (localStorage.getItem('sound') == '0'){
-
-  }else{
-    localStorage.setItem('sound', "1")
-  }
-
-  $('.buttonContainer a').addClass('killLink')
-  $('.water').show()
-  $('.cleaningBubblesLayer1').fadeIn()
-  $('.cleaningBubblesLayer1').addClass('animateBubbles1')
-  setTimeout(function(){
-    $('.cleaningBubblesLayer4').fadeIn()
-    $('.cleaningBubblesLayer4').addClass('animateBubbles4')
-  },300)
-  setTimeout(function(){
-    $('.cleaningBubblesLayer5').fadeIn()
-    $('.cleaningBubblesLayer5').addClass('animateBubbles5')
-  },400)
-  setTimeout(function(){
-    $('.cleaningBubblesLayer2').fadeIn()
-    $('.cleaningBubblesLayer2').addClass('animateBubbles2')
-  },300)
-  setTimeout(function(){
-    $('.cleaningBubblesLayer3').fadeIn()
-    $('.cleaningBubblesLayer3').addClass('animateBubbles1')
-  },500)
-  setTimeout(function(){
-    $.ajax({
-  		type: 'POST',
-  		data: 'pid='+localStorage.getItem('petID')+'&t=c',
-      dataType:'jsonp',
-      jsonp: 'callback',
-      async: false,
-  		url: 'http://applegotchi.co.uk/Ajax/ghAction.ashx',
-  		success: function(data){
-  			console.log(data);
-        self.updateActionLevels(localStorage.getItem('userID'),null)
-        $('.water').hide()
-  		},
-  		error: function(){
-        console.log('Error creating pet.')
-  		}
-    });
-
-    $('.animateBubbles1').removeClass('animateBubbles1')
-    $('.animateBubbles2').removeClass('animateBubbles2')
-    $('.animateBubbles4').removeClass('animateBubbles4')
-    $('.animateBubbles5').removeClass('animateBubbles5')
-    $('.buttonContainer a').removeClass('killLink')
-  },4000)
-
-}
-
-//Pet Action: Entertain
-Core.prototype.actionEntertain = function(stage){
-  var self =  this
-  var petStage = stage
-  $('.entertainStreamers img').show()
-  $('.buttonContainer a').addClass('killLink')
-
-  //1 == play
-  //0  == stop
-  if (localStorage.getItem('sound') == '1' && self.currentMood == 'happy' || localStorage.getItem('sound') == '1' && self.currentMood == 'meh'){
-    var audio = new Audio('audio/happy.mp3');
-    audio.play();
-  }else if (localStorage.getItem('sound') == '1' && self.currentMood == 'sad'){
-    var audio = new Audio('audio/sad.mp3');
-    audio.play();
-  }else if (localStorage.getItem('sound') == '0'){
-
-  }else{
-    localStorage.setItem('sound', "1")
-  }
-
-  setTimeout(function(){
-    $.ajax({
-  		type: 'POST',
-  		data: 'pid='+localStorage.getItem('petID')+'&t=p',
-      dataType:'jsonp',
-      jsonp: 'callback',
-      async: false,
-  		url: 'http://applegotchi.co.uk/Ajax/ghAction.ashx',
-  		success: function(data){
-  			console.log(data);
-        self.updateActionLevels(localStorage.getItem('userID'),null)
-  		},
-  		error: function(){
-        console.log('Error creating pet.')
-  		}
-    });
-
-    $('.entertainStreamers img').hide()
-    $('.buttonContainer a').removeClass('killLink')
-  },4000)
+      })
 
 
 }
 
-//TEMP SHIT DELETE THIS WHEN YO DONE
-Core.prototype.buildFunctionsDelete = function(){
-  var self = this
-  // +++ DELETE THIS FOR PRODUCTION +++
+Core.prototype.generateAuthNonce = function (username,password,keeploggedon) {
+  var self = this;
+	//If we've already logged in once (cookie has been generated), then skip the log in process
+	if (window.localStorage.getItem('loggedIn') == 1){
+		//console.log('already logged in')
+		$('.appContainer').load("home.html")
 
-  $(document).on("click",".skipLoading",function(e){
-    $('.registerLoginPanel').show()
+	}else{
+		console.log('attempting to generate authentication nonce...')
+		var username = username,
+		 	password = password
 
-    if (localStorage.getItem('music') == '1'){
-      $('.menuMusic').get(0).play()
-    }else if (localStorage.getItem('music') == '0'){
-      $('.menuMusic').get(0).pause()
-    }else{
-      $('.menuMusic').get(0).pause()
-    }
+		if (keeploggedon == 1){
+			window.localStorage.setItem("stayloggedon", 1);
+		}else{
+			window.localStorage.removeItem("stayloggedon");
+		}
 
+		////console.log(username,password)
 
-  })
-
-  $(document).on("click",".creationBypass",function(e){
-    // self.creationStory();
-    // $('.storyboardPanel').show()
-    e.preventDefault()
-
-  })
-
-
+		$.ajax({
+			url: "http://velocity.apple-dev.co.uk/api/get_nonce/?controller=auth&method=generate_auth_cookie",
+			type: "GET",
+			dataType: "jsonp",
+			contentType: 'application/json',
+			success: function(data){
+				var arr = [data]
+					nonce = arr[0].nonce;
+				console.log(nonce)
+				$('.generateAuthNonce .rendered').html(nonce)
+				self.generateCookie(nonce,username,password)
+				$('.navigationButtons').show()
+      	$('.socialStrip').show()
+			},
+			error: function (data){
+				console.log('Authentication Error ' + data);
+			}
+		});
+	}
 }
 
-//omg kill yo pet
-Core.prototype.petMurder = function(){
-
-  function kill(buttonIndex) {
-    console.log('login failure loop'+buttonIndex)
-    if (buttonIndex == 2){
-      alert('this function will kill pet')
-      localStorage.clear();
-      $('.menuPanel').hide()
-      $('.mainPanel').hide()
-      $('.storyboardPanel').hide()
-      $('.registerLoginPanel').removeClass('displaceBackgroundLogin')
-      $('.registerLoginContainer').removeClass('registerLoginReduce')
-      $('.slideLogin').hide()
-
-      //Call unregister
-      self.initPushwoosh(null, null, false, true)
-    }
-  }
-
-  navigator.notification.confirm('Please don\'t kill your pet. Just feed them, entertain them and keep them clean and they will be happy!', kill, 'Commit peticide', ['I\'ve changed my mind!','Kill my pet'])
-
-
-}
-
-Core.prototype.speechBubble = function(message){
-  var self = this
-  $('.speechBubble').show()
-  $('.speechBubbleText').addClass('showSpeechText').html(message)
-
-  $(document).on("click",".speechBubbleContainer",function(e){
-    $('.speechBubble').addClass('shrinkBubble')
-    setTimeout(function(){
-      $('.speechBubble').hide()
-      $('.speechBubble').removeClass('shrinkBubble')
-    },1000)
-    $('.speechBubbleText').removeClass('showSpeechText')
-  })
-
-}
-
-Core.prototype.initPushwoosh = function(email,petLevel,setTags,unRegister){
+Core.prototype.generateCookie = function (nonce,username,password) {
+  console.log('attempting to generate cookie from nonce...')
   var self = this
 
-  //FYI ///////////////////////////////////////////////////////////////
-  //Email = users email, petLevel = pets level and setTags = true/false
-  //If setTags == true, it will set the tags
-  //If setTags == false, register device will fire && tags will be set.
-  //If unRegister == true, un-register the user
+  	$.ajax({
+  		url: "http://velocity.apple-dev.co.uk/api/auth/generate_auth_cookie/?nonce="+nonce+"&username="+username+"&password="+password+"&insecure=cool",
+  		type: "GET",
+  		dataType: "jsonp",
+  		contentType: 'application/json',
+  		success: function(data){
+  			var arr = [data]
+  			////console.log(arr)
+  			if (arr[0].status == 'ok'){
+  				////console.log[arr]
+  				window.localStorage.setItem('loggedIn', '1');
+  				window.localStorage.setItem('user', username);
+  				$('.navigateBack').hide()
+        			$('.prelaunchButtons').hide()
+  				window.localStorage.setItem("auth", arr[0].cookie);
+  				var authenticate = window.localStorage.getItem("auth")
+        	var auth = self.getUserMeta(authenticate)
+  				$('.appContainer').load("home.html")
+  				//BDM Data load
+          self.getBdmData()
+
+  			}else if (arr[0].status == 'error'){
+  				//unregisterDevice() -- DOESN'T WORK PGB
+
+          function onRetry(buttonIndex){
+            if (buttonIndex == 1){
+              self.generateAuthNonce(username,password)
+            }
+          }
+
+          navigator.notification.confirm('Your username or password is incorrect', onRetry, 'Error', ['Retry','Ok'])
+
+  				return false;
+  			}
+
+  		},
+  		error: function (data){
+  			console.log('Error ' + data);
+  		}
+  	});
+  }
+
+Core.prototype.getBdmData = function () {
+  var self = this
+  //console.log('getting BDM')
+	//Fired during container height resize
+	var authenticate = window.localStorage.getItem("auth")
+	var auth = self.getUserMeta(authenticate)
+}
+
+Core.prototype.generateRegisterNonce = function (firstname,lastname,username,password,email) {
+  var self = this
+  console.log('generating user nonce')
+	$.ajax({
+		url: "http://velocity.apple-dev.co.uk/api/get_nonce/?controller=user&method=register",
+		type: "GET",
+		dataType: "jsonp",
+		contentType: 'application/json',
+		success: function(data){
+			var arr = [data]
+				nonce = arr[0].nonce;
+			////console.log(nonce)
+			self.registerNewUser(nonce,firstname,lastname,username,password,email)
+		},
+		error: function (data){
+			//console.log('Error ' + data);
+		}
+	});
+}
+
+Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,password,email){
+  console.log('registering new user...in theory..')
+  var self = this
+  	//console.log(nonce)
+  	$.ajax({
+  		url: "http://velocity.apple-dev.co.uk/api/user/register/?username="+username+"&display_name="+email+"&email="+email+"&nonce="+nonce+"&first_name="+firstname+"&last_name="+lastname+"&user_pass="+password+"&seconds=100",
+  		type: "GET",
+  		dataType: "jsonp",
+  		contentType: 'application/json',
+  		success: function(data){
+  			//console.log('success')
+  			var arr = [data]
+  			if (arr[0].status == 'ok'){
+  				$('.appContainer').load("login.html")
+  				$('#userName').val(username)
+  				$('#password').val(password)
+          navigator.notification.alert('Registration complete! You will receive your login details via email after you have been successfully approved by one of our team.', null, 'Registration Complete!', 'Ok')
+
+  			}else if (arr[0].status == 'error'){
+          function onRetry(buttonIndex){
+            if (buttonIndex == 1){
+              self.generateRegisterNonce(firstname,lastname,username,password,email)
+            }
+          }
+
+          navigator.notification.confirm('Username already exists', onRetry, 'Error', ['Retry','Ok'])
+
+  			}
+
+
+  		},
+  		error: function (data){
+  			//console.log('error')
+  			//console.log('Error ' + data);
+  		},
+  		complete: function(data){
+
+  		}
+  	});
+}
+
+//Not sure if we're even using this anymore, I don't think we are. Delete this if we don't need it
+Core.prototype.createPushRegister = function (ID){
+  var self = this;
+  console.log('pushing register')
+	console.log(ID)
+	$.ajax({
+		url: "http://velocity.apple-dev.co.uk/pnfw/register/?token="+ID+"&os=iOS",
+		type: "POST",
+		contentType: 'application/x-www-form-urlencoded',
+		success: function(data){
+			var arr = JSON.stringify(data)
+			//console.log('I think this worked?'+arr)
+		},
+		error: function (data){
+			var arr = JSON.stringify(data)
+			//console.log('This did not work.'+arr)
+		}
+	});
+
+}
+
+Core.prototype.recoverPassword = function (user){
+  var self = this;
+  //http://localhost/api/user/retrieve_password/?user_login=john
+	//recoverYourPassword
+
+	$.ajax({
+		url: "http://velocity.apple-dev.co.uk/api/user/retrieve_password/?user_login="+user,
+		type: "GET",
+		dataType: "jsonp",
+		contentType: 'application/json',
+		success: function(data){
+			var arr = [data]
+			//console.log(arr)
+		},
+		error: function (data){
+			//console.log('Error ' + data);
+		}
+	});
+}
+
+Core.prototype.getUserMeta = function (cookie){
+  var self = this;
+  //Get user data from wordpress by passing it the cookie generated at login
+	var toreturn = []
+	$.ajax({
+		url: "http://velocity.apple-dev.co.uk/api/user/get_currentuserinfo/?cookie="+cookie,
+		type: "GET",
+		dataType: "jsonp",
+		contentType: 'application/json',
+		success: function(data){
+			var arr = JSON.stringify(data)
+
+			var user = data.user.username
+			var firstname = data.user.firstname
+			var lastname = data.user.lastname
+			var email = data.user.email
+			toreturn = [firstname,lastname,email]
+			window.localStorage.setItem("email", toreturn[2]);
+			//console.log(toreturn)
+
+			var email = window.localStorage.getItem("email")
+			var splitEmail = email.split('@')
+			var afterAt = '@'+splitEmail[1]
+			var notbusiness = ['@hotmail.com','@hotmail.co.uk']
+			var appleprint = ['@appleprint.co.uk']
+			var craigrobertson = ['@bytes.co.uk','@qassociates.co.uk','@softcat.com','@proact.co.uk']
+			var timshaw = ['@bell-integration.com','@brighter-connections.com','@cetus-solutions.com','@concordeitgroup.com','@eacs.com','@gardsys.co.uk','@it-ps.com','@limanetworks.com','@majentasolutions.com','@phoenixs.co.uk','@silverbug.com','@ultimabusiness.com']
+			var simongow = ['@mhra.gsi.gov.uk','@acr-its.com','@agailitydatasolutions.com','@amorgroup.com','@asmtech.com','@bluelogic.co.uk','@bramattcomputing.co.uk','@brendata.co.uk','@e-business.com','@centralis.co.uk','@chilli-it.co.uk','@csc.com','@dacoll.co.uk','@datrix.co.uk','@dsiltd.co.uk','@enforcetechnology.com','@esteem.co.uk','@eci.com','@ezecastle.com','@frontiertechnology.co.uk','@highlandercomputing.com','@hp.com','@infosys.com','@innov8.co.uk','@isl.com','@misco.co.uk','@richardsoneyres.co.uk','@ntsols.com','@openreality.co.uk','@quadsys.co.uk','@r-comconsulting.com','@redstor.com','@skanco.co.uk','@sys-pro.co.uk','@tdmgroup.net','@tectrade.co.uk','@tet.co.uk','@tgccomputers.co.uk','@trilogytechnologies.com','@trustsystems.co.uk','@unisys.com','@vohkus.com','@wipro.com','@zero20.net','@bluecoffeenetworks.com','@doherty.co.uk','@e-know.net','@keyzone.com','@lombard.co.uk','@pstg.co.uk','@puredatasolutions.co.uk','@seric.co.uk','@stoneleigh.co.uk','@ukbackup.com']
+			var robwarner = ['@bt.com','@capita.co.uk','@dimensiondata.com','@uk.logicalis.com','@s3.co.uk','@scc.com','@virginmedia.co.uk']
+			var dominicvincent = ['@7tech.ltd.uk','@acs365.co.uk','@apsu.com','@autodata.co.uk','@bull.co.uk','@celerity-uk.com','@cloudxl.co.uk','@comparex.co.uk','@controlcircle.com','@eurotech-computers.com','@fordway.com','@highpoint.com','@instantonit.com','@isnsolutions.co.uk','@jcom.co.uk','@jesfertechnology.com','@kcom.com','@maplecom.co.uk','@netcentrix.co.uk','@netplan.co.uk','@nettitude.com','@network-interlinks.com','@nouveau.co.uk','@onx.com ','@gcicom.net','@server-link.co.uk','@psu.co.uk','@redpalm.co.uk','@thinks3.co.uk','@shi.com','@strawberrygt.com','@tmcs.co.uk','@tek-nologysolutions.co.uk','@tig.co.uk','@unionsolutions.co.uk','@Viadex.com','@ware247.co.uk','@ansecurity.com','@chase-security.com','@du360.com','@forfusion.com','@themavingroup.com','@northdoor.co.uk','@itspecialists.uk.com','@systemsexpress.com','@qual.co.uk']
+
+			if ($.inArray( afterAt, craigrobertson) >= 0){
+				 window.localStorage.setItem("bdm", "Craig Robertson")
+			}else if ($.inArray( afterAt, timshaw) >= 0){
+				window.localStorage.setItem("bdm", "Tim Shaw")
+			}else if ($.inArray( afterAt, simongow) >= 0){
+				window.localStorage.setItem("bdm", "Simon Gow")
+			}else if ($.inArray( afterAt, robwarner) >= 0){
+				window.localStorage.setItem("bdm", "Rob Warner")
+			}else if ($.inArray( afterAt, dominicvincent) >= 0){
+				window.localStorage.setItem("bdm", "Dominic Vincent")
+			}else if ($.inArray( afterAt, notbusiness) >= 0){
+				//console.log("Not a business address")
+			}else if ($.inArray( afterAt, appleprint) >= 0){
+				window.localStorage.setItem("bdm", "Craig Robertson")
+				//console.log('setting item')
+			}else{
+				window.localStorage.setItem("bdm", "Craig Robertson")
+				//console.log('Doesn\'t match any condition '+afterAt)
+			}
+		},
+		error: function (data){
+			//console.log('Error ' + data);
+		},
+		complete: function(data){
+			var contactsCat = JSON.parse(window.localStorage.getItem("category9"))
+			var mybdm = window.localStorage.getItem("bdm")
+			////console.log(contactsCat)
+			for (i = 0; i < contactsCat.count; i++) {
+				if (contactsCat.posts[i].title == mybdm){
+					var jsonstring = JSON.stringify(contactsCat.posts[i])
+					window.localStorage.setItem("mybdmdata",jsonstring)
+				}
+			}
+			var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
+            $('.postContactHeadshot').html('<img src="'+mybdm.custom_fields.Contact_Avatar[0]+'">')
+            $('.postContactName h4').html(mybdm.title)
+            $('.postContactName p').html(mybdm.custom_fields.Contact_Job_Title[0])
+            $('.myBdmMenu .postInner').append(mybdm.content)
+            var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
+            $('.myBdmName').html(mybdm.title)
+            $('.myBdmEmail').html(mybdm.custom_fields.Contact_Email[0])
+
+			////console.log(toreturn)
+			$('.settingsEmailAddress').html(toreturn[2])
+      		$('.settingsUserName').html(toreturn[0]+' '+toreturn[1])
+			return toreturn
+		}
+	});
+}
+
+Core.prototype.loadCoreData = function (){
+  var self = this;
+  //console.log('Load core data')
+  //Run loop of all post data and store that as JSON string in localstorage
+  //This will reduce load times later.
+
+  self.areWeConnected()
+  for (i = 1; i < 10; i++) {
+    (function (i) {
+      $.ajax({
+        url: "http://velocity.apple-dev.co.uk/api/core/get_category_posts/?id="+i,
+        type: "GET",
+        dataType: "jsonp",
+        contentType: 'application/json',
+        success: function(data){
+        	////console.log(data)
+        	window.localStorage.setItem('category'+i, JSON.stringify(data));
+        },
+        error: function (data){
+          console.log('Error ' + data);
+          navigator.notification.alert('No internet connection', null, 'Connection error', 'Cancel')
+        }
+      });
+    })(i);
+  }
+}
+
+Core.prototype.areWeConnected = function (){
+  var self = this;
+  ////console.log('are we connected?')
+	$.ajax({
+		url: "http://velocity.apple-dev.co.uk",
+		type: "GET",
+		success: function(data){
+			var arr = JSON.stringify(data)
+			//console.log('we are connected.')
+		},
+		error: function (data){
+      navigator.notification.alert('No Internet Connection. Some content may be missing or not up to date. Please connect to the internet and try again!', null, 'Connection error', 'Ok')
+		}
+	});
+}
+
+Core.prototype.addEvent = function (startDate,endDate,title,eventLocation,notes,success,error){
+  var self = this;
+  window.plugins.calendar.createEventInteractively(title,eventLocation,notes,startDate,endDate,success,error);
+}
+
+Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,notes,success,error){
+  var self = this;
+  window.plugins.calendar.createEvent(title,eventLocation,notes,startDate,endDate,success,error);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Core.prototype.initPushwoosh = function(){
+  var self = this
 
   //navigator.notification.alert('Success!', null, 'Pushwoosh CORE Initialised', 'ok')
-  console.log('line711: '+email+'_'+petLevel+'_'+setTags+'_'+unRegister)
 
   var pushNotification = cordova.require("com.pushwoosh.plugins.pushwoosh.PushNotification");
 
   pushNotification.onDeviceReady({
-    projectid: "364045976404", // GOOGLE_PROJECT_ID
-    pw_appid : "4FF24-5ACEC" // PUSHWOOSH_APP_ID
+    projectid: "625440960311", // GOOGLE_PROJECT_ID
+    pw_appid : "5B9A4-22A41" // PUSHWOOSH_APP_ID
   });
+
+  // PushNotification.unregisterDevice (
+  //   function(token){
+  //       console.log("unregistered success!" + token);
+  //   },
+  //   function(status){
+  //       console.log("unregistered failed!" + status);
+  //   })
+
+  //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
+  document.addEventListener('push-notification', function(event) {
+    var notification = event.notification;
+    console.log('push message recieved');
+    pushNotification.setApplicationIconBadgeNumber(0);
+
+  });
+
+  //register for pushes
+  pushNotification.registerDevice(
+    function(status) {
+      var deviceToken = status['deviceToken'];
+      console.log('registerDevice: ' + deviceToken);
+      setTagsFunc(email)
+    },
+    function(status) {
+      navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+
+      console.log('failed to register : ' + JSON.stringify(status));
+      alert(JSON.stringify(['failed to register ', status]));
+    }
+  );
 
   function setTagsFunc(email,petLevel){
     console.log(email+' : '+petLevel)
     pushNotification.setTags(
     {
       "emailaddress":email,
-      "petlevel":petLevel
     },
       function(status) {
           console.log('setTags success '+status);
@@ -1091,48 +1332,12 @@ Core.prototype.initPushwoosh = function(email,petLevel,setTags,unRegister){
     );
   }//end func
 
-  //If we're calling set tags only set tags, don't call register etc
-  if (setTags === true){
-    setTagsFunc(email,petLevel)
-
-  //else assume we're registering
-  }else if(unRegister === true){
-    console.log('Attempting unregister...')
-    PushNotification.unregisterDevice (
-      function(token){
-          console.log("unregistered success!" + token);
-      },
-      function(status){
-          console.log("unregistered failed!" + status);
-      })
-  }else{
-    //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
-    document.addEventListener('push-notification', function(event) {
-      var notification = event.notification;
-      console.log('push message recieved');
-      pushNotification.setApplicationIconBadgeNumber(0);
-      self.speechBubble(notification.aps.alert)
-      //navigator.notification.alert(notification.aps.alert, null, 'Your pet says...', 'OK')
-    });
-
-    //register for pushes
-    pushNotification.registerDevice(
-      function(status) {
-        var deviceToken = status['deviceToken'];
-        console.log('registerDevice: ' + deviceToken);
-        setTagsFunc(email)
-      },
-      function(status) {
-        navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-
-        console.log('failed to register : ' + JSON.stringify(status));
-        alert(JSON.stringify(['failed to register ', status]));
-      }
-    );
-  }
-
 }
 
+
+
+
+///////////////////////////////////////////////////////
 var app = {
     // Application Constructor
     initialize: function() {
