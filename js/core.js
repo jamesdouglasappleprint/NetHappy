@@ -28,6 +28,7 @@ function Core(){
   self.init();
   self.logIn();
   self.appCoreClickEvents();
+  self.loadCoreData();
 
 }
 
@@ -43,7 +44,7 @@ Core.prototype.init = function (x) {
     $('.prelaunchButtons').hide()
     $('.socialStrip').show()
     //BDM Data load
-    getBdmData()
+    self.getBdmData()
     //User Data
 
   }else{
@@ -62,7 +63,7 @@ Core.prototype.init = function (x) {
   })
 
 
-  // //TODO: this probably refers to the device plugin we're NOT using?
+  //TODO: this probably refers to the device plugin we're NOT using?
   // var string = device.uuid;
   // createPushRegister(string)
 
@@ -1126,6 +1127,7 @@ Core.prototype.getUserMeta = function (cookie){
 		contentType: 'application/json',
 		success: function(data){
 			var arr = JSON.stringify(data)
+      console.log(data)
 
 			var user = data.user.username
 			var firstname = data.user.firstname
@@ -1197,6 +1199,7 @@ Core.prototype.getUserMeta = function (cookie){
 }
 
 Core.prototype.loadCoreData = function (){
+  console.log('loading Core Data')
   var self = this;
   //console.log('Load core data')
   //Run loop of all post data and store that as JSON string in localstorage
@@ -1234,7 +1237,7 @@ Core.prototype.areWeConnected = function (){
 			//console.log('we are connected.')
 		},
 		error: function (data){
-      navigator.notification.alert('No Internet Connection. Some content may be missing or not up to date. Please connect to the internet and try again!', null, 'Connection error', 'Ok')
+      //navigator.notification.alert('No Internet Connection. Some content may be missing or not up to date. Please connect to the internet and try again!', null, 'Connection error', 'Ok')
 		}
 	});
 }
