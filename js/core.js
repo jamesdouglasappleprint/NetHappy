@@ -29,12 +29,8 @@ function Core(){
   core.logIn();
   core.appCoreClickEvents();
   core.loadCoreData();
-
-  setTimeout(function(){
-    console.log('Clearing Badges')
-    window.plugin.notification.badge.clear(); //clear badge notifications
-  },4000);
-
+  console.log('Clearing Badges')
+  window.plugin.notification.badge.clear(); //clear badge notifications
 
 
 }
@@ -894,6 +890,10 @@ Core.prototype.logIn = function (x) {
 
   //Log Off
   $(document).on("click",".logOff",function(e){
+    console.log('Log off Clicked')
+    //TODO: add this back in
+    core.initPushwoosh(null, "unregister")
+
     e.preventDefault()
     window.localStorage.removeItem('loggedIn');
     $('.navigateBack').hide()
@@ -906,8 +906,7 @@ Core.prototype.logIn = function (x) {
     window.localStorage.removeItem("userPass");
     window.location.replace('index.html')
 
-    //TODO: add this back in
-    core.initPushwoosh(null, "unregister")
+
 
   })
 
