@@ -19,25 +19,29 @@
 //navigator.notification.confirm('User not found. Please check your login details and try again!', loginFailure, 'Login failure', ['Retry','Cancel'])
 //localStorage.clear();
 //Call unregister
-//self.initPushwoosh(null, null, false, true)
+//core.initPushwoosh(null, null, false, true)
 
 function Core(){
   console.log('Core Loaded');
-  var self = this;
+  var core = this;
 
-  self.init();
-  self.logIn();
-  self.appCoreClickEvents();
-  self.loadCoreData();
+  core.init();
+  core.logIn();
+  core.appCoreClickEvents();
+  core.loadCoreData();
 
-  self.initPushwoosh()
-  window.plugin.notification.badge.clear(); //clear badge notifications
+  setTimeout(function(){
+    console.log('Clearing Badges')
+    window.plugin.notification.badge.clear(); //clear badge notifications
+  },4000);
+
+
 
 }
 
 //Initialiser
 Core.prototype.init = function (x) {
-  var self = this
+  var core = this
 
   var value = window.localStorage.getItem("stayloggedon")
 
@@ -47,7 +51,7 @@ Core.prototype.init = function (x) {
     $('.prelaunchButtons').hide()
     $('.socialStrip').show()
     //BDM Data load
-    self.getBdmData()
+    core.getBdmData()
     //User Data
 
   }else{
@@ -73,7 +77,7 @@ Core.prototype.init = function (x) {
 };
 
 Core.prototype.GoogleMap = function () {
-  var self = this;
+  var core = this;
 
   this.initialize = function(coords){
     var splitCoord = coords.split(',')
@@ -98,15 +102,15 @@ Core.prototype.GoogleMap = function () {
 }
 
 Core.prototype.appCoreClickEvents = function () {
-  var self = this;
+  var core = this;
 
   //Refire the getcalenderdata if the user clicks previous or next, so we can repopulate the calender with attached events for the month
   $(document).on("click",".ui-datepicker-prev",function(e){
-    self.getCalenderData()
+    core.getCalenderData()
   })
 
   $(document).on("click",".ui-datepicker-next",function(e){
-    self.getCalenderData()
+    core.getCalenderData()
   })
 
   //get category
@@ -115,7 +119,7 @@ Core.prototype.appCoreClickEvents = function () {
     var category = $(this).data('target')
     var trigger = $(this).parent().html().replace('listGrandParentAnchor','listGrandParentAnchorReturn')
     $('.appContainer').fadeOut('fast')
-    self.getCategory(category,trigger)
+    core.getCategory(category,trigger)
     $('.contentContainer').show()
     $('.actions').hide()
     $('.menuButton').show()
@@ -185,7 +189,7 @@ Core.prototype.appCoreClickEvents = function () {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   $(document).on("click",".listParentAnchor",function(e){
-    self.areWeConnected()
+    core.areWeConnected()
     $('.actions').fadeIn('fast')
     $('.externalLink').show()
     $('.shareThis').show()
@@ -374,7 +378,7 @@ Core.prototype.appCoreClickEvents = function () {
     })
 
     $('.googleMapTab').click(function(){
-      var map = new self.GoogleMap();
+      var map = new core.GoogleMap();
           map.initialize(coords);
     })
 
@@ -399,10 +403,14 @@ Core.prototype.appCoreClickEvents = function () {
       var title = itemTitle;
       var eventLocation = "";
       var notes = "";
-      var success = function(message) { triggerAlert('<i class="fa fa-calendar"></i>','The event has been added to your calendar','Ok','');};
-      var error = function(message) { triggerAlert('<i class="fa fa-calendar"></i>','An Error has occured!','Ok','');};
+      var success = function(message) {
+        navigator.notification.alert('The event has been added to your calendar', null, 'Event added', 'Ok')
+      };
+      var error = function(message) {
+        navigator.notification.alert('An error has occured', null, 'Event not added', 'Ok')
+      };
       //Add the event
-      self.addDirectEvent(startDate,endDate,title,eventLocation,notes,success,error)
+      core.addDirectEvent(startDate,endDate,title,eventLocation,notes,success,error)
     })
 
     //Add quick event from post (click the button, calendar event dumped straight into calendar)
@@ -420,7 +428,7 @@ Core.prototype.appCoreClickEvents = function () {
       var success = function(message) { triggerAlert('<i class="fa fa-calendar"></i>','The event has been added to your calendar','Ok','');};
       var error = function(message) { triggerAlert('<i class="fa fa-calendar"></i>','An Error has occured!','Ok','');};
       //Add the event
-      self.addDirectEvent(startDate,endDate,title,eventLocation,notes,success,error)
+      core.addDirectEvent(startDate,endDate,title,eventLocation,notes,success,error)
     })
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -428,7 +436,7 @@ Core.prototype.appCoreClickEvents = function () {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  self.setContainerHeight()
+  core.setContainerHeight()
 
 
 
@@ -436,7 +444,7 @@ Core.prototype.appCoreClickEvents = function () {
 }
 
 Core.prototype.setContainerHeight = function(){
-  var self = this
+  var core = this
  // console.log('setting container height')
   var docHeight = $(document).height()
   var maths = docHeight-120
@@ -451,11 +459,11 @@ Core.prototype.setContainerHeight = function(){
 
 //third level menu generated for contacts list
 Core.prototype.getContacts = function(category,triggerElement,contact,team){
-  var self = this;
+  var core = this;
 
   var data = JSON.parse(window.localStorage.getItem('category'+category))
   //console.log(data)
-  self.$renderList = $('<div/>')
+  core.$renderList = $('<div/>')
 
   if (contact == 'mybdm'){
     $('.myBdmMenu').show()
@@ -464,14 +472,14 @@ Core.prototype.getContacts = function(category,triggerElement,contact,team){
 
   for (i = 0; i < data.count; i++) {
     if (data.posts[i].custom_fields.Contact_NetApp_or_Arrow[0] == contact && data.posts[i].tags[0].title == team){
-      self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2><p>'+data.posts[i].custom_fields.Contact_Job_Title[0]+'</p><i class="fa fa-chevron-right"></i></a>')
-      self.$renderList.append(self.$listParent)
+      core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2><p>'+data.posts[i].custom_fields.Contact_Job_Title[0]+'</p><i class="fa fa-chevron-right"></i></a>')
+      core.$renderList.append(core.$listParent)
     }
   }
 
-  self.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
-  self.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor">'+self.$grandparentReturn.html()+'</li>'+self.$renderList.html()+'<li class="listParent mybdmlistlauncher"><a href="#" class=""><h2 class="menuTitleSpacing">My BDM</h2><i class="fa fa-chevron-right"></i></a></li>');
-  $('.thirdLevelContainer').html(self.$childSections).show()
+  core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+  core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor">'+core.$grandparentReturn.html()+'</li>'+core.$renderList.html()+'<li class="listParent mybdmlistlauncher"><a href="#" class=""><h2 class="menuTitleSpacing">My BDM</h2><i class="fa fa-chevron-right"></i></a></li>');
+  $('.thirdLevelContainer').html(core.$childSections).show()
   $('.contentContainer').hide()
   $('.fourthLevelContainer').hide()
 
@@ -484,13 +492,13 @@ Core.prototype.getContacts = function(category,triggerElement,contact,team){
 
 //Fourth level menu generated for contacts list
 Core.prototype.getContactTeam = function(category,triggerElement,contact){
-  var self= this;
+  var core= this;
 
   var data = JSON.parse(window.localStorage.getItem('category'+category))
   if (contact == 'mybdm'){
     $('.myBdmMenu').show()
   }
-  self.$renderList = $('<div/>')
+  core.$renderList = $('<div/>')
   var teamArr = []
   for (i = 0; i < data.count; i++) {
     if ($.inArray(data.posts[i].tags[0].title, teamArr) >= 0){
@@ -504,13 +512,13 @@ Core.prototype.getContactTeam = function(category,triggerElement,contact){
   //console.log(teamArr)
   for (i = 0; i < teamArr.length; i++) {
     //console.log('looping')
-    self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="generateThirdLevelFromFourth" data-contact="'+contact+'" data-team="'+teamArr[i]+'"><h2 class="menuTitleSpacing">'+teamArr[i]+'</h2><i class="fa fa-chevron-right"></i></a>')
-    self.$renderList.append(self.$listParent)
+    core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="generateThirdLevelFromFourth" data-contact="'+contact+'" data-team="'+teamArr[i]+'"><h2 class="menuTitleSpacing">'+teamArr[i]+'</h2><i class="fa fa-chevron-right"></i></a>')
+    core.$renderList.append(core.$listParent)
   }
 
-  self.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
-  self.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent fourthLevelAnchor">'+self.$grandparentReturn.html()+'</li>'+self.$renderList.html());
-  $('.fourthLevelContainer').html(self.$childSections).show()
+  core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+  core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent fourthLevelAnchor">'+core.$grandparentReturn.html()+'</li>'+core.$renderList.html());
+  $('.fourthLevelContainer').html(core.$childSections).show()
   $('.contentContainer').hide()
 
   $('.fourthLevelAnchor').click(function(){
@@ -521,27 +529,27 @@ Core.prototype.getContactTeam = function(category,triggerElement,contact){
   $('.generateThirdLevelFromFourth').click(function(){
     var contact = $(this).data('contact')
     var team = $(this).data('team')
-    self.getContacts(category,triggerElement,contact,team)
+    core.getContacts(category,triggerElement,contact,team)
   })
 }
 
 //third level menu generated for contacts list
 Core.prototype.getEnablements = function(category,triggerElement,topic){
-  var self = this;
+  var core = this;
   //console.log('getting enablements...')
   var data = JSON.parse(window.localStorage.getItem('category'+category))
   //console.log(data)
-  self.$renderList = $('<div/>')
+  core.$renderList = $('<div/>')
 
   for (i = 0; i < data.count; i++) {
     if (data.posts[i].tags[0].title == topic){
-      self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
-      self.$renderList.append(self.$listParent)
+      core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+      core.$renderList.append(core.$listParent)
     }
   }
-  self.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
-  self.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-graduation-cap"></i></div>'+self.$grandparentReturn.html()+'</a></li>'+self.$renderList.html());
-  $('.thirdLevelContainer').html(self.$childSections).show()
+  core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+  core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-graduation-cap"></i></div>'+core.$grandparentReturn.html()+'</a></li>'+core.$renderList.html());
+  $('.thirdLevelContainer').html(core.$childSections).show()
   $('.contentContainer').hide()
 
   $('.thirdLevelAnchor').click(function(){
@@ -552,13 +560,13 @@ Core.prototype.getEnablements = function(category,triggerElement,topic){
 }
 
 Core.prototype.getCategory = function(category,triggerElement){
-  var self = this;
+  var core = this;
  // console.log('getting the category...')
   $('.postContainer').hide()
   var data = JSON.parse(window.localStorage.getItem('category'+category))
   //console.log('category: '+category)
   //console.log(data)
-  self.$renderList = $('<div/>')
+  core.$renderList = $('<div/>')
   $('.thirdLevelContainer').hide()
   //Remove any additional styling classes added to content container before we possibly add new ones.
   $('.contentContainer').removeClass('calendarContainer')
@@ -567,7 +575,7 @@ Core.prototype.getCategory = function(category,triggerElement){
   if (category == 4){
     $('.contentContainer').addClass('calendarContainer')
 
-    self.$renderList.prepend('<li class="listCalendar"><div id="interactiveCalendar"></li>')
+    core.$renderList.prepend('<li class="listCalendar"><div id="interactiveCalendar"></li>')
     for (i = 0; i < data.count; i++) {
       //console.log(data.posts[i].custom_fields.Event_Start_Date)
       var startConvertDate = '/'+data.posts[i].custom_fields.Event_Start_Date.toString()
@@ -581,7 +589,7 @@ Core.prototype.getCategory = function(category,triggerElement){
       var endEventYear   = endConvertDate.substr(7, 4);
       //var enddate = new Date(endEventMonth+'/'+endEventDay+'/'+endEventYear) //As date
       //console.log(startEventMonth,endEventMonth)
-      self.$listParent = $('<li/>', {
+      core.$listParent = $('<li/>', {
         'class':'listParent calDate hidden',
         'data-post':i,
         'data-startday':startEventDay,
@@ -591,11 +599,11 @@ Core.prototype.getCategory = function(category,triggerElement){
         'data-endmonth':endEventMonth,
         'data-endyear':endEventYear,
          }).append('<a href="#" class="listParentAnchor"><i class="fa fa-calendar-o listCalendarIcon"></i><h2>'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
-      self.$renderList.append(self.$listParent)
+      core.$renderList.append(core.$listParent)
     }
   //Contact
   }else if(category == 9){
-    self.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>My Arrow contacts</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>My NetApp contacts </h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>My BDM contact</h2><i class="fa fa-chevron-right"></i></a></li>')
+    core.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>My Arrow contacts</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>My NetApp contacts </h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>My BDM contact</h2><i class="fa fa-chevron-right"></i></a></li>')
   //Quick Enablement
   }else if(category == 6){
     var firstLevelItems = []
@@ -610,38 +618,38 @@ Core.prototype.getCategory = function(category,triggerElement){
       }
     }
     for (x = 0; x < firstLevelItems.length; x++) {
-      self.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>'+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
-      self.$renderList.append(self.$listParent)
+      core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>'+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
+      core.$renderList.append(core.$listParent)
     }
 
   }else if(category == 3){
     for (i = 0; i < data.count; i++) {
-      self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2 class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
-      self.$renderList.append(self.$listParent)
+      core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2 class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+      core.$renderList.append(core.$listParent)
     }
   }else{
     for (i = 0; i < data.count; i++) {
-      self.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2>'+data.posts[i].excerpt+'<i class="fa fa-chevron-right"></i></a>')
-      self.$renderList.append(self.$listParent)
+      core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2>'+data.posts[i].excerpt+'<i class="fa fa-chevron-right"></i></a>')
+      core.$renderList.append(core.$listParent)
     }
   }
 
-  self.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
-  self.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent listParentReturn">'+self.$grandparentReturn.html()+'</li>'+self.$renderList.html());
-  $('.contentContainer').html(self.$childSections)
+  core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+  core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent listParentReturn">'+core.$grandparentReturn.html()+'</li>'+core.$renderList.html());
+  $('.contentContainer').html(core.$childSections)
 
   //go to quick enablement third level menu
   $('.enableAnchor').click(function(){
     var topic = $(this).find('h2').text()
     var newtrigger = $(this).html()
-    self.getEnablements(category,newtrigger,topic)
+    core.getEnablements(category,newtrigger,topic)
   })
 
   //go to third level menu
   $('.contactAnchor').click(function(){
     var contact = $(this).data('contact')
     var newtrigger = $(this).html()
-    self.getContactTeam(category,newtrigger,contact)
+    core.getContactTeam(category,newtrigger,contact)
   })
 
   $('#interactiveCalendar').datepicker({
@@ -655,7 +663,7 @@ Core.prototype.getCategory = function(category,triggerElement){
     monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
     onSelect: function(date, inst) {
       inst.inline = false;
-      self.getCalenderData()
+      core.getCalenderData()
 
       //Function to check the days an event spans over
       function isiInRange(startday,endday,current){
@@ -710,12 +718,12 @@ Core.prototype.getCategory = function(category,triggerElement){
   //Click today by default so that we show todays events, otherwise we have a blank event box until something happens..
   $('.ui-datepicker-current-day').trigger('click')
 
-  self.getCalenderData()
+  core.getCalenderData()
 }
 
 //Populate the calendar with related events
 Core.prototype.getCalenderData = function(){
-  var self = this;
+  var core = this;
   $('.calDate').each(function(){
 
     var startday = $(this).data('startday')
@@ -753,17 +761,17 @@ Core.prototype.getCalenderData = function(){
 };
 
 Core.prototype.logIn = function (x) {
-  var self = this;
+  var core = this;
   //Submit login form
       $(document).on("click",".submitLoginFormData",function(e){
-        self.areWeConnected()
+        core.areWeConnected()
         var username = $('.loginForm #userName').val()
         var password = $('.loginForm #password').val()
         var keeploggedon = 0;
         if ($('.fa-toggle-on').length){
           keeploggedon = 1;
         }
-        self.generateAuthNonce(username, password,keeploggedon)
+        core.generateAuthNonce(username, password,keeploggedon)
       })
 
       //Load registration form
@@ -785,7 +793,7 @@ Core.prototype.logIn = function (x) {
       //Recover Password
       $(document).on("click",".recoverYourPassword",function(e){
         var user = $('.recoveryForm #email').val()
-        self.recoverPassword(user)
+        core.recoverPassword(user)
         navigator.notification.alert('Password recovery email sent!', null, 'Email sent', 'Ok')
       })
 
@@ -824,7 +832,7 @@ Core.prototype.logIn = function (x) {
           if (error>=1){
             navigator.notification.alert('You must complete the registration form', null, 'Registration error', 'Cancel')
           }else{
-            self.generateRegisterNonce(firstname,lastname,username,password,email)
+            core.generateRegisterNonce(firstname,lastname,username,password,email)
           }
        // }
 
@@ -921,7 +929,7 @@ Core.prototype.logIn = function (x) {
 }
 
 Core.prototype.generateAuthNonce = function (username,password,keeploggedon) {
-  var self = this;
+  var core = this;
 	//If we've already logged in once (cookie has been generated), then skip the log in process
 	if (window.localStorage.getItem('loggedIn') == 1){
 		//console.log('already logged in')
@@ -950,7 +958,7 @@ Core.prototype.generateAuthNonce = function (username,password,keeploggedon) {
 					nonce = arr[0].nonce;
 				console.log(nonce)
 				$('.generateAuthNonce .rendered').html(nonce)
-				self.generateCookie(nonce,username,password)
+				core.generateCookie(nonce,username,password)
 				$('.navigationButtons').show()
       	$('.socialStrip').show()
 			},
@@ -963,7 +971,7 @@ Core.prototype.generateAuthNonce = function (username,password,keeploggedon) {
 
 Core.prototype.generateCookie = function (nonce,username,password) {
   console.log('attempting to generate cookie from nonce...')
-  var self = this
+  var core = this
 
   	$.ajax({
   		url: "http://velocity.apple-dev.co.uk/api/auth/generate_auth_cookie/?nonce="+nonce+"&username="+username+"&password="+password+"&insecure=cool",
@@ -974,24 +982,25 @@ Core.prototype.generateCookie = function (nonce,username,password) {
   			var arr = [data]
   			////console.log(arr)
   			if (arr[0].status == 'ok'){
-  				////console.log[arr]
+  				//console.log[arr]
   				window.localStorage.setItem('loggedIn', '1');
   				window.localStorage.setItem('user', username);
   				$('.navigateBack').hide()
         			$('.prelaunchButtons').hide()
   				window.localStorage.setItem("auth", arr[0].cookie);
   				var authenticate = window.localStorage.getItem("auth")
-        	var auth = self.getUserMeta(authenticate)
+        	var auth = core.getUserMeta(authenticate)
   				$('.appContainer').load("home.html")
   				//BDM Data load
-          self.getBdmData()
+          core.getBdmData()
+          core.initPushwoosh(window.localStorage.getItem('user'), 'register')
 
   			}else if (arr[0].status == 'error'){
   				//unregisterDevice() -- DOESN'T WORK PGB
 
           function onRetry(buttonIndex){
             if (buttonIndex == 1){
-              self.generateAuthNonce(username,password)
+              core.generateAuthNonce(username,password)
             }
           }
 
@@ -1008,15 +1017,15 @@ Core.prototype.generateCookie = function (nonce,username,password) {
   }
 
 Core.prototype.getBdmData = function () {
-  var self = this
+  var core = this
   //console.log('getting BDM')
 	//Fired during container height resize
 	var authenticate = window.localStorage.getItem("auth")
-	var auth = self.getUserMeta(authenticate)
+	var auth = core.getUserMeta(authenticate)
 }
 
 Core.prototype.generateRegisterNonce = function (firstname,lastname,username,password,email) {
-  var self = this
+  var core = this
   console.log('generating user nonce')
 	$.ajax({
 		url: "http://velocity.apple-dev.co.uk/api/get_nonce/?controller=user&method=register",
@@ -1027,7 +1036,7 @@ Core.prototype.generateRegisterNonce = function (firstname,lastname,username,pas
 			var arr = [data]
 				nonce = arr[0].nonce;
 			////console.log(nonce)
-			self.registerNewUser(nonce,firstname,lastname,username,password,email)
+			core.registerNewUser(nonce,firstname,lastname,username,password,email)
 		},
 		error: function (data){
 			//console.log('Error ' + data);
@@ -1037,7 +1046,7 @@ Core.prototype.generateRegisterNonce = function (firstname,lastname,username,pas
 
 Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,password,email){
   console.log('registering new user...in theory..')
-  var self = this
+  var core = this
   	//console.log(nonce)
   	$.ajax({
   		url: "http://velocity.apple-dev.co.uk/api/user/register/?username="+username+"&display_name="+email+"&email="+email+"&nonce="+nonce+"&first_name="+firstname+"&last_name="+lastname+"&user_pass="+password+"&seconds=100",
@@ -1056,7 +1065,7 @@ Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,pas
   			}else if (arr[0].status == 'error'){
           function onRetry(buttonIndex){
             if (buttonIndex == 1){
-              self.generateRegisterNonce(firstname,lastname,username,password,email)
+              core.generateRegisterNonce(firstname,lastname,username,password,email)
             }
           }
 
@@ -1078,7 +1087,7 @@ Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,pas
 
 //Not sure if we're even using this anymore, I don't think we are. Delete this if we don't need it
 Core.prototype.createPushRegister = function (ID){
-  var self = this;
+  var core = this;
   console.log('pushing register')
 	console.log(ID)
 	$.ajax({
@@ -1098,7 +1107,7 @@ Core.prototype.createPushRegister = function (ID){
 }
 
 Core.prototype.recoverPassword = function (user){
-  var self = this;
+  var core = this;
   //http://localhost/api/user/retrieve_password/?user_login=john
 	//recoverYourPassword
 
@@ -1118,7 +1127,7 @@ Core.prototype.recoverPassword = function (user){
 }
 
 Core.prototype.getUserMeta = function (cookie){
-  var self = this;
+  var core = this;
   //Get user data from wordpress by passing it the cookie generated at login
 	var toreturn = []
 	$.ajax({
@@ -1201,12 +1210,12 @@ Core.prototype.getUserMeta = function (cookie){
 
 Core.prototype.loadCoreData = function (){
   console.log('loading Core Data')
-  var self = this;
+  var core = this;
   //console.log('Load core data')
   //Run loop of all post data and store that as JSON string in localstorage
   //This will reduce load times later.
 
-  self.areWeConnected()
+  core.areWeConnected()
   for (i = 1; i < 10; i++) {
     (function (i) {
       $.ajax({
@@ -1228,7 +1237,7 @@ Core.prototype.loadCoreData = function (){
 }
 
 Core.prototype.areWeConnected = function (){
-  var self = this;
+  var core = this;
   ////console.log('are we connected?')
 	$.ajax({
 		url: "http://velocity.apple-dev.co.uk",
@@ -1244,12 +1253,12 @@ Core.prototype.areWeConnected = function (){
 }
 
 Core.prototype.addEvent = function (startDate,endDate,title,eventLocation,notes,success,error){
-  var self = this;
+  var core = this;
   window.plugins.calendar.createEventInteractively(title,eventLocation,notes,startDate,endDate,success,error);
 }
 
 Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,notes,success,error){
-  var self = this;
+  var core = this;
   window.plugins.calendar.createEvent(title,eventLocation,notes,startDate,endDate,success,error);
 }
 
@@ -1270,8 +1279,8 @@ Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,
 
 
 
-Core.prototype.initPushwoosh = function(){
-  var self = this
+Core.prototype.initPushwoosh = function(username, action){
+  var core = this
   console.log('PUSHWOOSH INIT')
   //navigator.notification.alert('Success!', null, 'Pushwoosh CORE Initialised', 'ok')
 
@@ -1282,41 +1291,11 @@ Core.prototype.initPushwoosh = function(){
     pw_appid : "5B9A4-22A41" // PUSHWOOSH_APP_ID
   });
 
-  // PushNotification.unregisterDevice (
-  //   function(token){
-  //       console.log("unregistered success!" + token);
-  //   },
-  //   function(status){
-  //       console.log("unregistered failed!" + status);
-  //   })
-
-  //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
-  document.addEventListener('push-notification', function(event) {
-    var notification = event.notification;
-    console.log('push message recieved');
-    pushNotification.setApplicationIconBadgeNumber(0);
-
-  });
-
-  //register for pushes
-  pushNotification.registerDevice(
-    function(status) {
-      var deviceToken = status['deviceToken'];
-      console.log('registerDevice: ' + deviceToken);
-      //setTagsFunc(email)
-    },
-    function(status) {
-      navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-      console.log('failed to register : ' + JSON.stringify(status));
-      alert(JSON.stringify(['failed to register ', status]));
-    }
-  );
-
-  function setTagsFunc(email,petLevel){
-    console.log(email+' : '+petLevel)
+  function setTagsFunc(username){
+    console.log('Attempting tag setting of username:'+username)
     pushNotification.setTags(
     {
-      "emailaddress":email,
+      "username":username,
     },
       function(status) {
           console.log('setTags success '+status);
@@ -1334,6 +1313,40 @@ Core.prototype.initPushwoosh = function(){
       }
     );
   }//end func
+
+  if (action == 'register'){
+    //register for push
+    pushNotification.registerDevice(
+      function(status) {
+        var deviceToken = status['deviceToken'];
+        console.log('registerDevice: ' + deviceToken);
+        setTagsFunc(username)
+      },
+      function(status) {
+        navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+        console.log('failed to register : ' + JSON.stringify(status));
+        alert(JSON.stringify(['failed to register ', status]));
+      }
+    );
+  }else if (action == 'unregister'){
+    //Unregister for push
+    PushNotification.unregisterDevice (
+      function(token){
+          console.log("unregistered success!" + token);
+      },
+      function(status){
+          console.log("unregistered failed!" + status);
+      }
+    )
+  }
+
+  //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
+  document.addEventListener('push-notification', function(event) {
+    var notification = event.notification;
+    console.log('push message recieved');
+    pushNotification.setApplicationIconBadgeNumber(0);
+
+  });
 
 }
 
