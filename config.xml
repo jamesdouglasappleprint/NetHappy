@@ -4,7 +4,7 @@
        xmlns:gap   = "http://phonegap.com/ns/1.0"
        xmlns:android ="http://schemas.android.com/apk/res/android"
        id          = "com.applegotchi"
-       version     = "2.0.9">
+       version     = "2.0.10">
 
   <name>NetHappy</name>
 
@@ -39,7 +39,8 @@
   <gap:plugin name="it.zerob.cordova.screenshot" spec="0.1.3" source="pgb" /><!-- Saves screenshots -->
   <gap:plugin name="de.appplant.cordova.plugin.badge" source="pgb" />
   <gap:plugin name="org.apache.cordova.device" source="pgb" />
-  <gap:plugin name="nl.x-services.plugins.calendar" source="pgb" />
+  <gap:plugin name="nl.x-services.plugins.calendar" source="pgb" /><!-- Publish events to device calender -->
+  <gap:plugin name="org.apache.cordova.inappbrowser" spec="0.6.0" source="pgb" /><!-- inapp browser -->
 
 
   <icon src="icon/icon-36-ldpi.png"         gap:platform="android"  gap:qualifier="ldpi"/>

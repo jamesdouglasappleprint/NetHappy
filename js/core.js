@@ -1122,7 +1122,6 @@ Core.prototype.getUserMeta = function (cookie){
 		contentType: 'application/json',
 		success: function(data){
 			var arr = JSON.stringify(data)
-      console.log(data)
 
 			var user = data.user.username
 			var firstname = data.user.firstname
@@ -1338,9 +1337,6 @@ Core.prototype.initPushwoosh = function(username, action){
 
 
 }
-
-
-
 
 ///////////////////////////////////////////////////////
 var app = {
