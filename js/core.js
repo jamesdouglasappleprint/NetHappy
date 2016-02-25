@@ -907,7 +907,7 @@ Core.prototype.logIn = function (x) {
     window.location.replace('index.html')
 
     //TODO: add this back in
-    core.initPushwoosh(null, unregister)
+    core.initPushwoosh(null, "unregister")
 
   })
 
