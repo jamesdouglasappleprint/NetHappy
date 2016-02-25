@@ -1288,7 +1288,7 @@ Core.prototype.initPushwoosh = function(username, action){
 
   pushNotification.onDeviceReady({
     projectid: "625440960311", // GOOGLE_PROJECT_ID
-    pw_appid : "5B9A4-22A41" // PUSHWOOSH_APP_ID
+    pw_appid : "5093D-320F3" // PUSHWOOSH_APP_ID
   });
 
   function setTagsFunc(username){
