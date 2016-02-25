@@ -1291,6 +1291,15 @@ Core.prototype.initPushwoosh = function(username, action){
     pw_appid : "5093D-320F3" // PUSHWOOSH_APP_ID
   });
 
+  //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
+  document.addEventListener('push-notification', function(event) {
+    var notification = event.notification;
+    console.log('push message recieved');
+    navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
+    pushNotification.setApplicationIconBadgeNumber(0);
+
+  });
+
   function setTagsFunc(username){
     console.log('Attempting tag setting of username:'+username)
     pushNotification.setTags(
@@ -1340,13 +1349,7 @@ Core.prototype.initPushwoosh = function(username, action){
     )
   }
 
-  //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
-  document.addEventListener('push-notification', function(event) {
-    var notification = event.notification;
-    console.log('push message recieved');
-    pushNotification.setApplicationIconBadgeNumber(0);
 
-  });
 
 }
 
