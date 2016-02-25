@@ -61,19 +61,6 @@ Core.prototype.init = function (x) {
     $('.appContainer').load("login.html")
   }
 
-  //I HAVE NO IDEA WHAT THIS IS IS - it seems to boot pushregister, but i dont know what for...
-  $(document).on("click",".push",function(e){
-    e.preventDefault
-    var string = device.uuid;
-    createPushRegister(string)
-    initPushwoosh()
-  })
-
-
-  //TODO: this probably refers to the device plugin we're NOT using?
-  // var string = device.uuid;
-  // createPushRegister(string)
-
 };
 
 Core.prototype.GoogleMap = function () {
@@ -763,167 +750,166 @@ Core.prototype.getCalenderData = function(){
 Core.prototype.logIn = function (x) {
   var core = this;
   //Submit login form
-      $(document).on("click",".submitLoginFormData",function(e){
-        core.areWeConnected()
-        var username = $('.loginForm #userName').val()
-        var password = $('.loginForm #password').val()
-        var keeploggedon = 0;
-        if ($('.fa-toggle-on').length){
-          keeploggedon = 1;
-        }
-        core.generateAuthNonce(username, password,keeploggedon)
-      })
+  $(document).on("click",".submitLoginFormData",function(e){
+    core.areWeConnected()
+    var username = $('.loginForm #userName').val()
+    var password = $('.loginForm #password').val()
+    var keeploggedon = 0;
+    if ($('.fa-toggle-on').length){
+      keeploggedon = 1;
+    }
+    core.generateAuthNonce(username, password,keeploggedon)
+  })
 
-      //Load registration form
-      $(document).on("click",".createAccount",function(e){
-        //console.log('create account clicked')
-        $('.appContainer').load("register.html")
-        $('.navigateBack').show()
-        $('.appLogos').hide()
-      })
+  //Load registration form
+  $(document).on("click",".createAccount",function(e){
+    //console.log('create account clicked')
+    $('.appContainer').load("register.html")
+    $('.navigateBack').show()
+    $('.appLogos').hide()
+  })
 
-      //Load Password Recovery form
-      $(document).on("click",".passwordRecover",function(e){
-        //console.log('Trying to recover password...')
-        $('.appContainer').load("recovery.html")
-        $('.navigateBack').show()
-        $('.appLogos').hide()
-      })
+  //Load Password Recovery form
+  $(document).on("click",".passwordRecover",function(e){
+    //console.log('Trying to recover password...')
+    $('.appContainer').load("recovery.html")
+    $('.navigateBack').show()
+    $('.appLogos').hide()
+  })
 
-      //Recover Password
-      $(document).on("click",".recoverYourPassword",function(e){
-        var user = $('.recoveryForm #email').val()
-        core.recoverPassword(user)
-        navigator.notification.alert('Password recovery email sent!', null, 'Email sent', 'Ok')
-      })
+  //Recover Password
+  $(document).on("click",".recoverYourPassword",function(e){
+    var user = $('.recoveryForm #email').val()
+    core.recoverPassword(user)
+    navigator.notification.alert('Password recovery email sent!', null, 'Email sent', 'Ok')
+  })
 
-       //'Navigate back buttons'
-      $(document).on("click",".navigateBack",function(e){
-        var location = $(this).data('location')
-        //console.log(location)
-        $('.appContainer').load(location+".html")
-        $('.navigateBack').hide()
-        $('.appLogos').show()
-      });
+   //'Navigate back buttons'
+  $(document).on("click",".navigateBack",function(e){
+    var location = $(this).data('location')
+    //console.log(location)
+    $('.appContainer').load(location+".html")
+    $('.navigateBack').hide()
+    $('.appLogos').show()
+  });
 
+  //Register User
+  $(document).on("click",".createAccountForm",function(e){
+    var firstname = $('.registerForm #firstName').val(),
+        lastname = $('.registerForm #lastName').val(),
+        password = $('.registerForm #password').val(),
+        email = $('.registerForm #email').val(),
+        username = email,
+        error = 0;
 
-      //Register User
-      $(document).on("click",".createAccountForm",function(e){
-        var firstname = $('.registerForm #firstName').val(),
-            lastname = $('.registerForm #lastName').val(),
-            password = $('.registerForm #password').val(),
-            email = $('.registerForm #email').val(),
-            username = email,
-            error = 0;
+    // if (email.toLowerCase().indexOf("hotmail") >= 0 || email.toLowerCase().indexOf("yahoo") >= 0 || email.toLowerCase().indexOf("sky") >= 0 || email.toLowerCase().indexOf("gmail") >= 0 || email.toLowerCase().indexOf("aol") >= 0 || email.toLowerCase().indexOf("zoho") >= 0 || email.toLowerCase().indexOf("lycos") >= 0 || email.toLowerCase().indexOf("btinternet") >= 0 || email.toLowerCase().indexOf("outlook") >= 0 || email.toLowerCase().indexOf("icloud") >= 0 || email.toLowerCase().indexOf("me") >= 0 || email.toLowerCase().indexOf("ntlworld") >= 0){
+    //   triggerAlert('<i class="fa fa-envelope-o"></i>','Unfortunately this email address is not allowed. Please re-register using your business email address. ','Cancel','');
+    // }else if (email.toLowerCase().indexOf("avnet") >= 0 || email.toLowerCase().indexOf("simplivity") >= 0 || email.toLowerCase().indexOf("simplicity") >= 0 || email.toLowerCase().indexOf("hammerplc") >= 0 || email.toLowerCase().indexOf("hammer") >= 0 || email.toLowerCase().indexOf("e92plus") >= 0 || email.toLowerCase().indexOf("westcoast") >= 0 || email.toLowerCase().indexOf("micro-p") >= 0 || email.toLowerCase().indexOf("interfacesolutions") >= 0){
+    //   triggerAlert('<i class="fa fa-envelope-o"></i>','Email Domain Not Allowed','Cancel','');
+    // }else{
+      $('input').each(function(){
 
-        // if (email.toLowerCase().indexOf("hotmail") >= 0 || email.toLowerCase().indexOf("yahoo") >= 0 || email.toLowerCase().indexOf("sky") >= 0 || email.toLowerCase().indexOf("gmail") >= 0 || email.toLowerCase().indexOf("aol") >= 0 || email.toLowerCase().indexOf("zoho") >= 0 || email.toLowerCase().indexOf("lycos") >= 0 || email.toLowerCase().indexOf("btinternet") >= 0 || email.toLowerCase().indexOf("outlook") >= 0 || email.toLowerCase().indexOf("icloud") >= 0 || email.toLowerCase().indexOf("me") >= 0 || email.toLowerCase().indexOf("ntlworld") >= 0){
-        //   triggerAlert('<i class="fa fa-envelope-o"></i>','Unfortunately this email address is not allowed. Please re-register using your business email address. ','Cancel','');
-        // }else if (email.toLowerCase().indexOf("avnet") >= 0 || email.toLowerCase().indexOf("simplivity") >= 0 || email.toLowerCase().indexOf("simplicity") >= 0 || email.toLowerCase().indexOf("hammerplc") >= 0 || email.toLowerCase().indexOf("hammer") >= 0 || email.toLowerCase().indexOf("e92plus") >= 0 || email.toLowerCase().indexOf("westcoast") >= 0 || email.toLowerCase().indexOf("micro-p") >= 0 || email.toLowerCase().indexOf("interfacesolutions") >= 0){
-        //   triggerAlert('<i class="fa fa-envelope-o"></i>','Email Domain Not Allowed','Cancel','');
-        // }else{
-          $('input').each(function(){
-
-            if (!$(this).val()){
-              error++
-              $(this).css({border:"1px solid red"})
-            }
-          })
-
-          if (error>=1){
-            navigator.notification.alert('You must complete the registration form', null, 'Registration error', 'Cancel')
-          }else{
-            core.generateRegisterNonce(firstname,lastname,username,password,email)
-          }
-       // }
-
-
-
-      })
-
-      //KEEP USER LOGGED IN
-      $(document).on("click",".checkboxtoggle",function(e){
-        if ($(this).hasClass('fa-toggle-on')){
-          $(this).removeClass('fa-toggle-on').addClass('fa-toggle-off')
-          window.localStorage.removeItem("stayloggedon");
-        }else{
-          $(this).removeClass('fa-toggle-off').addClass('fa-toggle-on')
-          window.localStorage.setItem("stayloggedon", 1);
+        if (!$(this).val()){
+          error++
+          $(this).css({border:"1px solid red"})
         }
       })
 
-      //Settings Button
-      $(document).on("click",".settings a",function(e){
-        e.preventDefault()
-        $('.settingsMenu').toggle();
-        $('.myBdmMenu').hide()
-      })
+      if (error>=1){
+        navigator.notification.alert('You must complete the registration form', null, 'Registration error', 'Cancel')
+      }else{
+        core.generateRegisterNonce(firstname,lastname,username,password,email)
+      }
+   // }
 
-      $(document).on("click",".loadMyBdm",function(e){
-        $('.myBdmMenu').show()
-        $('.settingsMenu').hide()
-        $('.fourthLevelContainer').hide()
-      })
 
-      $(document).on("click",".mybdmlistlauncher",function(e){
-        $('.myBdmMenu').show()
-         $('.fourthLevelContainer').hide()
-      })
 
-      $(document).on("click",".contactMyBdm",function(e){
-        $('.myBdmMenu').show()
-         $('.fourthLevelContainer').hide()
-      })
+  })
 
-      $(document).on("click","a",function(e){
-        e.preventDefault()
-        var href = $(this).attr('href')
-        window.open(href, '_system')
-      });
+  //KEEP USER LOGGED IN
+  $(document).on("click",".checkboxtoggle",function(e){
+    if ($(this).hasClass('fa-toggle-on')){
+      $(this).removeClass('fa-toggle-on').addClass('fa-toggle-off')
+      window.localStorage.removeItem("stayloggedon");
+    }else{
+      $(this).removeClass('fa-toggle-off').addClass('fa-toggle-on')
+      window.localStorage.setItem("stayloggedon", 1);
+    }
+  })
 
-      $(document).on("click",".dealreglink",function(e){
-        // var targetUser = Cookies.get('user')
-        // if (targetUser.indexOf("softcat") >= 0){
-        //   triggerAlert('<i class="fa fa-exclamation-triangle"></i>','Sorry, you are not able to submit a deal registration','Ok','');
-        // }else{
-        //   window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
-        //   $('.appContainer').show()
-        //   $('.contentContainer').hide()
-        // }
-        window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
-          $('.appContainer').show()
-          $('.contentContainer').hide()
-      })
+  //Settings Button
+  $(document).on("click",".settings a",function(e){
+    e.preventDefault()
+    $('.settingsMenu').toggle();
+    $('.myBdmMenu').hide()
+  })
 
-      $(document).on("click",".twitter",function(e){
-        window.open('https://twitter.com/arrowecs_netapp', '_system')
-      })
+  $(document).on("click",".loadMyBdm",function(e){
+    $('.myBdmMenu').show()
+    $('.settingsMenu').hide()
+    $('.fourthLevelContainer').hide()
+  })
 
-      $(document).on("click",".facebook",function(e){
-        window.open('https://www.facebook.com/arrowfiveyearsout', '_system')
-      })
+  $(document).on("click",".mybdmlistlauncher",function(e){
+    $('.myBdmMenu').show()
+     $('.fourthLevelContainer').hide()
+  })
 
-      $(document).on("click",".linkedIn",function(e){
-        window.open('https://www.linkedin.com/company/arrow-ecs-united-kingdom', '_system')
-      })
+  $(document).on("click",".contactMyBdm",function(e){
+    $('.myBdmMenu').show()
+     $('.fourthLevelContainer').hide()
+  })
 
-      //Log Off
-      $(document).on("click",".logOff",function(e){
-        e.preventDefault()
-        window.localStorage.removeItem('loggedIn');
-        $('.navigateBack').hide()
-        $('.socialStrip').hide()
-        window.localStorage.removeItem("stayloggedon");
-        window.localStorage.removeItem("auth");
-        window.localStorage.removeItem("email");
-        window.localStorage.removeItem("bdm");
-        window.localStorage.removeItem("mybdmdata");
-        window.localStorage.removeItem("userPass");
-        window.location.replace('index.html')
+  $(document).on("click","a",function(e){
+    e.preventDefault()
+    var href = $(this).attr('href')
+    window.open(href, '_system')
+  });
 
-        //TODO: add this back in
-        //unregisterDevice()
+  $(document).on("click",".dealreglink",function(e){
+    // var targetUser = Cookies.get('user')
+    // if (targetUser.indexOf("softcat") >= 0){
+    //   triggerAlert('<i class="fa fa-exclamation-triangle"></i>','Sorry, you are not able to submit a deal registration','Ok','');
+    // }else{
+    //   window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
+    //   $('.appContainer').show()
+    //   $('.contentContainer').hide()
+    // }
+    window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
+      $('.appContainer').show()
+      $('.contentContainer').hide()
+  })
 
-      })
+  $(document).on("click",".twitter",function(e){
+    window.open('https://twitter.com/arrowecs_netapp', '_system')
+  })
+
+  $(document).on("click",".facebook",function(e){
+    window.open('https://www.facebook.com/arrowfiveyearsout', '_system')
+  })
+
+  $(document).on("click",".linkedIn",function(e){
+    window.open('https://www.linkedin.com/company/arrow-ecs-united-kingdom', '_system')
+  })
+
+  //Log Off
+  $(document).on("click",".logOff",function(e){
+    e.preventDefault()
+    window.localStorage.removeItem('loggedIn');
+    $('.navigateBack').hide()
+    $('.socialStrip').hide()
+    window.localStorage.removeItem("stayloggedon");
+    window.localStorage.removeItem("auth");
+    window.localStorage.removeItem("email");
+    window.localStorage.removeItem("bdm");
+    window.localStorage.removeItem("mybdmdata");
+    window.localStorage.removeItem("userPass");
+    window.location.replace('index.html')
+
+    //TODO: add this back in
+    core.initPushwoosh(null, unregister)
+
+  })
 
 
 }
@@ -1338,6 +1324,7 @@ Core.prototype.initPushwoosh = function(username, action){
       }
     );
   }else if (action == 'unregister'){
+    console.log('Unregistering Device')
     //Unregister for push
     PushNotification.unregisterDevice (
       function(token){
