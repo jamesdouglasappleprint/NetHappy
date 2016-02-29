@@ -195,6 +195,7 @@ Core.prototype.appCoreClickEvents = function () {
       $('.externalLink').show()
       $('.shareThis').show()
       var siteLink = '<a href="#" class="visitSiteLink externalLink"><i class="fa fa-sign-in"></i> Visit Website</a>'
+
     }else{
       $('.externalLink').hide()
       $('.shareThis').hide()
@@ -323,13 +324,20 @@ Core.prototype.appCoreClickEvents = function () {
 
     $('.postContainer').show()
     $('.postThumbnail').css({background:'url('+thumbnail+')','background-size':'cover', 'background-position':'center'})
-    $('.externalLink').click(function(){
+    $('.externalLink').click(function(e){
+      e.preventDefault()
+      var source = $(this).parent().parent().prev().find('h2').text()
+      core.logContent('external',link, source);
       window.open(link, '_system')
     })
 
     $('.promotionsFindOutMore').click(function(e){
       e.preventDefault()
       var link = $(this).attr('href')
+
+      var source = $(this).parent().prev().find('h2').text()
+      core.logContent('findoutmore',link, source);
+
       window.open(link, '_system')
 
     })
@@ -339,13 +347,23 @@ Core.prototype.appCoreClickEvents = function () {
       window.open(download, '_system')
     });
 
+    //If a data sheet is downloaded//opened
     $('.dataSheetAnchor').click(function(){
       var url = $(this).data('url')
+      var source = $(this).parent().parent().parent().parent().prev().find('h2').text()
+      var item = $(this).prev().text()
+      core.logContent('downloadcollateral',item, source);
+
       window.open(url, '_system')
     });
 
+    //If a data sheet is shared
     $('.dataSheetShareAnchor').click(function(){
       var url = $(this).data('url')
+      var source = $(this).parent().parent().parent().parent().prev().find('h2').text()
+      var item = $(this).prev().prev().text()
+      core.logContent('sharedcollateral',item, source);
+
       $('.shareOnFacebook').attr('data-link',url)
       $('.shareOnTwitter').attr('data-link',url)
       $('.shareOnLinkedin').attr('data-link',url)
@@ -367,11 +385,19 @@ Core.prototype.appCoreClickEvents = function () {
 
     $('.registerForEvent').click(function(){
       var url = data.posts[postRef].custom_fields.Event_Registration_Link[0]
+
+      var source = $(this).parent().parent().parent().prev().find('h2').text()
+      core.logContent('registerforevent',url, source);
+
       window.open(url, '_system')
     });
 
     $('.addFullEvent').click(function(){
       //console.log('Creating quick calendar event')
+
+      var source = $(this).parent().parent().parent().prev().find('h2').text()
+      core.logContent('addtocalendar',null, source);
+
       var eventDay    = eventStart.substr(0, 2);
       var eventMonth  = (eventStart.substr(2, 3).replace('/0','').replace('/1','1'))-1;
       var eventYear   = eventStart.substr(6, 4);
@@ -398,6 +424,7 @@ Core.prototype.appCoreClickEvents = function () {
 
     //Add quick event from post (click the button, calendar event dumped straight into calendar)
     $('.addPostEvent').click(function(){
+
      // console.log('Creating quick calendar event')
       var eventDay    = events.substr(0, 2);
       var eventMonth  = (events.substr(2, 3).replace('/0','').replace('/1','1'))-1;
@@ -835,18 +862,24 @@ Core.prototype.logIn = function (x) {
 
   //Settings Button
   $(document).on("click",".settings a",function(e){
+    core.logContent('settings',null, null);
     e.preventDefault()
     $('.settingsMenu').toggle();
     $('.myBdmMenu').hide()
   })
 
   $(document).on("click",".loadMyBdm",function(e){
+    var source = $(this).text()
+    core.logContent('viewprofile',null, window.localStorage.getItem('bdm'));
+
     $('.myBdmMenu').show()
     $('.settingsMenu').hide()
     $('.fourthLevelContainer').hide()
   })
 
   $(document).on("click",".mybdmlistlauncher",function(e){
+    core.logContent('viewprofile',null, window.localStorage.getItem('bdm'));
+
     $('.myBdmMenu').show()
      $('.fourthLevelContainer').hide()
   })
@@ -858,7 +891,13 @@ Core.prototype.logIn = function (x) {
 
   $(document).on("click","a",function(e){
     e.preventDefault()
-    var href = $(this).attr('href')
+    if ($(this).parent().parent().hasClass('listParentReturn') || $(this).parent().hasClass('listParentReturn') ){
+
+    }else{
+      core.logContent('anchor',null, $(this).find('h2').text());
+      var href = $(this).attr('href')
+    }
+
     window.open(href, '_system')
   });
 
@@ -871,20 +910,28 @@ Core.prototype.logIn = function (x) {
     //   $('.appContainer').show()
     //   $('.contentContainer').hide()
     // }
+
+    var source = $(this).find('h2').text()
+    core.logContent('dealreg',null, source);
+
     window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
-      $('.appContainer').show()
-      $('.contentContainer').hide()
+    $('.appContainer').show()
+    $('.contentContainer').hide()
   })
 
   $(document).on("click",".twitter",function(e){
+    core.logContent('twitter',null, null);
+
     window.open('https://twitter.com/arrowecs_netapp', '_system')
   })
 
   $(document).on("click",".facebook",function(e){
+    core.logContent('facebook',null, null);
     window.open('https://www.facebook.com/arrowfiveyearsout', '_system')
   })
 
   $(document).on("click",".linkedIn",function(e){
+    core.logContent('linkedin',null, null);
     window.open('https://www.linkedin.com/company/arrow-ecs-united-kingdom', '_system')
   })
 
@@ -892,6 +939,7 @@ Core.prototype.logIn = function (x) {
   $(document).on("click",".logOff",function(e){
     console.log('Log off Clicked')
     //TODO: add this back in
+    core.logContent('logoff',null, null);
     core.initPushwoosh(null, "unregister")
 
     e.preventDefault()
@@ -1176,15 +1224,16 @@ Core.prototype.getUserMeta = function (cookie){
 				}
 			}
 			var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
-            $('.postContactHeadshot').html('<img src="'+mybdm.custom_fields.Contact_Avatar[0]+'">')
-            $('.postContactName h4').html(mybdm.title)
-            $('.postContactName p').html(mybdm.custom_fields.Contact_Job_Title[0])
-            $('.myBdmMenu .postInner').append(mybdm.content)
-            var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
-            $('.myBdmName').html(mybdm.title)
-            $('.myBdmEmail').html(mybdm.custom_fields.Contact_Email[0])
+      $('.postContactHeadshot').html('<img src="'+mybdm.custom_fields.Contact_Avatar[0]+'">')
+      $('.postContactName h4').html(mybdm.title)
+      $('.postContactName p').html(mybdm.custom_fields.Contact_Job_Title[0])
+      $('.myBdmMenu .postInner').append(mybdm.content)
+      var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
+      $('.myBdmName').html(mybdm.title)
+      $('.myBdmEmail').html(mybdm.custom_fields.Contact_Email[0])
 
-			////console.log(toreturn)
+			//console.log(toreturn)
+      window.localStorage.setItem("userName", toreturn[0]+' '+toreturn[1])
 			$('.settingsEmailAddress').html(toreturn[2])
       		$('.settingsUserName').html(toreturn[0]+' '+toreturn[1])
 			return toreturn
@@ -1246,13 +1295,71 @@ Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,
   window.plugins.calendar.createEvent(title,eventLocation,notes,startDate,endDate,success,error);
 }
 
+Core.prototype.logContent = function (action,toLog,source){
+  console.log('I\'m a lumberjack...')
+  var fullName = window.localStorage.getItem('userName')
+  fullName = fullName.split(' ');
+  // console.log(toLog)
+  // console.log(action) //Action to log
+
+  var id    = '21';                                         // ID 21 assigned to NetHappy in DB // REQUIRED
+  var fn    = fullName[0];                                  //First Name
+  var ln    = fullName[1];                                  //Last Name
+  var em    = window.localStorage.getItem('email');         //Email Address
+  var ph    = null;                                         //Phone Number
+  var rec   = '';                                           //Data
+
+  if (action == 'external'){
+    rec = 'External Website '+toLog+' opened from tab '+source
+  }else if (action == 'findoutmore'){
+    rec = 'Find Out More clicked on '+source
+  }else if (action == 'addtocalendar'){
+    rec = 'Added event to calendar '+source
+  }else if (action == 'registerforevent'){
+    rec = 'Clicked register for event '+source
+  }else if (action == 'downloadcollateral'){
+    rec = 'Collateral: '+toLog+' downloaded on '+source
+  }else if (action == 'sharedcollateral'){
+    rec = 'Collateral: '+toLog+' shared on '+source
+  }else if (action == 'dealreg'){
+    rec = 'User clicked '+source
+  }else if (action == 'viewprofile'){
+    rec = 'User viewed their BDM profile '+source
+  }else if (action == 'twitter'){
+    rec = 'User clicked Twitter share';
+  }else if (action == 'facebook'){
+    rec = 'User clicked facebook share';
+  }else if (action == 'linkedin'){
+    rec = 'User clicked Linked-In share';
+  }else if (action == 'logoff'){
+    rec = 'User Logged off';
+  }else if (action == 'settings'){
+    rec = 'Opened settings';
+  }else if (action == 'anchor'){
+    rec = source+' clicked';
+  }else{
+
+  }
+
+  var dataStr = 'id='+id+'&fn='+fn+'&ln='+ln+'&em='+em+'&ph='+ph+'&rec='+rec
+
+  console.log(dataStr)
+  $.ajax({
+    url: "http://landingpageservice.apple-dev.co.uk/Ajax/ghRecordStuff.ashx",
+    type: "GET",
+    data: dataStr,
+    dataType: "jsonp",
+    contentType: 'application/json',
+    success: function(data){
+      console.log(data)
+    },
+    error: function (data){
+      console.log('Error ' + data);
+    }
+  });
 
 
-
-
-
-
-
+}
 
 
 
