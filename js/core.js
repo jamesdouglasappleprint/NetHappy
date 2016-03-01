@@ -897,9 +897,9 @@ Core.prototype.logIn = function (x) {
     }else{
       core.logContent('anchor',null, $(this).find('h2').text());
       var href = $(this).attr('href')
+      window.open(href, '_system')
     }
 
-    window.open(href, '_system')
   });
 
   $(document).on("click",".dealreglink",function(e){
@@ -1344,7 +1344,7 @@ Core.prototype.logContent = function (action,toLog,source){
 
   var dataStr = 'id='+id+'&fn='+fn+'&ln='+ln+'&em='+em+'&ph='+ph+'&rec='+rec
 
-  console.log(dataStr)
+  //console.log(dataStr)
   $.ajax({
     url: "http://landingpageservice.apple-dev.co.uk/Ajax/ghRecordStuff.ashx",
     type: "GET",
@@ -1352,7 +1352,7 @@ Core.prototype.logContent = function (action,toLog,source){
     dataType: "jsonp",
     contentType: 'application/json',
     success: function(data){
-      console.log(data)
+      //console.log(data)
     },
     error: function (data){
       console.log('Error ' + data);
