@@ -862,8 +862,9 @@ Core.prototype.logIn = function (x) {
 
   //Settings Button
   $(document).on("click",".settings a",function(e){
-    core.logContent('settings',null, null);
     e.preventDefault()
+    core.logContent('settings',null, null);
+
     $('.settingsMenu').toggle();
     $('.myBdmMenu').hide()
   })
