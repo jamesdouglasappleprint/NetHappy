@@ -942,8 +942,6 @@ Core.prototype.logIn = function (x) {
   $(document).on("click",".logOff",function(e){
     console.log('Log off Clicked')
     //TODO: add this back in
-    core.logContent('logoff',null, null);
-    core.initPushwoosh(null, "unregister")
 
     e.preventDefault()
     window.localStorage.removeItem('loggedIn');
@@ -956,6 +954,9 @@ Core.prototype.logIn = function (x) {
     window.localStorage.removeItem("mybdmdata");
     window.localStorage.removeItem("userPass");
     window.location.replace('index.html')
+
+    core.logContent('logoff',null, null);
+    core.initPushwoosh(null, "unregister")
 
 
 
