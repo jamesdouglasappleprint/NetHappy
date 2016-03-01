@@ -895,11 +895,11 @@ Core.prototype.logIn = function (x) {
     if ($(this).parent().parent().hasClass('listParentReturn') || $(this).parent().hasClass('listParentReturn') ){
 
     }else{
-      core.logContent('anchor',null, $(this).find('h2').text());
+      var clickedItem = $(this).find('h2').text();
+      core.logContent('anchor',null, clickedItem);
       // var href = $(this).attr('href')
       // window.open(href, '_system')
     }
-
   });
 
   $(document).on("click",".dealreglink",function(e){
@@ -1300,7 +1300,7 @@ Core.prototype.logContent = function (action,toLog,source){
   console.log('I\'m a lumberjack...')
   var fullName = window.localStorage.getItem('userName')
   fullName = fullName.split(' ');
-  // console.log(toLog)
+  console.log(source)
   // console.log(action) //Action to log
 
   var id    = '21';                                         // ID 21 assigned to NetHappy in DB // REQUIRED
