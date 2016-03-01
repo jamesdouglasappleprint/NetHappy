@@ -891,7 +891,7 @@ Core.prototype.logIn = function (x) {
   })
 
   $(document).on("click","a",function(e){
-    e.preventDefault()
+    //e.preventDefault()
     if ($(this).parent().parent().hasClass('listParentReturn') || $(this).parent().hasClass('listParentReturn') ){
 
     }else{
@@ -899,8 +899,8 @@ Core.prototype.logIn = function (x) {
       core.logContent('anchor',null, clickedItem);
 
     }
-    var href = $(this).attr('href')
-    window.open(href, '_system')
+    // var href = $(this).attr('href')
+    // window.open(href, '_system')
 
   });
 
