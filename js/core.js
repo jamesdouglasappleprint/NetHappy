@@ -897,9 +897,11 @@ Core.prototype.logIn = function (x) {
     }else{
       var clickedItem = $(this).find('h2').text();
       core.logContent('anchor',null, clickedItem);
-      // var href = $(this).attr('href')
-      // window.open(href, '_system')
+
     }
+    var href = $(this).attr('href')
+    window.open(href, '_system')
+
   });
 
   $(document).on("click",".dealreglink",function(e){
