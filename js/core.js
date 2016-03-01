@@ -896,8 +896,8 @@ Core.prototype.logIn = function (x) {
 
     }else{
       core.logContent('anchor',null, $(this).find('h2').text());
-      var href = $(this).attr('href')
-      window.open(href, '_system')
+      // var href = $(this).attr('href')
+      // window.open(href, '_system')
     }
 
   });
