@@ -1302,6 +1302,7 @@ Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,
 Core.prototype.logContent = function (action,toLog,source){
   console.log('I\'m a lumberjack...')
   var fullName = window.localStorage.getItem('userName')
+  var empty = false
   fullName = fullName.split(' ');
   console.log(source)
   // console.log(action) //Action to log
@@ -1341,7 +1342,8 @@ Core.prototype.logContent = function (action,toLog,source){
     rec = 'Opened settings';
   }else if (action == 'anchor'){
     if (source == ''){
-
+      //If there's nothing to take not of, don't log it.
+      empty = true;
     }else{
       rec = source+' clicked';
     }
@@ -1351,20 +1353,25 @@ Core.prototype.logContent = function (action,toLog,source){
 
   var dataStr = 'id='+id+'&fn='+fn+'&ln='+ln+'&em='+em+'&ph='+ph+'&rec='+rec
 
-  //console.log(dataStr)
-  $.ajax({
-    url: "http://landingpageservice.apple-dev.co.uk/Ajax/ghRecordStuff.ashx",
-    type: "GET",
-    data: dataStr,
-    dataType: "jsonp",
-    contentType: 'application/json',
-    success: function(data){
-      //console.log(data)
-    },
-    error: function (data){
-      console.log('Error ' + data);
-    }
-  });
+  if (empty == false){
+    //console.log(dataStr)
+    $.ajax({
+      url: "http://landingpageservice.apple-dev.co.uk/Ajax/ghRecordStuff.ashx",
+      type: "GET",
+      data: dataStr,
+      dataType: "jsonp",
+      contentType: 'application/json',
+      success: function(data){
+        //console.log(data)
+      },
+      error: function (data){
+        console.log('Error ' + data);
+      }
+    });
+  }else{
+
+  }
+
 
 
 }
@@ -1427,18 +1434,14 @@ Core.prototype.initPushwoosh = function(username, action){
       var notification = event.notification;
       console.log('push message recieved');
 
-      // var ua = navigator.userAgent.toLowerCase();
-      // var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-      // if(isAndroid) {
-      //   var title = event.notification.title;
-      //   var userData = event.notification.userdata;
+      // var title = event.notification.title;
+      // var userData = event.notification.userdata;
       //
-      //   if(typeof(userData) != "undefined") {
-      //       console.warn('user data: ' + JSON.stringify(userData));
-      //   }
-      //
-      //   alert(title);
+      // if(typeof(userData) != "undefined") {
+      //  console.warn('user data: ' + JSON.stringify(userData));
       // }
+      //
+      // alert(title);
 
       navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
       pushNotification.setApplicationIconBadgeNumber(0);
