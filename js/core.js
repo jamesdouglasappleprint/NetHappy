@@ -1427,18 +1427,18 @@ Core.prototype.initPushwoosh = function(username, action){
       var notification = event.notification;
       console.log('push message recieved');
 
-      var ua = navigator.userAgent.toLowerCase();
-      var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-      if(isAndroid) {
-        var title = event.notification.title;
-        var userData = event.notification.userdata;
-
-        if(typeof(userData) != "undefined") {
-            console.warn('user data: ' + JSON.stringify(userData));
-        }
-
-        alert(title);
-      }
+      // var ua = navigator.userAgent.toLowerCase();
+      // var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+      // if(isAndroid) {
+      //   var title = event.notification.title;
+      //   var userData = event.notification.userdata;
+      //
+      //   if(typeof(userData) != "undefined") {
+      //       console.warn('user data: ' + JSON.stringify(userData));
+      //   }
+      //
+      //   alert(title);
+      // }
 
       navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
       pushNotification.setApplicationIconBadgeNumber(0);
