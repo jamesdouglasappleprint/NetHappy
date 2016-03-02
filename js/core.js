@@ -1427,7 +1427,7 @@ Core.prototype.initPushwoosh = function(username, action){
   }else if (action == 'unregister'){
     console.log('Unregistering Device')
     //Unregister for push
-    PushNotification.unregisterDevice (
+    pushNotification.unregisterDevice (
       function(token){
           console.log("unregistered success!" + token);
       },
