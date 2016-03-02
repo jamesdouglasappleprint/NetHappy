@@ -1444,6 +1444,7 @@ Core.prototype.initPushwoosh = function(username, action){
       pushNotification.setApplicationIconBadgeNumber(0);
 
     });
+
   }else if (action == 'unregister'){
     console.log('Unregistering Device')
     //Unregister for push
