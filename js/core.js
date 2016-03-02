@@ -1366,14 +1366,6 @@ Core.prototype.logContent = function (action,toLog,source){
 }
 
 
-
-
-
-
-
-
-
-
 Core.prototype.initPushwoosh = function(username, action){
   var core = this
   console.log('PUSHWOOSH INIT')
