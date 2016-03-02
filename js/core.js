@@ -1382,7 +1382,7 @@ Core.prototype.initPushwoosh = function(username, action){
   var pushNotification = cordova.require("com.pushwoosh.plugins.pushwoosh.PushNotification");
 
   pushNotification.onDeviceReady({
-    projectid: "625440960311", // GOOGLE_PROJECT_ID
+    projectid: "888511028179", // GOOGLE_PROJECT_ID
     pw_appid : "5093D-320F3" // PUSHWOOSH_APP_ID
   });
 
