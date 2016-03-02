@@ -4,7 +4,7 @@
        xmlns:gap   = "http://phonegap.com/ns/1.0"
        xmlns:android ="http://schemas.android.com/apk/res/android"
        id          = "com.net.happy"
-       version     = "2.0.24">
+       version     = "2.0.25">
 
   <name>NetHappy</name>
 
@@ -15,7 +15,6 @@
   <author href="http://yoursite.com" email="you@youremail.com">Your Name</author>
 
   <access origin="*"/> <!-- allow all pages, use for development -->
-  <allow-navigation href="http://*/*" />
   <access origin="*.pushwoosh.com"/> <!-- allow pushwoosh service -->
   <access origin="velocity.apple-dev.co.uk"/>
   <access origin="*.phonegap.com"/> <!-- allow phonegap service -->
@@ -42,6 +41,7 @@
   <gap:plugin name="nl.x-services.plugins.calendar" source="pgb" /><!-- Publish events to device calender -->
   <gap:plugin name="org.apache.cordova.inappbrowser" spec="0.6.0" source="pgb" /><!-- inapp browser -->
 
+  <allow-navigation href="http://*/*" />
 
   <icon src="icon/icon-36-ldpi.png"         gap:platform="android"  gap:qualifier="ldpi"/>
   <icon src="icon/icon-48-mdpi.png"         gap:platform="android"  gap:qualifier="mdpi"/>
