@@ -1340,7 +1340,11 @@ Core.prototype.logContent = function (action,toLog,source){
   }else if (action == 'settings'){
     rec = 'Opened settings';
   }else if (action == 'anchor'){
-    rec = source+' clicked';
+    if (source == ''){
+
+    }else{
+      rec = source+' clicked';
+    }
   }else{
 
   }
@@ -1380,17 +1384,21 @@ Core.prototype.initPushwoosh = function(username, action){
 
   //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
   document.addEventListener('push-notification', function(event) {
-    var notification = event.notification.title;
+    var notification = event.notification;
     console.log('push message recieved');
 
-    // var title = event.notification.title;
-    // var userData = event.notification.userdata;
-    //
-    // if(typeof(userData) != "undefined") {
-    //     console.warn('user data: ' + JSON.stringify(userData));
-    // }
-    //
-    // alert(title);
+    var ua = navigator.userAgent.toLowerCase();
+    var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+    if(isAndroid) {
+      var title = event.notification.title;
+      var userData = event.notification.userdata;
+
+      if(typeof(userData) != "undefined") {
+          console.warn('user data: ' + JSON.stringify(userData));
+      }
+
+      alert(title);
+    }
 
     navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
     pushNotification.setApplicationIconBadgeNumber(0);
