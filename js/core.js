@@ -890,6 +890,11 @@ Core.prototype.logIn = function (x) {
      $('.fourthLevelContainer').hide()
   })
 
+  $(document).on("click",".eshot a",function(e){
+    var href = $(this).attr('href')
+    window.open(href, '_system')
+  });
+
   $(document).on("click","a",function(e){
     //e.preventDefault()
     if ($(this).parent().parent().hasClass('listParentReturn') || $(this).parent().hasClass('listParentReturn') ){
