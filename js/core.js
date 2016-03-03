@@ -891,6 +891,7 @@ Core.prototype.logIn = function (x) {
   })
 
   $(document).on("click",".eshot a",function(e){
+    console.log('logging')
     var href = $(this).attr('href')
     window.open(href, '_system')
   });
