@@ -32,6 +32,13 @@ function Core(){
   console.log('Clearing Badges')
   window.plugin.notification.badge.clear(); //clear badge notifications
 
+  if (window.localStorage.getItem('hasRegisteredForNotifcations') == "1"){
+
+  }else{
+    console.log('user not registered, registering...')
+    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+  }
+
 
 }
 
@@ -108,6 +115,8 @@ Core.prototype.appCoreClickEvents = function () {
     $('.menuButton').show()
     $('.myBdmMenu').hide()
     $('.fourthLevelContainer').hide()
+    var clickedItem = $(this).find('h2').text();
+    core.logContent('anchor',null, clickedItem);
   })
 
   //Return to parent item
@@ -177,6 +186,15 @@ Core.prototype.appCoreClickEvents = function () {
     $('.externalLink').show()
     $('.shareThis').show()
     $('.downloadItem').show()
+    if ($(this).parent().hasClass('calDate')){
+      var clickedItem = $(this).find('h2').text();
+      core.logContent('dateAnchor',null, clickedItem);
+    }else{
+      console.log('logging listparentanchor click')
+      var clickedItem = $(this).find('h2').text();
+      core.logContent('anchor',null, clickedItem);
+    }
+
 
     //console.log('parent clicked')
     var that = $(this).html()
@@ -376,6 +394,12 @@ Core.prototype.appCoreClickEvents = function () {
       $('.tab'+target).show()
       $('.tabTitle').removeClass('tabSelected')
       $(this).addClass('tabSelected')
+
+      console.log('Collateral tab')
+      var parentItem = $(this).parent().prev().find('h2').text()
+      var clickedItem = $(this).find('p').text();
+      core.logContent('anchor',null, parentItem+': '+clickedItem);
+
     })
 
     $('.googleMapTab').click(function(){
@@ -540,6 +564,8 @@ Core.prototype.getContactTeam = function(category,triggerElement,contact){
     var contact = $(this).data('contact')
     var team = $(this).data('team')
     core.getContacts(category,triggerElement,contact,team)
+    var clickedItem = $(this).find('h2').text();
+    core.logContent('anchor',null, clickedItem);
   })
 }
 
@@ -653,6 +679,10 @@ Core.prototype.getCategory = function(category,triggerElement){
     var topic = $(this).find('h2').text()
     var newtrigger = $(this).html()
     core.getEnablements(category,newtrigger,topic)
+
+    console.log('logging Enablement click')
+    var clickedItem = $(this).find('h2').text();
+    core.logContent('anchor',null, clickedItem);
   })
 
   //go to third level menu
@@ -660,6 +690,9 @@ Core.prototype.getCategory = function(category,triggerElement){
     var contact = $(this).data('contact')
     var newtrigger = $(this).html()
     core.getContactTeam(category,newtrigger,contact)
+
+    var clickedItem = $(this).find('h2').text();
+    core.logContent('anchor',null, clickedItem);
   })
 
   $('#interactiveCalendar').datepicker({
@@ -888,24 +921,31 @@ Core.prototype.logIn = function (x) {
   $(document).on("click",".contactMyBdm",function(e){
     $('.myBdmMenu').show()
      $('.fourthLevelContainer').hide()
+     var source = $(this).text()
+     core.logContent('viewprofile',null, window.localStorage.getItem('bdm'));
   })
 
   $(document).on("click",".eshot a",function(e){
     e.preventDefault()
     console.log('logging')
+    var clickedItem = $(this).text();
+    core.logContent('communicationsExternal',null, clickedItem);
+
     var href = $(this).attr('href')
     window.open(href, '_system')
   });
 
   $(document).on("click","a",function(e){
+    //TODO: this was a blanket click idea, but it was annoying since it triggered on everything. Remove this if you want, it doesn't do anything now
+
     //e.preventDefault()
-    if ($(this).parent().parent().hasClass('listParentReturn') || $(this).parent().hasClass('listParentReturn') ){
-
-    }else{
-      var clickedItem = $(this).find('h2').text();
-      core.logContent('anchor',null, clickedItem);
-
-    }
+    // if ($(this).parent().parent().hasClass('listParentReturn') || $(this).parent().hasClass('listParentReturn') ){
+    //
+    // }else{
+    //   var clickedItem = $(this).find('h2').text();
+    //   core.logContent('anchor',null, clickedItem);
+    //
+    // }
     // var href = $(this).attr('href')
     // window.open(href, '_system')
 
@@ -1326,9 +1366,9 @@ Core.prototype.logContent = function (action,toLog,source){
   }else if (action == 'findoutmore'){
     rec = 'Find Out More clicked on '+source
   }else if (action == 'addtocalendar'){
-    rec = 'Added event to calendar '+source
+    rec = 'Event added to calender: '+source
   }else if (action == 'registerforevent'){
-    rec = 'Clicked register for event '+source
+    rec = 'Register for event Clicked: '+source
   }else if (action == 'downloadcollateral'){
     rec = 'Collateral: '+toLog+' downloaded on '+source
   }else if (action == 'sharedcollateral'){
@@ -1345,6 +1385,10 @@ Core.prototype.logContent = function (action,toLog,source){
     rec = 'User clicked Linked-In share';
   }else if (action == 'logoff'){
     rec = 'User Logged off';
+  }else if (action == 'communicationsExternal'){
+    rec = 'Communications External Link: '+source
+  }else if (action == 'dateAnchor'){
+    rec = 'Event opened: '+source
   }else if (action == 'settings'){
     rec = 'Opened settings';
   }else if (action == 'anchor'){
@@ -1386,6 +1430,7 @@ Core.prototype.logContent = function (action,toLog,source){
 
 Core.prototype.initPushwoosh = function(username, action){
   var core = this
+  window.localStorage.setItem('hasRegisteredForNotifcations', "1")
   console.log('PUSHWOOSH INIT')
   //navigator.notification.alert('Success!', null, 'Pushwoosh CORE Initialised', 'ok')
 
