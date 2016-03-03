@@ -29,8 +29,13 @@ function Core(){
   core.logIn();
   core.appCoreClickEvents();
   core.loadCoreData();
-  console.log('Clearing Badges')
-  window.plugin.notification.badge.clear(); //clear badge notifications
+
+
+  //Run a check to see if a user has already registered for notifications
+  //if the flag isn't set, they could be logged in but NOT registered
+  //This would happen updating from the old app to the new app because its on
+  //a seperate Pushwoosh account. version 3 of the app can remove this, but probably
+  //worth keeping it for the moment.
 
   if (window.localStorage.getItem('hasRegisteredForNotifcations') == "1"){
 
@@ -38,6 +43,11 @@ function Core(){
     console.log('user not registered, registering...')
     core.initPushwoosh(window.localStorage.getItem('user'), 'register')
   }
+
+  console.log('Clearing Badges')
+  window.plugin.notification.badge.clear(); //clear badge notifications
+
+
 
 
 }
@@ -1430,7 +1440,6 @@ Core.prototype.logContent = function (action,toLog,source){
 
 Core.prototype.initPushwoosh = function(username, action){
   var core = this
-  window.localStorage.setItem('hasRegisteredForNotifcations', "1")
   console.log('PUSHWOOSH INIT')
   //navigator.notification.alert('Success!', null, 'Pushwoosh CORE Initialised', 'ok')
 
@@ -1470,6 +1479,7 @@ Core.prototype.initPushwoosh = function(username, action){
     //register for push
     pushNotification.registerDevice(
       function(status) {
+        window.localStorage.setItem('hasRegisteredForNotifcations', "1")
         var deviceToken = status['deviceToken'];
         console.log('registerDevice: ' + deviceToken);
         setTagsFunc(username)
