@@ -1571,6 +1571,7 @@ Core.prototype.logContent = function (action,toLog,source){
 Core.prototype.initPushwoosh = function(username, action){
   var core = this
   console.log('PUSHWOOSH INIT')
+  console.log(action, username)
   //navigator.notification.alert('Success!', null, 'Pushwoosh CORE Initialised', 'ok')
 
   var pushNotification = cordova.require("com.pushwoosh.plugins.pushwoosh.PushNotification");
@@ -1579,8 +1580,6 @@ Core.prototype.initPushwoosh = function(username, action){
     projectid: "888511028179", // GOOGLE_PROJECT_ID
     pw_appid : "5093D-320F3" // PUSHWOOSH_APP_ID
   });
-
-
 
   function setTagsFunc(username){
     console.log('Attempting tag setting of username:'+username)
