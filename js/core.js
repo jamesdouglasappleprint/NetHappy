@@ -261,7 +261,7 @@ Core.prototype.appCoreClickEvents = function () {
   //SHARE LINK OF SINGLE POST ON FACEBOOK
   $(document).on("click",".shareOnFacebook",function(e){
     var link = $(this).data('link')
-    window.open('http://www.facebook.com/sharer.php?u='+link, '_system')
+    window.open('https://www.facebook.com/sharer.php?u='+link, '_system')
     $('.socialModal').hide()
   })
 

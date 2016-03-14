@@ -4,7 +4,7 @@
        xmlns:gap   = "http://phonegap.com/ns/1.0"
        xmlns:android ="http://schemas.android.com/apk/res/android"
        id          = "com.net.happy"
-       version     = "2.0.49">
+       version     = "2.0.50">
 
   <name>NetHappy</name>
 
@@ -13,7 +13,6 @@
   <description>NetHappy</description>
 
   <author href="http://yoursite.com" email="you@youremail.com">Your Name</author>
-  <allow-navigation href="http://*/*" />
   <access origin="*"/> <!-- allow all pages, use for development -->
   <access origin="*.pushwoosh.com"/> <!-- allow pushwoosh service -->
   <access origin="velocity.apple-dev.co.uk"/>
