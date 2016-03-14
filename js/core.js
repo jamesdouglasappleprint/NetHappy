@@ -1605,6 +1605,7 @@ Core.prototype.initPushwoosh = function(username, action){
   }//end func
 
   if (action == 'register'){
+    console.log('attempting register')
     //register for push
     pushNotification.registerDevice(
       function(status) {
@@ -1614,7 +1615,7 @@ Core.prototype.initPushwoosh = function(username, action){
         setTagsFunc(username)
       },
       function(status) {
-        navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+        //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
         console.log('failed to register : ' + JSON.stringify(status));
         alert(JSON.stringify(['failed to register ', status]));
       }
