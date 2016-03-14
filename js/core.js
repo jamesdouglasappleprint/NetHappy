@@ -25,11 +25,31 @@ function Core(){
   console.log('Core Loaded');
   var core = this;
 
-  core.init();
-  core.logIn();
-  core.appCoreClickEvents();
-  core.loadCoreData();
+  core.languageContent = []
 
+  //NOTE: here is where alllllll the InAPP data is loaded
+  $.getJSON( "js/inapplanguage.json", function( data ) {
+    core.languageContent = data
+    console.log(core.languageContent)
+    core.wordpressVersion = 'velocity.apple-dev.co.uk'
+    core.reassignCoreVersion() //Check to see if we already have a version selected
+    core.init();
+    core.logIn();
+    core.appCoreClickEvents();
+    core.loadCoreData();
+
+    core.getInAppLanguageContent()
+    core.selectLanguage()
+
+    //If the language was set from a previous load, keep it set to that language
+    if (window.localStorage.getItem('language') == null){
+      window.localStorage.setItem('language','gb')
+    }else{
+
+    }
+
+
+  });
 
   //Run a check to see if a user has already registered for notifications
   //if the flag isn't set, they could be logged in but NOT registered
@@ -37,19 +57,31 @@ function Core(){
   //a seperate Pushwoosh account. version 3 of the app can remove this, but probably
   //worth keeping it for the moment.
 
-  if (window.localStorage.getItem('hasRegisteredForNotifcations') == "1"){
+  if (window.localStorage.getItem('hasRegisteredForNotifcations') == "2"){
 
   }else{
     console.log('user not registered, registering...')
+    window.localStorage.clear();
     core.initPushwoosh(window.localStorage.getItem('user'), 'register')
   }
 
-  console.log('Clearing Badges')
-  window.plugin.notification.badge.clear(); //clear badge notifications
+  // console.log('Clearing Badges')
+  // window.plugin.notification.badge.clear(); //clear badge notifications
+}
 
 
-
-
+Core.prototype.reassignCoreVersion = function(){
+  var core = this
+  //uk, fr, eu
+  if (window.localStorage.getItem('language') == 'gb'){
+    core.wordpressVersion = 'velocity.apple-dev.co.uk'
+  }else if(window.localStorage.getItem('language') == 'fr'){
+    core.wordpressVersion = 'netappyfr.apple-dev.co.uk'
+  }else if (window.localStorage.getItem('language') == 'eu'){
+    core.wordpressVersion = 'netappyeu.apple-dev.co.uk'
+  }else{
+    core.wordpressVersion = 'velocity.apple-dev.co.uk'
+  }
 }
 
 //Initialiser
@@ -59,7 +91,10 @@ Core.prototype.init = function (x) {
   var value = window.localStorage.getItem("stayloggedon")
 
   if( value == 1){
-    $('.appContainer').load("home.html")
+    $('.appContainer').load("home.html",function(){
+      core.getInAppLanguageContent()
+    })
+
     $('.navigateBack').hide()
     $('.prelaunchButtons').hide()
     $('.socialStrip').show()
@@ -71,10 +106,78 @@ Core.prototype.init = function (x) {
     $('.navigateBack').hide()
     $('.prelaunchButtons').show()
     $('.socialStrip').hide()
-    $('.appContainer').load("login.html")
+    $('.appContainer').load("login.html", function(){
+      console.log('loading')
+      core.getInAppLanguageContent()
+    })
   }
 
 };
+
+//Get JSON containing all in APP text
+Core.prototype.getInAppLanguageContent = function(){
+  var core = this
+
+  //NOTE:: Update all hardcoded content NOT pulled from Wordpress is toggled here for its language.
+  //Yes, this is a crazy way of doing this - but this is what happens when you add functionality in
+  //to an app after it's built that you weren't intending on.
+
+  $('.remLogDeet').html(core.languageContent.remember_login_details[0][window.localStorage.getItem('language')])
+  $('.passwordRecover').html(core.languageContent.recover_password_trigger[0][window.localStorage.getItem('language')])
+  $('.createAccount').html(core.languageContent.create_account_trigger[0][window.localStorage.getItem('language')])
+  $('.submitLoginFormData').html(core.languageContent.login_button[0][window.localStorage.getItem('language')])
+  $('#userName').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_email[0][window.localStorage.getItem('language')])
+  $('#password').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_password[0][window.localStorage.getItem('language')])
+  $('.languageSelector').val(window.localStorage.getItem('language'))
+  $('.menuFlag').removeClass('flag-icon-gb').addClass('flag-icon-'+window.localStorage.getItem('language'))
+
+  //LEVEL 1 MENU ITEMS
+  $('#menuItemArrowValue').html(core.languageContent.menu_items[0].arrow_value[0][window.localStorage.getItem('language')])
+  $('#menuItemCurrentPromotions').html(core.languageContent.menu_items[0].current_promotions[0][window.localStorage.getItem('language')])
+  $('#menuItemEvents').html(core.languageContent.menu_items[0].events[0][window.localStorage.getItem('language')])
+  $('#menuItemRecentCommunications').html(core.languageContent.menu_items[0].recent_communications[0][window.localStorage.getItem('language')])
+  $('#menuItemQuickEnablement').html(core.languageContent.menu_items[0].quick_enablement[0][window.localStorage.getItem('language')])
+  $('#menuItemUsefulCollateral').html(core.languageContent.menu_items[0].useful_collateral[0][window.localStorage.getItem('language')])
+  $('#menuItemSubmitDealRegistration').html(core.languageContent.menu_items[0].submit_deal_registration[0][window.localStorage.getItem('language')])
+  $('#menuItemContactUs').html(core.languageContent.menu_items[0].contact_us[0][window.localStorage.getItem('language')])
+
+  //Settings
+  $('#settingsMyDetails').html(core.languageContent.settings[0].my_details[0][window.localStorage.getItem('language')])
+  $('#settingsName i').html(core.languageContent.settings[0].settings_name[0][window.localStorage.getItem('language')])
+  $('#settingsBDMName i').html(core.languageContent.settings[0].settings_name[0][window.localStorage.getItem('language')])
+  $('#settingsEmail i').html(core.languageContent.settings[0].settings_email[0][window.localStorage.getItem('language')])
+  $('#settingsBDMEmail i').html(core.languageContent.settings[0].settings_email[0][window.localStorage.getItem('language')])
+  $('#settingsMyBDM').html(core.languageContent.settings[0].my_bdm[0][window.localStorage.getItem('language')])
+  $('#settingsBDMProfile').html(core.languageContent.settings[0].view_profile[0][window.localStorage.getItem('language')])
+  $('#settingsSettings').html(core.languageContent.settings[0].settings[0][window.localStorage.getItem('language')])
+  $('#settingsLogOff').html(core.languageContent.settings[0].log_off[0][window.localStorage.getItem('language')])
+  $('#settingsHelp').html(core.languageContent.settings[0].help[0][window.localStorage.getItem('language')])
+  $('.appError i').html(core.languageContent.settings[0].app_not_working[0][window.localStorage.getItem('language')])
+  $('#settingsContactUs').html(core.languageContent.settings[0].contact_us[0][window.localStorage.getItem('language')])
+
+
+}
+
+Core.prototype.selectLanguage = function (lang) {
+  var core = this;
+  //NOTE: set the global URL of the app to be the specific language url
+  //This will use a DIFFERENT version of wordpress for each language
+  //I can't think of another way of doing this, not while giving regional admins
+  //specific access to only their content.
+
+  $(document).on("change",".languageSelector",function(e){
+    core.loadCoreData();
+    var l = $(this).val()
+    window.localStorage.setItem('language', l)
+    core.reassignCoreVersion()
+
+    $('.menuFlag').removeClass('flag-icon-gb').removeClass('flag-icon-fr').removeClass('flag-icon-eu').addClass('flag-icon-'+l)
+    //set local storage of language version
+    core.getInAppLanguageContent()
+
+
+  })
+}
 
 Core.prototype.GoogleMap = function () {
   var core = this;
@@ -222,7 +325,7 @@ Core.prototype.appCoreClickEvents = function () {
       //add button to post if we do have a link
       $('.externalLink').show()
       $('.shareThis').show()
-      var siteLink = '<a href="#" class="visitSiteLink externalLink"><i class="fa fa-sign-in"></i> Visit Website</a>'
+      var siteLink = '<a href="#" class="visitSiteLink externalLink"><i class="fa fa-sign-in"></i> '+core.languageContent.inapp_content[0].visit_website[0][window.localStorage.getItem('language')]+'</a>'
 
     }else{
       $('.externalLink').hide()
@@ -239,7 +342,7 @@ Core.prototype.appCoreClickEvents = function () {
     if (data.posts[postRef].custom_fields.Event != undefined){
       var events = data.posts[postRef].custom_fields.Event[0]
       $('.addEventToCalender').show()
-      var eventLink = '<a href="#" class="addPostEvent"><i class="fa fa-calendar"></i> Add to Calendar</a>'
+      var eventLink = '<a href="#" class="addPostEvent"><i class="fa fa-calendar"></i> '+core.languageContent.inapp_content[0].add_to_calendar[0][window.localStorage.getItem('language')]+'</a>'
     }else{
       $('.addEventToCalender').hide()
       var eventLink = ''
@@ -248,7 +351,7 @@ Core.prototype.appCoreClickEvents = function () {
     if (data.posts[postRef].custom_fields.Event_Start_Date != undefined){
       var eventStart = data.posts[postRef].custom_fields.Event_Start_Date[0]
       $('.actions').hide()
-      var eventFullLink = '<a href="#" class="addFullEvent"><i class="fa fa-calendar"></i> Add to Calendar</a>'
+      var eventFullLink = '<a href="#" class="addFullEvent"><i class="fa fa-calendar"></i> '+core.languageContent.inapp_content[0].add_to_calendar[0][window.localStorage.getItem('language')]+'</a>'
       var firstdate = returnDayMonth(data.posts[postRef].custom_fields.Event_Start_Date[0])
       var lastdate = returnDayMonth(data.posts[postRef].custom_fields.Event_End_Date[0])
       var completeddatestring = firstdate+' - '+lastdate
@@ -260,7 +363,7 @@ Core.prototype.appCoreClickEvents = function () {
     ///////////////
     if (data.posts[postRef].custom_fields.Event_Registration_Link != undefined){
       var register = data.posts[postRef].custom_fields.Event_Registration_Link[0]
-      var registerLink = '<a href="#" class="registerForEvent"><i class="fa fa-check"></i> Register</a>'
+      var registerLink = '<a href="#" class="registerForEvent"><i class="fa fa-check"></i> '+core.languageContent.inapp_content[0].register[0][window.localStorage.getItem('language')]+'</a>'
     }else{
       var registerLink = ''
     }
@@ -316,11 +419,11 @@ Core.prototype.appCoreClickEvents = function () {
     //Check which type of post we're generating
     if (parentCat == 4){
     //Events
-      $('.postContainer').html('<div class="postInner"><div class="tabTitle tabSelected" data-tab="1"><p>Info</p></div><div class="tabTitle googleMapTab" data-tab="2"><p>Location</p></div><div class="tabPanel tab1"><h5>'+completeddatestring+'</h5><h6>'+data.posts[postRef].custom_fields.Event_Location[0]+'</h6>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+registerLink+eventFullLink+'</div></div><div class="tabPanel tab2"><div id="map-canvas"></div><p>'+data.posts[postRef].custom_fields.Event_Location[0]+'</p></div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('<i class="fa fa-calendar-o listCalendarIcon"></i>','').replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      $('.postContainer').html('<div class="postInner"><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle googleMapTab" data-tab="2"><p>'+core.languageContent.inapp_content[0].location[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1"><h5>'+completeddatestring+'</h5><h6>'+data.posts[postRef].custom_fields.Event_Location[0]+'</h6>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+registerLink+eventFullLink+'</div></div><div class="tabPanel tab2"><div id="map-canvas"></div><p>'+data.posts[postRef].custom_fields.Event_Location[0]+'</p></div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('<i class="fa fa-calendar-o listCalendarIcon"></i>','').replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
     }else if (parentCat == 7){
       $('.actions').hide()
     //Collateral
-      $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabTitle tabSelected" data-tab="1"><p>Info</p></div><div class="tabTitle" data-tab="2"><p>Case Studies</p></div><div class="tabTitle" data-tab="3"><p>Data Sheets</p></div><div class="tabTitle" data-tab="4"><p>White Papers</p></div><div class="tabPanel tab1">'+data.posts[postRef].content+'</div><div class="tabPanel tab2">'+casestudy+'</div><div class="tabPanel tab3">'+datasheet+'</div><div class="tabPanel tab4">'+whitepaper+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="2"><p>'+core.languageContent.inapp_content[0].case_studies[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="3"><p>'+core.languageContent.inapp_content[0].data_sheets[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="4"><p>'+core.languageContent.inapp_content[0].white_papers[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1">'+data.posts[postRef].content+'</div><div class="tabPanel tab2">'+casestudy+'</div><div class="tabPanel tab3">'+datasheet+'</div><div class="tabPanel tab4">'+whitepaper+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
     }else if (parentCat == 2){
       //eShot / recent communications
       $('.postContainer').html('<div class="postInner eshot"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-envelope-square'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
@@ -487,6 +590,7 @@ Core.prototype.appCoreClickEvents = function () {
 
 }
 
+//Set container heights to 100vh (without using VH because VH sucks)
 Core.prototype.setContainerHeight = function(){
   var core = this
  // console.log('setting container height')
@@ -605,6 +709,7 @@ Core.prototype.getEnablements = function(category,triggerElement,topic){
 
 }
 
+//
 Core.prototype.getCategory = function(category,triggerElement){
   var core = this;
  // console.log('getting the category...')
@@ -649,7 +754,7 @@ Core.prototype.getCategory = function(category,triggerElement){
     }
   //Contact
   }else if(category == 9){
-    core.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>My Arrow contacts</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>My NetApp contacts </h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>My BDM contact</h2><i class="fa fa-chevron-right"></i></a></li>')
+    core.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>'+core.languageContent.inapp_content[0].my_arrow_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>'+core.languageContent.inapp_content[0].my_netapp_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>'+core.languageContent.inapp_content[0].my_bdm_contact[0][window.localStorage.getItem('language')]+'</h2><i class="fa fa-chevron-right"></i></a></li>')
   //Quick Enablement
   }else if(category == 6){
     var firstLevelItems = []
@@ -667,7 +772,6 @@ Core.prototype.getCategory = function(category,triggerElement){
       core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>'+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
       core.$renderList.append(core.$listParent)
     }
-
   }else if(category == 3){
     for (i = 0; i < data.count; i++) {
       core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2 class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
@@ -708,12 +812,12 @@ Core.prototype.getCategory = function(category,triggerElement){
   $('#interactiveCalendar').datepicker({
     inline: true,
     hideIfNoPrevNext: true,
-    prevText: "Previous",
-    nextText: "Next",
+    prevText: core.languageContent.inapp_content[0].events_previous[0][window.localStorage.getItem('language')],
+    nextText: core.languageContent.inapp_content[0].events_next[0][window.localStorage.getItem('language')],
     firstDay: 1,
     showOtherMonths: true,
-    dayNamesMin: ['Su', 'M', 'T', 'W', 'T', 'F', 'S'],
-    monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
+    dayNamesMin: core.languageContent.inapp_content[0].calendar_week[0][window.localStorage.getItem('language')],
+    monthNames: core.languageContent.inapp_content[0].calendar_month[0][window.localStorage.getItem('language')],
     onSelect: function(date, inst) {
       inst.inline = false;
       core.getCalenderData()
@@ -818,6 +922,7 @@ Core.prototype.logIn = function (x) {
   //Submit login form
   $(document).on("click",".submitLoginFormData",function(e){
     core.areWeConnected()
+    core.loadCoreData();
     var username = $('.loginForm #userName').val()
     var password = $('.loginForm #password').val()
     var keeploggedon = 0;
@@ -830,7 +935,14 @@ Core.prototype.logIn = function (x) {
   //Load registration form
   $(document).on("click",".createAccount",function(e){
     //console.log('create account clicked')
-    $('.appContainer').load("register.html")
+    $('.appContainer').load("register.html", function(){
+      $('.createAccountForm').html(core.languageContent.create_account_button[0][window.localStorage.getItem('language')])
+      $('#firstName').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_fname[0][window.localStorage.getItem('language')])
+      $('#lastName').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_lname[0][window.localStorage.getItem('language')])
+      $('#password').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_password[0][window.localStorage.getItem('language')])
+      $('#email').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_email[0][window.localStorage.getItem('language')])
+
+    })
     $('.navigateBack').show()
     $('.appLogos').hide()
   })
@@ -838,7 +950,12 @@ Core.prototype.logIn = function (x) {
   //Load Password Recovery form
   $(document).on("click",".passwordRecover",function(e){
     //console.log('Trying to recover password...')
-    $('.appContainer').load("recovery.html")
+    $('.appContainer').load("recovery.html", function(){
+      console.log('loaded')
+      $('.recoverYourPassword').html(core.languageContent.recover_password_button[0][window.localStorage.getItem('language')])
+      $('#email').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_email[0][window.localStorage.getItem('language')])
+    })
+
     $('.navigateBack').show()
     $('.appLogos').hide()
   })
@@ -854,7 +971,10 @@ Core.prototype.logIn = function (x) {
   $(document).on("click",".navigateBack",function(e){
     var location = $(this).data('location')
     //console.log(location)
-    $('.appContainer').load(location+".html")
+    $('.appContainer').load(location+".html", function(){
+      core.getInAppLanguageContent()
+    })
+
     $('.navigateBack').hide()
     $('.appLogos').show()
   });
@@ -966,7 +1086,7 @@ Core.prototype.logIn = function (x) {
     // if (targetUser.indexOf("softcat") >= 0){
     //   triggerAlert('<i class="fa fa-exclamation-triangle"></i>','Sorry, you are not able to submit a deal registration','Ok','');
     // }else{
-    //   window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
+    //   window.open('http://"+core.wordpressVersion+"/reg_redirect/', '_system')
     //   $('.appContainer').show()
     //   $('.contentContainer').hide()
     // }
@@ -974,7 +1094,7 @@ Core.prototype.logIn = function (x) {
     var source = $(this).find('h2').text()
     core.logContent('dealreg',null, source);
 
-    window.open('http://velocity.apple-dev.co.uk/reg_redirect/', '_system')
+    window.open('http://"+core.wordpressVersion+"/reg_redirect/', '_system')
     $('.appContainer').show()
     $('.contentContainer').hide()
   })
@@ -1043,7 +1163,7 @@ Core.prototype.generateAuthNonce = function (username,password,keeploggedon) {
 		////console.log(username,password)
 
 		$.ajax({
-			url: "http://velocity.apple-dev.co.uk/api/get_nonce/?controller=auth&method=generate_auth_cookie",
+			url: "http://"+core.wordpressVersion+"/api/get_nonce/?controller=auth&method=generate_auth_cookie",
 			type: "GET",
 			dataType: "jsonp",
 			contentType: 'application/json',
@@ -1068,7 +1188,7 @@ Core.prototype.generateCookie = function (nonce,username,password) {
   var core = this
 
   	$.ajax({
-  		url: "http://velocity.apple-dev.co.uk/api/auth/generate_auth_cookie/?nonce="+nonce+"&username="+username+"&password="+password+"&insecure=cool",
+  		url: "http://"+core.wordpressVersion+"/api/auth/generate_auth_cookie/?nonce="+nonce+"&username="+username+"&password="+password+"&insecure=cool",
   		type: "GET",
   		dataType: "jsonp",
   		contentType: 'application/json',
@@ -1080,11 +1200,14 @@ Core.prototype.generateCookie = function (nonce,username,password) {
   				window.localStorage.setItem('loggedIn', '1');
   				window.localStorage.setItem('user', username);
   				$('.navigateBack').hide()
-        			$('.prelaunchButtons').hide()
+        	$('.prelaunchButtons').hide()
   				window.localStorage.setItem("auth", arr[0].cookie);
   				var authenticate = window.localStorage.getItem("auth")
         	var auth = core.getUserMeta(authenticate)
-  				$('.appContainer').load("home.html")
+  				$('.appContainer').load("home.html",function(){
+            //NOTE: LOADING THE MAIN MENU
+            core.getInAppLanguageContent()
+          })
   				//BDM Data load
           core.getBdmData()
           core.initPushwoosh(window.localStorage.getItem('user'), 'register')
@@ -1122,7 +1245,7 @@ Core.prototype.generateRegisterNonce = function (firstname,lastname,username,pas
   var core = this
   console.log('generating user nonce')
 	$.ajax({
-		url: "http://velocity.apple-dev.co.uk/api/get_nonce/?controller=user&method=register",
+		url: "http://"+core.wordpressVersion+"/api/get_nonce/?controller=user&method=register",
 		type: "GET",
 		dataType: "jsonp",
 		contentType: 'application/json',
@@ -1143,7 +1266,7 @@ Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,pas
   var core = this
   	//console.log(nonce)
   	$.ajax({
-  		url: "http://velocity.apple-dev.co.uk/api/user/register/?username="+username+"&display_name="+email+"&email="+email+"&nonce="+nonce+"&first_name="+firstname+"&last_name="+lastname+"&user_pass="+password+"&seconds=100",
+  		url: "http://"+core.wordpressVersion+"/api/user/register/?username="+username+"&display_name="+email+"&email="+email+"&nonce="+nonce+"&first_name="+firstname+"&last_name="+lastname+"&user_pass="+password+"&seconds=100",
   		type: "GET",
   		dataType: "jsonp",
   		contentType: 'application/json',
@@ -1185,7 +1308,7 @@ Core.prototype.createPushRegister = function (ID){
   console.log('pushing register')
 	console.log(ID)
 	$.ajax({
-		url: "http://velocity.apple-dev.co.uk/pnfw/register/?token="+ID+"&os=iOS",
+		url: "http://"+core.wordpressVersion+"/pnfw/register/?token="+ID+"&os=iOS",
 		type: "POST",
 		contentType: 'application/x-www-form-urlencoded',
 		success: function(data){
@@ -1206,7 +1329,7 @@ Core.prototype.recoverPassword = function (user){
 	//recoverYourPassword
 
 	$.ajax({
-		url: "http://velocity.apple-dev.co.uk/api/user/retrieve_password/?user_login="+user,
+		url: "http://"+core.wordpressVersion+"/api/user/retrieve_password/?user_login="+user,
 		type: "GET",
 		dataType: "jsonp",
 		contentType: 'application/json',
@@ -1225,7 +1348,7 @@ Core.prototype.getUserMeta = function (cookie){
   //Get user data from wordpress by passing it the cookie generated at login
 	var toreturn = []
 	$.ajax({
-		url: "http://velocity.apple-dev.co.uk/api/user/get_currentuserinfo/?cookie="+cookie,
+		url: "http://"+core.wordpressVersion+"/api/user/get_currentuserinfo/?cookie="+cookie,
 		type: "GET",
 		dataType: "jsonp",
 		contentType: 'application/json',
@@ -1302,23 +1425,26 @@ Core.prototype.getUserMeta = function (cookie){
 	});
 }
 
+//Store all app data in local storage.
 Core.prototype.loadCoreData = function (){
   console.log('loading Core Data')
   var core = this;
   //console.log('Load core data')
   //Run loop of all post data and store that as JSON string in localstorage
   //This will reduce load times later.
-
+  console.log('core version: '+ core.wordpressVersion)
   core.areWeConnected()
   for (i = 1; i < 10; i++) {
     (function (i) {
       $.ajax({
-        url: "http://velocity.apple-dev.co.uk/api/core/get_category_posts/?id="+i,
+        url: "http://"+core.wordpressVersion+"/api/core/get_category_posts/?id="+i,
         type: "GET",
         dataType: "jsonp",
         contentType: 'application/json',
         success: function(data){
         	////console.log(data)
+
+        	window.localStorage.removeItem('category'+i);
         	window.localStorage.setItem('category'+i, JSON.stringify(data));
         },
         error: function (data){
@@ -1330,32 +1456,36 @@ Core.prototype.loadCoreData = function (){
   }
 }
 
+//Run a connection test on velocity, if it comes back as error device is likely disconnected from internet
 Core.prototype.areWeConnected = function (){
   var core = this;
   ////console.log('are we connected?')
 	$.ajax({
-		url: "http://velocity.apple-dev.co.uk",
+		url: "http://"+core.wordpressVersion,
 		type: "GET",
 		success: function(data){
 			var arr = JSON.stringify(data)
 			//console.log('we are connected.')
 		},
 		error: function (data){
-      //navigator.notification.alert('No Internet Connection. Some content may be missing or not up to date. Please connect to the internet and try again!', null, 'Connection error', 'Ok')
+      navigator.notification.alert('No Internet Connection. Some content may be missing or not up to date. Please connect to the internet and try again!', null, 'Connection error', 'Ok')
 		}
 	});
 }
 
+//Create calendar event in device system calender
 Core.prototype.addEvent = function (startDate,endDate,title,eventLocation,notes,success,error){
   var core = this;
   window.plugins.calendar.createEventInteractively(title,eventLocation,notes,startDate,endDate,success,error);
 }
 
+//Create calendar event in device system calender
 Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,notes,success,error){
   var core = this;
   window.plugins.calendar.createEvent(title,eventLocation,notes,startDate,endDate,success,error);
 }
 
+//Log content with our ajax service
 Core.prototype.logContent = function (action,toLog,source){
   console.log('I\'m a lumberjack...')
   var fullName = window.localStorage.getItem('userName')
@@ -1437,7 +1567,7 @@ Core.prototype.logContent = function (action,toLog,source){
 
 }
 
-
+//Register / unregister or add tags with pushwoosh
 Core.prototype.initPushwoosh = function(username, action){
   var core = this
   console.log('PUSHWOOSH INIT')
@@ -1479,7 +1609,7 @@ Core.prototype.initPushwoosh = function(username, action){
     //register for push
     pushNotification.registerDevice(
       function(status) {
-        window.localStorage.setItem('hasRegisteredForNotifcations', "1")
+        window.localStorage.setItem('hasRegisteredForNotifcations', "2")
         var deviceToken = status['deviceToken'];
         console.log('registerDevice: ' + deviceToken);
         setTagsFunc(username)

@@ -1,0 +1,232 @@
+{
+  "login_button": [{
+    "gb":"Log In",
+    "fr":"S'identifier",
+    "eu":"Log In"
+  }],
+  "remember_login_details": [{
+    "gb":"Remember login details",
+    "fr":"Souvenir connexion",
+    "eu":"Remember login details"
+  }],
+  "recover_password_trigger": [{
+    "gb":"Recover your password",
+    "fr":"Récupérer mot de passe",
+    "eu":"Recover your password"
+  }],
+  "recover_password_button": [{
+    "gb":"Recover password",
+    "fr":"Récupérer mot de passe",
+    "eu":"Recover password"
+  }],
+  "create_account_trigger": [{
+    "gb":"Create an <br/>account",
+    "fr":"Créer un <br/>compte",
+    "eu":"Create an <br/>account"
+  }],
+  "create_account_button": [{
+    "gb":"Create Account",
+    "fr":"Créer compte",
+    "eu":"Create Account"
+  }],
+  "field_form_inputs": [{
+    "field_input_email":[{
+      "gb":"Business Email",
+      "fr":"Adresse e-mail",
+      "eu":"Business Email"
+    }],
+    "field_input_fname":[{
+      "gb":"First Name",
+      "fr":"Prénom",
+      "eu":"First Name"
+    }],
+    "field_input_lname":[{
+      "gb":"Last Name",
+      "fr":"Nom de famille",
+      "eu":"Last Name"
+    }],
+    "field_input_password":[{
+      "gb":"Password",
+      "fr":"Mot de passe",
+      "eu":"Password"
+    }]
+  }],
+  "menu_items": [{
+    "arrow_value":[{
+      "gb":"Arrow Value",
+      "fr":"FR Translate",
+      "eu":"Arrow Value"
+    }],
+    "current_promotions":[{
+      "gb":"Current Promotions",
+      "fr":"FR Translate",
+      "eu":"Current Promotions"
+    }],
+    "events":[{
+      "gb":"Events",
+      "fr":"FR Translate",
+      "eu":"Events"
+    }],
+    "recent_communications":[{
+      "gb":"Recent Communications",
+      "fr":"FR Translate",
+      "eu":"Recent Communications"
+    }],
+    "quick_enablement":[{
+      "gb":"Quick Enablement",
+      "fr":"FR Translate",
+      "eu":"Quick Enablement"
+    }],
+    "useful_collateral":[{
+      "gb":"Useful Collateral",
+      "fr":"FR Translate",
+      "eu":"Useful Collateral"
+    }],
+    "submit_deal_registration":[{
+      "gb":"Submit Deal Registration",
+      "fr":"FR Translate",
+      "eu":"Submit Deal Registration"
+    }],
+    "contact_us":[{
+      "gb":"Contact Us",
+      "fr":"FR Translate",
+      "eu":"Contact Us"
+    }]
+  }],
+  "settings": [{
+    "my_details":[{
+      "gb":"My Details",
+      "fr":"Mes Details",
+      "eu":"My Details"
+    }],
+    "settings_name":[{
+      "gb":"Name",
+      "fr":"Prénom",
+      "eu":"Name"
+    }],
+    "settings_email":[{
+      "gb":"Email Address",
+      "fr":"Adresse e-mail",
+      "eu":"Email Address"
+    }],
+    "my_bdm":[{
+      "gb":"My BDM",
+      "fr":"Mes BDM",
+      "eu":"My BDM"
+    }],
+    "view_profile":[{
+      "gb":"View profile",
+      "fr":"Voir le profil",
+      "eu":"View profile"
+    }],
+    "settings":[{
+      "gb":"Settings",
+      "fr":"Paramètres",
+      "eu":"Settings"
+    }],
+    "log_off":[{
+      "gb":"Log Off",
+      "fr":"Se déconnecter",
+      "eu":"Log Off"
+    }],
+    "help":[{
+      "gb":"Help",
+      "fr":"Help",
+      "eu":"Help"
+    }],
+    "app_not_working":[{
+      "gb":"App not working?",
+      "fr":"App ne fonctionne?",
+      "eu":"App not working?"
+    }],
+    "contact_us":[{
+      "gb":"Contact us",
+      "fr":"Contactez nous",
+      "eu":"Contact us"
+    }]
+  }],
+  "arrow_elite": [{
+    "contact_bdm":[{
+      "gb":"Contact your NetApp BDM",
+      "fr":"Contactez votre BDM NetApp",
+      "eu":"Contact your NetApp BDM"
+    }]
+  }],
+  "inapp_content":[{
+    "visit_website":[{
+      "gb":"Visit Website",
+      "fr":"Visitez le site Web",
+      "eu":"Visit Website"
+    }],
+    "add_to_calendar":[{
+      "gb":"Add to Calendar",
+      "fr":"Ajouter au calendrier",
+      "eu":"Add to Calendar"
+    }],
+    "register":[{
+      "gb":"Register",
+      "fr":"Registre",
+      "eu":"Register"
+    }],
+    "events_previous":[{
+      "gb":"Previous",
+      "fr":"Précédent",
+      "eu":"Previous"
+    }],
+    "events_next":[{
+      "gb":"Next",
+      "fr":"Prochain",
+      "eu":"Next"
+    }],
+    "calendar_week":[{
+      "gb":["Su", "M", "T", "W", "T", "F", "S"],
+      "fr":["Su", "M", "T", "W", "T", "F", "S"],
+      "eu":["Su", "M", "T", "W", "T", "F", "S"]
+    }],
+    "calendar_month":[{
+      "gb":[ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
+      "fr":[ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
+      "eu":[ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+    }],
+    "info":[{
+      "gb":"Info",
+      "fr":"FR Info",
+      "eu":"Info"
+    }],
+    "location":[{
+      "gb":"Location",
+      "fr":"FR Location",
+      "eu":"Location"
+    }],
+    "case_studies":[{
+      "gb":"Case Studies",
+      "fr":"Études de cas",
+      "eu":"Case Studies"
+    }],
+    "data_sheets":[{
+      "gb":"Data Sheets",
+      "fr":"Études de cas",
+      "eu":"Data Sheets"
+    }],
+    "white_papers":[{
+      "gb":"White Papers",
+      "fr":"Papiers blanc",
+      "eu":"White Papers"
+    }],
+    "my_arrow_contacts":[{
+      "gb":"My Arrow Contacts",
+      "fr":"FR My Arrow Contacts",
+      "eu":"My Arrow Contacts"
+    }],
+    "my_netapp_contacts":[{
+      "gb":"My NetApp Contacts",
+      "fr":"FR My NetApp Contacts",
+      "eu":"My NetApp Contacts"
+    }],
+    "my_bdm_contact":[{
+      "gb":"My BDM Contact",
+      "fr":"FR My BDM Contact",
+      "eu":"My BDM Contact"
+    }]
+  }]
+}
