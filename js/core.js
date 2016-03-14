@@ -1025,10 +1025,9 @@ Core.prototype.logIn = function (x) {
 
   //Settings Button
   $(document).on("click",".settings a",function(e){
-    //core.logContent('settings',null, null);
-
     $('.settingsMenu').toggle();
     $('.myBdmMenu').hide()
+    core.logContent('settings',null, null);
   })
 
   $(document).on("click",".loadMyBdm",function(e){
@@ -1099,19 +1098,18 @@ Core.prototype.logIn = function (x) {
   })
 
   $(document).on("click",".twitter",function(e){
-    core.logContent('twitter',null, null);
-
     window.open('https://twitter.com/arrowecs_netapp', '_system')
+    core.logContent('twitter',null, null);
   })
 
   $(document).on("click",".facebook",function(e){
-    core.logContent('facebook',null, null);
     window.open('https://www.facebook.com/arrowfiveyearsout', '_system')
+    core.logContent('facebook',null, null);
   })
 
   $(document).on("click",".linkedIn",function(e){
-    core.logContent('linkedin',null, null);
     window.open('https://www.linkedin.com/company/arrow-ecs-united-kingdom', '_system')
+    core.logContent('linkedin',null, null);
   })
 
   //Log Off
