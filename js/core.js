@@ -62,7 +62,7 @@ function Core(){
   }else{
     console.log('user not registered, registering...')
     window.localStorage.clear();
-    //core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
   }
 
   // console.log('Clearing Badges')
@@ -1209,7 +1209,7 @@ Core.prototype.generateCookie = function (nonce,username,password) {
           })
   				//BDM Data load
           core.getBdmData()
-          //core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+          core.initPushwoosh(window.localStorage.getItem('user'), 'register')
 
   			}else if (arr[0].status == 'error'){
   				//unregisterDevice() -- DOESN'T WORK PGB
