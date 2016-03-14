@@ -1486,82 +1486,82 @@ Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,
 
 //Log content with our ajax service
 Core.prototype.logContent = function (action,toLog,source){
-  console.log('I\'m a lumberjack...')
-  var fullName = window.localStorage.getItem('userName')
-  var empty = false
-  fullName = fullName.split(' ');
-  console.log(source)
-  // console.log(action) //Action to log
-
-  var id    = '21';                                         // ID 21 assigned to NetHappy in DB // REQUIRED
-  var fn    = fullName[0];                                  //First Name
-  var ln    = fullName[1];                                  //Last Name
-  var em    = window.localStorage.getItem('email');         //Email Address
-  var ph    = null;                                         //Phone Number
-  var rec   = '';                                           //Data
-
-  if (action == 'external'){
-    rec = 'External Website '+toLog+' opened from tab '+source
-  }else if (action == 'findoutmore'){
-    rec = 'Find Out More clicked on '+source
-  }else if (action == 'addtocalendar'){
-    rec = 'Event added to calender: '+source
-  }else if (action == 'registerforevent'){
-    rec = 'Register for event Clicked: '+source
-  }else if (action == 'downloadcollateral'){
-    rec = 'Collateral: '+toLog+' downloaded on '+source
-  }else if (action == 'sharedcollateral'){
-    rec = 'Collateral: '+toLog+' shared on '+source
-  }else if (action == 'dealreg'){
-    rec = 'User clicked '+source
-  }else if (action == 'viewprofile'){
-    rec = 'User viewed their BDM profile '+source
-  }else if (action == 'twitter'){
-    rec = 'User clicked Twitter share';
-  }else if (action == 'facebook'){
-    rec = 'User clicked facebook share';
-  }else if (action == 'linkedin'){
-    rec = 'User clicked Linked-In share';
-  }else if (action == 'logoff'){
-    rec = 'User Logged off';
-  }else if (action == 'communicationsExternal'){
-    rec = 'Communications External Link: '+source
-  }else if (action == 'dateAnchor'){
-    rec = 'Event opened: '+source
-  }else if (action == 'settings'){
-    rec = 'Opened settings';
-  }else if (action == 'anchor'){
-    if (source == ''){
-      //If there's nothing to take not of, don't log it.
-      empty = true;
-    }else{
-      rec = source+' clicked';
-    }
-  }else{
-
-  }
-
-  var dataStr = 'id='+id+'&fn='+fn+'&ln='+ln+'&em='+em+'&ph='+ph+'&rec='+rec
-
-  if (empty == false){
-    //console.log(dataStr)
-    $.ajax({
-      url: "http://landingpageservice.apple-dev.co.uk/Ajax/ghRecordStuff.ashx",
-      type: "GET",
-      data: dataStr,
-      dataType: "jsonp",
-      contentType: 'application/json',
-      success: function(data){
-        //console.log(data)
-      },
-      error: function (data){
-        console.log('Error ' + data);
-      }
-    });
-  }else{
-
-  }
-
+  // console.log('I\'m a lumberjack...')
+  // var fullName = window.localStorage.getItem('userName')
+  // var empty = false
+  // fullName = fullName.split(' ');
+  // console.log(source)
+  // // console.log(action) //Action to log
+  //
+  // var id    = '21';                                         // ID 21 assigned to NetHappy in DB // REQUIRED
+  // var fn    = fullName[0];                                  //First Name
+  // var ln    = fullName[1];                                  //Last Name
+  // var em    = window.localStorage.getItem('email');         //Email Address
+  // var ph    = null;                                         //Phone Number
+  // var rec   = '';                                           //Data
+  //
+  // if (action == 'external'){
+  //   rec = 'External Website '+toLog+' opened from tab '+source
+  // }else if (action == 'findoutmore'){
+  //   rec = 'Find Out More clicked on '+source
+  // }else if (action == 'addtocalendar'){
+  //   rec = 'Event added to calender: '+source
+  // }else if (action == 'registerforevent'){
+  //   rec = 'Register for event Clicked: '+source
+  // }else if (action == 'downloadcollateral'){
+  //   rec = 'Collateral: '+toLog+' downloaded on '+source
+  // }else if (action == 'sharedcollateral'){
+  //   rec = 'Collateral: '+toLog+' shared on '+source
+  // }else if (action == 'dealreg'){
+  //   rec = 'User clicked '+source
+  // }else if (action == 'viewprofile'){
+  //   rec = 'User viewed their BDM profile '+source
+  // }else if (action == 'twitter'){
+  //   rec = 'User clicked Twitter share';
+  // }else if (action == 'facebook'){
+  //   rec = 'User clicked facebook share';
+  // }else if (action == 'linkedin'){
+  //   rec = 'User clicked Linked-In share';
+  // }else if (action == 'logoff'){
+  //   rec = 'User Logged off';
+  // }else if (action == 'communicationsExternal'){
+  //   rec = 'Communications External Link: '+source
+  // }else if (action == 'dateAnchor'){
+  //   rec = 'Event opened: '+source
+  // }else if (action == 'settings'){
+  //   rec = 'Opened settings';
+  // }else if (action == 'anchor'){
+  //   if (source == ''){
+  //     //If there's nothing to take not of, don't log it.
+  //     empty = true;
+  //   }else{
+  //     rec = source+' clicked';
+  //   }
+  // }else{
+  //
+  // }
+  //
+  // var dataStr = 'id='+id+'&fn='+fn+'&ln='+ln+'&em='+em+'&ph='+ph+'&rec='+rec
+  //
+  // if (empty == false){
+  //   //console.log(dataStr)
+  //   $.ajax({
+  //     url: "http://landingpageservice.apple-dev.co.uk/Ajax/ghRecordStuff.ashx",
+  //     type: "GET",
+  //     data: dataStr,
+  //     dataType: "jsonp",
+  //     contentType: 'application/json',
+  //     success: function(data){
+  //       //console.log(data)
+  //     },
+  //     error: function (data){
+  //       console.log('Error ' + data);
+  //     }
+  //   });
+  // }else{
+  //
+  // }
+  //
 
 
 }
@@ -1581,6 +1581,21 @@ Core.prototype.initPushwoosh = function(username, action){
   });
 
   console.log('1584')
+
+  //register for push
+  pushNotification.registerDevice(
+    function(status) {
+      window.localStorage.setItem('reg', "2")
+      var deviceToken = status['deviceToken'];
+      console.log('registerDevice: ' + deviceToken);
+      setTagsFunc(username)
+    },
+    function(status) {
+      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+      console.log('failed to register : ' + JSON.stringify(status));
+      alert(JSON.stringify(['failed to register ', status]));
+    }
+  );
 
   function setTagsFunc(username){
     console.log('Attempting tag setting of username:'+username)
