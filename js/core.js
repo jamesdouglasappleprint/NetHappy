@@ -1025,7 +1025,6 @@ Core.prototype.logIn = function (x) {
 
   //Settings Button
   $(document).on("click",".settings a",function(e){
-    e.preventDefault()
     core.logContent('settings',null, null);
 
     $('.settingsMenu').toggle();
