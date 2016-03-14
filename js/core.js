@@ -57,7 +57,7 @@ function Core(){
   //a seperate Pushwoosh account. version 3 of the app can remove this, but probably
   //worth keeping it for the moment.
 
-  if (window.localStorage.getItem('hasRegisteredForNotifcations') == "2"){
+  if (window.localStorage.getItem('reg') == "2"){
 
   }else{
     console.log('user not registered, registering...')
@@ -1609,7 +1609,7 @@ Core.prototype.initPushwoosh = function(username, action){
     //register for push
     pushNotification.registerDevice(
       function(status) {
-        window.localStorage.setItem('hasRegisteredForNotifcations', "2")
+        window.localStorage.setItem('reg', "2")
         var deviceToken = status['deviceToken'];
         console.log('registerDevice: ' + deviceToken);
         setTagsFunc(username)
