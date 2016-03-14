@@ -1575,11 +1575,13 @@ Core.prototype.initPushwoosh = function(username, action){
   //navigator.notification.alert('Success!', null, 'Pushwoosh CORE Initialised', 'ok')
 
   var pushNotification = cordova.require("com.pushwoosh.plugins.pushwoosh.PushNotification");
+  console.log('1578')
 
   pushNotification.onDeviceReady({
     projectid: "888511028179", // GOOGLE_PROJECT_ID
     pw_appid : "5093D-320F3" // PUSHWOOSH_APP_ID
   });
+  console.log('1584')
 
   function setTagsFunc(username){
     console.log('Attempting tag setting of username:'+username)
@@ -1604,42 +1606,42 @@ Core.prototype.initPushwoosh = function(username, action){
     );
   }//end func
 
-  pushNotification.registerDevice(
-    function(status) {
-      window.localStorage.setItem('reg', "2")
-      var deviceToken = status['deviceToken'];
-      console.log('registerDevice: ' + deviceToken);
-      setTagsFunc(username)
-    },
-    function(status) {
-      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-      console.log('failed to register : ' + JSON.stringify(status));
-      alert(JSON.stringify(['failed to register ', status]));
-    }
-  );
-
-  //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
-  document.addEventListener('push-notification', function(event) {
-    var notification = event.notification;
-    console.log('push message recieved');
-
-    // var title = event.notification.title;
-    // var userData = event.notification.userdata;
-    //
-    // if(typeof(userData) != "undefined") {
-    //  console.warn('user data: ' + JSON.stringify(userData));
-    // }
-    //
-    // alert(title);
-
-    navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
-    pushNotification.setApplicationIconBadgeNumber(0);
-
-  });
   if (action == 'register'){
     console.log('attempting register')
-    //register for push
 
+    //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
+    document.addEventListener('push-notification', function(event) {
+      var notification = event.notification;
+      console.log('push message recieved');
+
+      // var title = event.notification.title;
+      // var userData = event.notification.userdata;
+      //
+      // if(typeof(userData) != "undefined") {
+      //  console.warn('user data: ' + JSON.stringify(userData));
+      // }
+      //
+      // alert(title);
+
+      navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
+      pushNotification.setApplicationIconBadgeNumber(0);
+
+    });
+
+    //register for push
+    pushNotification.registerDevice(
+      function(status) {
+        window.localStorage.setItem('reg', "2")
+        var deviceToken = status['deviceToken'];
+        console.log('registerDevice: ' + deviceToken);
+        setTagsFunc(username)
+      },
+      function(status) {
+        //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+        console.log('failed to register : ' + JSON.stringify(status));
+        alert(JSON.stringify(['failed to register ', status]));
+      }
+    );
 
   }else if (action == 'unregister'){
     console.log('Unregistering Device')
