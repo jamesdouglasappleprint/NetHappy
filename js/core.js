@@ -1091,9 +1091,9 @@ Core.prototype.logIn = function (x) {
     // }
 
     var source = $(this).find('h2').text()
-    core.logContent('dealreg',null, source);
+    //core.logContent('dealreg',null, source);
 
-    window.open('http://"+core.wordpressVersion+"/reg_redirect/', '_system')
+    window.open('http://'+core.wordpressVersion+'/reg_redirect/', '_system')
     $('.appContainer').show()
     $('.contentContainer').hide()
   })
