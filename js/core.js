@@ -1103,7 +1103,7 @@ Core.prototype.logIn = function (x) {
   })
 
   $(document).on("click",".facebook",function(e){
-    window.open('http://www.facebook.com/arrowfiveyearsout', '_system')
+    window.open('https://www.facebook.com/arrowfiveyearsout', '_system')
     core.logContent('facebook',null, null);
   })
 
