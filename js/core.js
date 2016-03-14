@@ -1572,7 +1572,7 @@ Core.prototype.initPushwoosh = function(username, action){
   console.log('PUSHWOOSH INIT')
   console.log(action, username)
 
-  var pushNotification = cordova.require("com.pushwoosh.plugins.pushwoosh.PushNotification");
+  var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
   console.log('1578')
 
   pushNotification.onDeviceReady({

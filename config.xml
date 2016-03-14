@@ -16,7 +16,6 @@
   <access origin="*"/> <!-- allow all pages, use for development -->
   <access origin="*.pushwoosh.com"/> <!-- allow pushwoosh service -->
   <access origin="velocity.apple-dev.co.uk"/>
-  <access origin="*.apple-dev.co.uk"/>
   <access origin="*.phonegap.com"/> <!-- allow phonegap service -->
 
   <!-- enable features -->
