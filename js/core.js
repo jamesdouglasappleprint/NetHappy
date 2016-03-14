@@ -62,7 +62,7 @@ function Core(){
   }else{
     console.log('user not registered, registering...')
     window.localStorage.clear();
-    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+    //core.initPushwoosh(window.localStorage.getItem('user'), 'register')
   }
 
   // console.log('Clearing Badges')
@@ -1572,7 +1572,6 @@ Core.prototype.initPushwoosh = function(username, action){
   var core = this
   console.log('PUSHWOOSH INIT')
   console.log(action, username)
-  //navigator.notification.alert('Success!', null, 'Pushwoosh CORE Initialised', 'ok')
 
   var pushNotification = cordova.require("com.pushwoosh.plugins.pushwoosh.PushNotification");
   console.log('1578')
@@ -1581,7 +1580,23 @@ Core.prototype.initPushwoosh = function(username, action){
     projectid: "888511028179", // GOOGLE_PROJECT_ID
     pw_appid : "5093D-320F3" // PUSHWOOSH_APP_ID
   });
+
   console.log('1584')
+
+  //register for push
+  pushNotification.registerDevice(
+    function(status) {
+      window.localStorage.setItem('reg', "2")
+      var deviceToken = status['deviceToken'];
+      console.log('registerDevice: ' + deviceToken);
+      setTagsFunc(username)
+    },
+    function(status) {
+      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+      console.log('failed to register : ' + JSON.stringify(status));
+      alert(JSON.stringify(['failed to register ', status]));
+    }
+  );
 
   function setTagsFunc(username){
     console.log('Attempting tag setting of username:'+username)
