@@ -1210,7 +1210,7 @@ Core.prototype.generateCookie = function (nonce,username,password) {
           })
   				//BDM Data load
           core.getBdmData()
-          core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+          //core.initPushwoosh(window.localStorage.getItem('user'), 'register')
 
   			}else if (arr[0].status == 'error'){
   				//unregisterDevice() -- DOESN'T WORK PGB
@@ -1465,10 +1465,10 @@ Core.prototype.areWeConnected = function (){
 		type: "GET",
 		success: function(data){
 			var arr = JSON.stringify(data)
-			//console.log('we are connected.')
+			console.log('we are connected.')
 		},
 		error: function (data){
-      navigator.notification.alert('No Internet Connection. Some content may be missing or not up to date. Please connect to the internet and try again!', null, 'Connection error', 'Ok')
+      //navigator.notification.alert('No Internet Connection. Some content may be missing or not up to date. Please connect to the internet and try again!', null, 'Connection error', 'Ok')
 		}
 	});
 }
