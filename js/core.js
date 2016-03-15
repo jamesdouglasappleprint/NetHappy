@@ -1567,8 +1567,8 @@ Core.prototype.logContent = function (action,toLog,source){
 //Register / unregister or add tags with pushwoosh
 Core.prototype.initPushwoosh = function(username, action){
   var core = this
-  console.log('PUSHWOOSH INIT')
-  console.log(action, username)
+  console.log('PUSHWOOSH INIT'+'_'+action+'_'+username)
+  console.log()
 
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
 
