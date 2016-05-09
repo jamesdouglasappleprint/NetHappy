@@ -21,10 +21,6 @@
 //Call unregister
 //core.initPushwoosh(null, null, false, true)
 
-//NOTE: I'm really sorry, future other developer trying to edit this code... The app was never designed to have other language
-//regions added, and the bodges i've had to do to do it are horrible. I realise this makes the code VERY hard to read...
-//sorry...
-
 function Core(){
   console.log('Core Loaded');
   var core = this;
@@ -61,8 +57,12 @@ function Core(){
   //a seperate Pushwoosh account. version 3 of the app can remove this, but probably
   //worth keeping it for the moment.
 
+  //Also useful because it forces a new register for pushwoosh, if the user left the app
+  //open and for some reason it doesn't auto close it after an update.
+  //This flag is set in the pushwoosh register at the bottom of this document.
+
   if (core.debug == 0){
-    if (window.localStorage.getItem('reg') == "2"){
+    if (window.localStorage.getItem('reg') == "4"){
 
     }else{
       console.log('user not registered, registering...')
@@ -175,6 +175,9 @@ Core.prototype.getInAppLanguageContent = function(language){
   $('.languageSelector').val(language)
   $('.menuFlag').removeClass().addClass('flag-icon menuFlag flag-icon-'+language)
 
+  //NOTE:: not sure we actually need the next bit since menu items are based off categories in the amended app, so the data
+  //is pulled from wordpress and not the json file...
+
   //LEVEL 1 MENU ITEMS
   // $('#menuItemArrowValue').html(core.languageContent.menu_items[0].arrow_value[0][inAppLanguage])
   // $('#menuItemCurrentPromotions').html(core.languageContent.menu_items[0].current_promotions[0][inAppLanguage])
@@ -205,9 +208,7 @@ Core.prototype.getInAppLanguageContent = function(language){
 Core.prototype.selectLanguage = function (lang) {
   var core = this;
   //NOTE: set the global URL of the app to be the specific language url
-  //This will use a DIFFERENT version of wordpress for each language
-  //I can't think of another way of doing this, not while giving regional admins
-  //specific access to only their content.
+  //This will use a DIFFERENT version of wordpress for UK and ROW
 
   $(document).on("change",".languageSelector",function(e){
     core.loadCoreData();
@@ -1312,7 +1313,7 @@ Core.prototype.logIn = function (x) {
     var location = $(this).data('location')
     //console.log(location)
     $('.appContainer').load(location+".html", function(){
-      core.getInAppLanguageContent()
+      core.getInAppLanguageContent(localStorage.getItem('language'))
     })
 
     $('.navigateBack').hide()
@@ -1986,7 +1987,7 @@ Core.prototype.initPushwoosh = function(username, action){
     //register for push
     pushNotification.registerDevice(
       function(status) {
-        window.localStorage.setItem('reg', "2")
+        window.localStorage.setItem('reg', "4")
         var deviceToken = status['deviceToken'];
         console.log('registerDevice: ' + deviceToken);
         var appLang = localStorage.getItem('language')

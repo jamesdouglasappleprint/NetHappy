@@ -154,6 +154,7 @@ select.languageSelector {
   margin-top: 10px;
   font-size: 18px;
   color: #fff;
+  -webkit-appearance: none;
   /*display:none;*/
 }
 form>.flag-icon {
