@@ -51,48 +51,6 @@
       "eu":"Password"
     }]
   }],
-  "menu_items": [{
-    "arrow_value":[{
-      "gb":"Arrow Value",
-      "fr":"FR Translate",
-      "eu":"Arrow Value"
-    }],
-    "current_promotions":[{
-      "gb":"Current Promotions",
-      "fr":"FR Translate",
-      "eu":"Current Promotions"
-    }],
-    "events":[{
-      "gb":"Events",
-      "fr":"FR Translate",
-      "eu":"Events"
-    }],
-    "recent_communications":[{
-      "gb":"Recent Communications",
-      "fr":"FR Translate",
-      "eu":"Recent Communications"
-    }],
-    "quick_enablement":[{
-      "gb":"Quick Enablement",
-      "fr":"FR Translate",
-      "eu":"Quick Enablement"
-    }],
-    "useful_collateral":[{
-      "gb":"Useful Collateral",
-      "fr":"FR Translate",
-      "eu":"Useful Collateral"
-    }],
-    "submit_deal_registration":[{
-      "gb":"Submit Deal Registration",
-      "fr":"FR Translate",
-      "eu":"Submit Deal Registration"
-    }],
-    "contact_us":[{
-      "gb":"Contact Us",
-      "fr":"FR Translate",
-      "eu":"Contact Us"
-    }]
-  }],
   "settings": [{
     "my_details":[{
       "gb":"My Details",
@@ -150,6 +108,13 @@
       "gb":"Contact your NetApp BDM",
       "fr":"Contactez votre BDM NetApp",
       "eu":"Contact your NetApp BDM"
+    }]
+  }],
+  "download": [{
+    "download":[{
+      "gb":"Download",
+      "fr":"Download",
+      "eu":"Download"
     }]
   }],
   "inapp_content":[{

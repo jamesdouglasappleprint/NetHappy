@@ -21,11 +21,16 @@
 //Call unregister
 //core.initPushwoosh(null, null, false, true)
 
+//NOTE: I'm really sorry, future other developer trying to edit this code... The app was never designed to have other language
+//regions added, and the bodges i've had to do to do it are horrible. I realise this makes the code VERY hard to read...
+//sorry...
+
 function Core(){
   console.log('Core Loaded');
   var core = this;
 
   core.languageContent = []
+  core.debug = 1; //if 1, disable cordova functionality
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -38,7 +43,7 @@ function Core(){
     core.appCoreClickEvents();
     core.loadCoreData();
 
-    core.getInAppLanguageContent()
+    core.getInAppLanguageContent('gb')
     core.selectLanguage()
 
     //If the language was set from a previous load, keep it set to that language
@@ -48,7 +53,6 @@ function Core(){
 
     }
 
-
   });
 
   //Run a check to see if a user has already registered for notifications
@@ -57,13 +61,18 @@ function Core(){
   //a seperate Pushwoosh account. version 3 of the app can remove this, but probably
   //worth keeping it for the moment.
 
-  if (window.localStorage.getItem('reg') == "2"){
+  if (core.debug == 0){
+    if (window.localStorage.getItem('reg') == "2"){
 
+    }else{
+      console.log('user not registered, registering...')
+      window.localStorage.clear();
+      core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+    }
   }else{
-    console.log('user not registered, registering...')
-    window.localStorage.clear();
-    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+
   }
+
 
   // console.log('Clearing Badges')
   // window.plugin.notification.badge.clear(); //clear badge notifications
@@ -72,28 +81,29 @@ function Core(){
 
 Core.prototype.reassignCoreVersion = function(){
   var core = this
+
+  //This switches which version of wordpress we're looking at.
+  //UK has it's own wordpress, whereas every other country is listed under netappyeu with custom post types.
+
   //uk, fr, eu
-  if (window.localStorage.getItem('language') == 'gb'){
+  if (localStorage.getItem('language') == 'gb'){
     core.wordpressVersion = 'velocity.apple-dev.co.uk'
-  }else if(window.localStorage.getItem('language') == 'fr'){
-    core.wordpressVersion = 'netappyfr.apple-dev.co.uk'
-  }else if (window.localStorage.getItem('language') == 'eu'){
-    core.wordpressVersion = 'netappyeu.apple-dev.co.uk'
   }else{
-    core.wordpressVersion = 'velocity.apple-dev.co.uk'
+    core.wordpressVersion = 'netappyeu.apple-dev.co.uk'
   }
+  core.loadCoreData();
 }
 
 //Initialiser
 Core.prototype.init = function (x) {
+  console.warn('++++ init firing ++++')
   var core = this
 
   var value = window.localStorage.getItem("stayloggedon")
 
   if( value == 1){
-    $('.appContainer').load("home.html",function(){
-      core.getInAppLanguageContent()
-    })
+
+    core.loadLanguageGrandparentMenu()
 
     $('.navigateBack').hide()
     $('.prelaunchButtons').hide()
@@ -108,52 +118,86 @@ Core.prototype.init = function (x) {
     $('.socialStrip').hide()
     $('.appContainer').load("login.html", function(){
       console.log('loading')
-      core.getInAppLanguageContent()
+      core.getInAppLanguageContent(localStorage.getItem('language'))
     })
   }
 
 };
 
-//Get JSON containing all in APP text
-Core.prototype.getInAppLanguageContent = function(){
+//Reloads the home menu with content based on region and resizes the list elements depending on the total number of them
+Core.prototype.loadLanguageGrandparentMenu = function(){
   var core = this
+
+  if (localStorage.getItem('language') == 'fr'){
+    $('.appContainer').load("home_FR.html",function(){
+      core.getInAppLanguageContent(localStorage.getItem('language'))
+      var grandParentMenu = $('.listGrandParent').length
+      //console.log(grandParentMenu)
+      var grandParentMenuMaths = 100 / grandParentMenu
+      $('.sections li').css({height:grandParentMenuMaths+'%'})
+    })
+  }else{
+    $('.appContainer').load("home.html", function(){
+      core.getInAppLanguageContent(localStorage.getItem('language'))
+      var grandParentMenu = $('.listGrandParent').length
+      console.log(grandParentMenu)
+      var grandParentMenuMaths = 100 / grandParentMenu
+      $('.sections li').css({height:grandParentMenuMaths+'%'})
+    })
+  }
+}
+
+//Get JSON containing all in APP text
+Core.prototype.getInAppLanguageContent = function(language){
+  var core = this
+  console.warn(language)
+
+  var inAppLanguage = ''
+
+  if (language == 'gb' || language == 'fr'){
+    //If france or UK, set manual inapp language
+    inAppLanguage = language
+  }else{
+    //If any other country, set it to default EU (which is english in the inapplanguage JSON)
+    inAppLanguage = 'eu'
+  }
 
   //NOTE:: Update all hardcoded content NOT pulled from Wordpress is toggled here for its language.
   //Yes, this is a crazy way of doing this - but this is what happens when you add functionality in
   //to an app after it's built that you weren't intending on.
 
-  $('.remLogDeet').html(core.languageContent.remember_login_details[0][window.localStorage.getItem('language')])
-  $('.passwordRecover').html(core.languageContent.recover_password_trigger[0][window.localStorage.getItem('language')])
-  $('.createAccount').html(core.languageContent.create_account_trigger[0][window.localStorage.getItem('language')])
-  $('.submitLoginFormData').html(core.languageContent.login_button[0][window.localStorage.getItem('language')])
-  $('#userName').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_email[0][window.localStorage.getItem('language')])
-  $('#password').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_password[0][window.localStorage.getItem('language')])
-  $('.languageSelector').val(window.localStorage.getItem('language'))
-  $('.menuFlag').removeClass('flag-icon-gb').addClass('flag-icon-'+window.localStorage.getItem('language'))
+  $('.remLogDeet').html(core.languageContent.remember_login_details[0][inAppLanguage])
+  $('.passwordRecover').html(core.languageContent.recover_password_trigger[0][inAppLanguage])
+  $('.createAccount').html(core.languageContent.create_account_trigger[0][inAppLanguage])
+  $('.submitLoginFormData').html(core.languageContent.login_button[0][inAppLanguage])
+  $('#userName').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_email[0][inAppLanguage])
+  $('#password').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_password[0][inAppLanguage])
+  $('.languageSelector').val(language)
+  $('.menuFlag').removeClass().addClass('flag-icon menuFlag flag-icon-'+language)
 
   //LEVEL 1 MENU ITEMS
-  $('#menuItemArrowValue').html(core.languageContent.menu_items[0].arrow_value[0][window.localStorage.getItem('language')])
-  $('#menuItemCurrentPromotions').html(core.languageContent.menu_items[0].current_promotions[0][window.localStorage.getItem('language')])
-  $('#menuItemEvents').html(core.languageContent.menu_items[0].events[0][window.localStorage.getItem('language')])
-  $('#menuItemRecentCommunications').html(core.languageContent.menu_items[0].recent_communications[0][window.localStorage.getItem('language')])
-  $('#menuItemQuickEnablement').html(core.languageContent.menu_items[0].quick_enablement[0][window.localStorage.getItem('language')])
-  $('#menuItemUsefulCollateral').html(core.languageContent.menu_items[0].useful_collateral[0][window.localStorage.getItem('language')])
-  $('#menuItemSubmitDealRegistration').html(core.languageContent.menu_items[0].submit_deal_registration[0][window.localStorage.getItem('language')])
-  $('#menuItemContactUs').html(core.languageContent.menu_items[0].contact_us[0][window.localStorage.getItem('language')])
+  // $('#menuItemArrowValue').html(core.languageContent.menu_items[0].arrow_value[0][inAppLanguage])
+  // $('#menuItemCurrentPromotions').html(core.languageContent.menu_items[0].current_promotions[0][inAppLanguage])
+  // $('#menuItemEvents').html(core.languageContent.menu_items[0].events[0][inAppLanguage])
+  // $('#menuItemRecentCommunications').html(core.languageContent.menu_items[0].recent_communications[0][inAppLanguage])
+  // $('#menuItemQuickEnablement').html(core.languageContent.menu_items[0].quick_enablement[0][inAppLanguage])
+  // $('#menuItemUsefulCollateral').html(core.languageContent.menu_items[0].useful_collateral[0][inAppLanguage])
+  // $('#menuItemSubmitDealRegistration').html(core.languageContent.menu_items[0].submit_deal_registration[0][inAppLanguage])
+  // $('#menuItemContactUs').html(core.languageContent.menu_items[0].contact_us[0][inAppLanguage])
 
   //Settings
-  $('#settingsMyDetails').html(core.languageContent.settings[0].my_details[0][window.localStorage.getItem('language')])
-  $('#settingsName i').html(core.languageContent.settings[0].settings_name[0][window.localStorage.getItem('language')])
-  $('#settingsBDMName i').html(core.languageContent.settings[0].settings_name[0][window.localStorage.getItem('language')])
-  $('#settingsEmail i').html(core.languageContent.settings[0].settings_email[0][window.localStorage.getItem('language')])
-  $('#settingsBDMEmail i').html(core.languageContent.settings[0].settings_email[0][window.localStorage.getItem('language')])
-  $('#settingsMyBDM').html(core.languageContent.settings[0].my_bdm[0][window.localStorage.getItem('language')])
-  $('#settingsBDMProfile').html(core.languageContent.settings[0].view_profile[0][window.localStorage.getItem('language')])
-  $('#settingsSettings').html(core.languageContent.settings[0].settings[0][window.localStorage.getItem('language')])
-  $('#settingsLogOff').html(core.languageContent.settings[0].log_off[0][window.localStorage.getItem('language')])
-  $('#settingsHelp').html(core.languageContent.settings[0].help[0][window.localStorage.getItem('language')])
-  $('.appError i').html(core.languageContent.settings[0].app_not_working[0][window.localStorage.getItem('language')])
-  $('#settingsContactUs').html(core.languageContent.settings[0].contact_us[0][window.localStorage.getItem('language')])
+  $('#settingsMyDetails').html(core.languageContent.settings[0].my_details[0][inAppLanguage])
+  $('#settingsName i').html(core.languageContent.settings[0].settings_name[0][inAppLanguage])
+  $('#settingsBDMName i').html(core.languageContent.settings[0].settings_name[0][inAppLanguage])
+  $('#settingsEmail i').html(core.languageContent.settings[0].settings_email[0][inAppLanguage])
+  $('#settingsBDMEmail i').html(core.languageContent.settings[0].settings_email[0][inAppLanguage])
+  $('#settingsMyBDM').html(core.languageContent.settings[0].my_bdm[0][inAppLanguage])
+  $('#settingsBDMProfile').html(core.languageContent.settings[0].view_profile[0][inAppLanguage])
+  $('#settingsSettings').html(core.languageContent.settings[0].settings[0][inAppLanguage])
+  $('#settingsLogOff').html(core.languageContent.settings[0].log_off[0][inAppLanguage])
+  $('#settingsHelp').html(core.languageContent.settings[0].help[0][inAppLanguage])
+  $('.appError i').html(core.languageContent.settings[0].app_not_working[0][inAppLanguage])
+  $('#settingsContactUs').html(core.languageContent.settings[0].contact_us[0][inAppLanguage])
 
 
 }
@@ -168,12 +212,17 @@ Core.prototype.selectLanguage = function (lang) {
   $(document).on("change",".languageSelector",function(e){
     core.loadCoreData();
     var l = $(this).val()
+    console.log(l)
+
+    $('.menuFlag').removeClass().addClass('flag-icon menuFlag flag-icon-'+l)
+
     window.localStorage.setItem('language', l)
+
     core.reassignCoreVersion()
 
-    $('.menuFlag').removeClass('flag-icon-gb').removeClass('flag-icon-fr').removeClass('flag-icon-eu').addClass('flag-icon-'+l)
+
     //set local storage of language version
-    core.getInAppLanguageContent()
+    core.getInAppLanguageContent(l)
 
 
   })
@@ -183,6 +232,7 @@ Core.prototype.GoogleMap = function () {
   var core = this;
 
   this.initialize = function(coords){
+    console.log(coords)
     var splitCoord = coords.split(',')
     var firstCoord = splitCoord[0]
     var secondCoord = splitCoord[1]
@@ -204,6 +254,7 @@ Core.prototype.GoogleMap = function () {
   }
 }
 
+//Basically anything that happens on a single article
 Core.prototype.appCoreClickEvents = function () {
   var core = this;
 
@@ -337,6 +388,7 @@ Core.prototype.appCoreClickEvents = function () {
       var download = data.posts[postRef].custom_fields.Download[0]
     }else{
       $('.downloadItem').hide()
+      var download = ''
     }
     ///////////////
     if (data.posts[postRef].custom_fields.Event != undefined){
@@ -401,6 +453,131 @@ Core.prototype.appCoreClickEvents = function () {
     }else{
       var whitepapers = ''
     }
+    ///////////////
+    if (localStorage.getItem('language') == 'fr'){
+      //FR if attachment
+
+      //If theres a post attachment, work out if it's just an image attached to the header - if not, add a button at the end of the post to download it
+      if (data.posts[postRef].attachments.length > 0 && data.category.id != 7){
+        var totalNumberOfAttachments = data.posts[postRef].attachments.length
+
+        for (i=0; i<totalNumberOfAttachments; i++ ){
+          if (data.posts[postRef].attachments[i].images == undefined){
+            //Item isn't an image, so it SHOULD be a PDF or other file attached.
+            var attachmentURL = data.posts[postRef].attachments[i].url
+            $('.downloadResource').show()
+            var eventLink = '<a href="'+data.posts[postRef].attachments[i].url+'" target="_blank" class="addPostEvent"><i class="fa fa-download"></i> '+core.languageContent.download[0].download[0][window.localStorage.getItem('language')]+'</a>'
+          }else{
+            //item must be an image, so ignore it because it's probably the header image.
+          }
+        }
+      }else{
+        $('.addEventToCalender').hide()
+        var eventLink = ''
+      }
+      //if FR google maps coords
+      if (data.posts[postRef].custom_fields.google_maps_coordinates != undefined){var coords = data.posts[postRef].custom_fields.google_maps_coordinates[0]}else{var coords = false}
+      //FR registration for event link
+      if (data.posts[postRef].custom_fields.registration_link != undefined){
+        var register = data.posts[postRef].custom_fields.registration_link[0]
+        var registerLink = '<a href="#" class="registerForEvent"><i class="fa fa-check"></i> '+core.languageContent.inapp_content[0].register[0][window.localStorage.getItem('language')]+'</a>'
+      }else{
+        var registerLink = ''
+      }
+      //FR start date
+      if (data.posts[postRef].custom_fields.start_date != undefined){
+        var eventStart = data.posts[postRef].custom_fields.start_date[0]
+        $('.actions').hide()
+        var eventFullLink = '<a href="#" class="addFullEvent"><i class="fa fa-calendar"></i> '+core.languageContent.inapp_content[0].add_to_calendar[0][window.localStorage.getItem('language')]+'</a>'
+        var firstdate = returnDayMonth(data.posts[postRef].custom_fields.start_date[0])
+        var lastdate = returnDayMonth(data.posts[postRef].custom_fields.end_date[0])
+        var completeddatestring = firstdate+' - '+lastdate
+      }else{
+        var eventFullLink = ''
+      }
+      ///////////////
+      if (data.posts[postRef].custom_fields.end_date != undefined){var eventEnd = data.posts[postRef].custom_fields.end_date[0]}else{var eventEnd = false}
+
+      ///////////////
+      //Count how many case studies there are, search the attachments for the corrosponding data - export that into an array, then append it.
+      //But only if its cat 7, because breaks otherwise...
+      if (data.category.id == 7){
+        if (data.posts[postRef].custom_fields.case_studies[0] > 0){
+          var casestudies = ''
+          var casestudies_items = []
+          for (i = 0; i < data.posts[postRef].custom_fields.case_studies[0]; i++) {
+            var str = 'case_studies_'+i+'_case_study'
+            var itemToFind = data.posts[postRef].custom_fields[str]
+
+            for (j = 0; j < data.posts[postRef].attachments.length; j++) {
+              if (data.posts[postRef].attachments[j].id == itemToFind){
+                var url = data.posts[postRef].attachments[j].url
+                var title = data.posts[postRef].attachments[j].title
+                casestudies_items.push({url:url,title:title})
+              }
+            }
+            casestudies+= '<li><p>'+casestudies_items[i].title+'</p><a href="#" class="dataSheetAnchor" data-url="'+casestudies_items[i].url+'"><i class="fa fa-eye"></i></a><a href="#" class="dataSheetShareAnchor" data-url="'+casestudies_items[i].url+'"><i class="fa fa-share-alt"></i></a></li>'
+          }
+
+          casestudy = "<ul class='customFieldDatasheets'>"+casestudies+"</ul>"
+        }else{
+          var casestudies = ''
+          casestudy = "<ul class='customFieldDatasheets'>"+casestudies+"</ul>"
+        }
+
+        ///////////
+        if (data.posts[postRef].custom_fields.data_sheets[0] > 0){
+          var datasheets = ''
+          var datasheets_items = []
+          for (i = 0; i < data.posts[postRef].custom_fields.data_sheets[0]; i++) {
+            var str = 'data_sheets_'+i+'_data_sheet'
+            var itemToFind = data.posts[postRef].custom_fields[str]
+
+            for (j = 0; j < data.posts[postRef].attachments.length; j++) {
+              if (data.posts[postRef].attachments[j].id == itemToFind){
+                var url = data.posts[postRef].attachments[j].url
+                var title = data.posts[postRef].attachments[j].title
+                datasheets_items.push({url:url,title:title})
+              }
+            }
+            datasheets+= '<li><p>'+datasheets_items[i].title+'</p><a href="#" class="dataSheetAnchor" data-url="'+datasheets_items[i].url+'"><i class="fa fa-eye"></i></a><a href="#" class="dataSheetShareAnchor" data-url="'+datasheets_items[i].url+'"><i class="fa fa-share-alt"></i></a></li>'
+          }
+
+          datasheet = "<ul class='customFieldDatasheets'>"+datasheets+"</ul>"
+        }else{
+          var datasheets = ''
+          datasheet = "<ul class='customFieldDatasheets'>"+datasheets+"</ul>"
+        }
+        ///////////////
+        if (data.posts[postRef].custom_fields.white_papers[0] > 0){
+          var whitepapers = ''
+          var whitepapers_items = []
+          for (i = 0; i < data.posts[postRef].custom_fields.white_papers[0]; i++) {
+            var str = 'white_papers_'+i+'_white_paper'
+            var itemToFind = data.posts[postRef].custom_fields[str]
+
+            for (j = 0; j < data.posts[postRef].attachments.length; j++) {
+              if (data.posts[postRef].attachments[j].id == itemToFind){
+                var url = data.posts[postRef].attachments[j].url
+                var title = data.posts[postRef].attachments[j].title
+                whitepapers_items.push({url:url,title:title})
+              }
+            }
+            console.log(whitepapers_items)
+            whitepapers+= '<li><p>'+whitepapers_items[i].title+'</p><a href="#" class="dataSheetAnchor" data-url="'+whitepapers_items[i].url+'"><i class="fa fa-eye"></i></a><a href="#" class="dataSheetShareAnchor" data-url="'+whitepapers_items[i].url+'"><i class="fa fa-share-alt"></i></a></li>'
+          }
+
+          whitepaper = "<ul class='customFieldDatasheets'>"+whitepapers+"</ul>"
+        }else{
+          var whitepapers = ''
+          var whitepaper = "<ul class='customFieldDatasheets'>"+whitepapers+"</ul>"
+        }
+
+      }
+
+
+
+    }
 
     //console.log('line 206 index.js',data.posts[postRef])
 
@@ -416,42 +593,95 @@ Core.prototype.appCoreClickEvents = function () {
     $('.shareOnTwitter').attr('data-link',link)
     $('.shareOnLinkedin').attr('data-link',link)
     $('.contentContainer').fadeOut('fast')
-    //Check which type of post we're generating
-    if (parentCat == 4){
-    //Events
-      $('.postContainer').html('<div class="postInner"><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle googleMapTab" data-tab="2"><p>'+core.languageContent.inapp_content[0].location[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1"><h5>'+completeddatestring+'</h5><h6>'+data.posts[postRef].custom_fields.Event_Location[0]+'</h6>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+registerLink+eventFullLink+'</div></div><div class="tabPanel tab2"><div id="map-canvas"></div><p>'+data.posts[postRef].custom_fields.Event_Location[0]+'</p></div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('<i class="fa fa-calendar-o listCalendarIcon"></i>','').replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
-    }else if (parentCat == 7){
-      $('.actions').hide()
-    //Collateral
-      $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="2"><p>'+core.languageContent.inapp_content[0].case_studies[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="3"><p>'+core.languageContent.inapp_content[0].data_sheets[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="4"><p>'+core.languageContent.inapp_content[0].white_papers[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1">'+data.posts[postRef].content+'</div><div class="tabPanel tab2">'+casestudy+'</div><div class="tabPanel tab3">'+datasheet+'</div><div class="tabPanel tab4">'+whitepaper+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
-    }else if (parentCat == 2){
-      //eShot / recent communications
-      $('.postContainer').html('<div class="postInner eshot"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-envelope-square'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
-      $('.socialStrip').show()
-      $('.actions').hide()
-    }else if (parentCat == 9){
-      //Contact
-      $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div><div class="postContactHeadshot"><img src="'+data.posts[postRef].custom_fields.Contact_Avatar[0]+'"></div><div class="postContactName"><h4>'+data.posts[postRef].title+'</h4><p>'+data.posts[postRef].custom_fields.Contact_Job_Title[0]+'</p></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-phone'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
-    }else if (parentCat == 6){
-      //Quick Enablement
-      $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div>'+data.posts[postRef].content+'</div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-graduation-cap'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
-    }else if (parentCat == 3){
-      //Promotions
-      var link = ""
-       if (data.posts[postRef].custom_fields.Promotion_link == undefined ){
-        link =  ""
+
+    //formatting for single items based on category
+    if (localStorage.getItem('language') == 'fr'){
+
+      //If single article is in Proposition de valeur Arrow
+      if (parentCat == 2 || parentCat == 5){
+        $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-envelope-square'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+        $('.socialStrip').show()
+        $('.actions').hide()
+      }else if (parentCat == 3){
+        //Promotions
+        var link = ""
+         if (data.posts[postRef].custom_fields.link == undefined ){
+          link =  ""
+        }else{
+          link = '<a class="promotionsFindOutMore" href="'+data.posts[postRef].custom_fields.link+'">Find out more</a>'
+        }
+
+        $('.postContainer').html('<div class="postInner"><div class="promotionsTopBar"><div class="promotionsAvTo"><p class="promotionsTitles">Available To</p>'+data.posts[postRef].custom_fields.available_to+'</div><div class="promotionsValFrom"><p class="promotionsTitles">Valid From</p>'+data.posts[postRef].custom_fields.valid_from+'</div><div class="promotionsValTo"><p class="promotionsTitles">Valid To</p>'+data.posts[postRef].custom_fields.valid_to+'</div></div><div class="promotionsDetails">'+data.posts[postRef].custom_fields.details+'</div>'+data.posts[postRef].content+link+'</div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><img src='img/promotionsIcon.png' class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+        $('.socialStrip').show()
+        $('.actions').hide()
+
+        //console.log(data.posts[postRef])
+      }else if (parentCat == 6){
+        //Promotions
+        var link = ""
+         if (data.posts[postRef].custom_fields.link == undefined ){
+          link =  ""
+        }else{
+          link = '<a class="promotionsFindOutMore" href="'+data.posts[postRef].custom_fields.link+'">Find out more</a>'
+        }
+
+        $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-graduation-cap'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+        $('.socialStrip').show()
+        $('.actions').hide()
+
+
+        $('.socialStrip').show()
+        $('.actions').hide()
+
+        //console.log(data.posts[postRef])
+      }else if (parentCat == 4){
+        //Events
+        $('.postContainer').html('<div class="postInner"><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle googleMapTab" data-tab="2"><p>'+core.languageContent.inapp_content[0].location[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1"><h5>'+completeddatestring+'</h5><h6>'+data.posts[postRef].custom_fields.location[0]+'</h6>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+registerLink+eventFullLink+'</div></div><div class="tabPanel tab2"><div id="map-canvas"></div><p>'+data.posts[postRef].custom_fields.location[0]+'</p></div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('<i class="fa fa-calendar-o listCalendarIcon"></i>','').replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      }else if (parentCat == 7){
+        $('.actions').hide()
+        //Collateral
+        $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="2"><p>'+core.languageContent.inapp_content[0].case_studies[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="3"><p>'+core.languageContent.inapp_content[0].data_sheets[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="4"><p>'+core.languageContent.inapp_content[0].white_papers[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1">'+data.posts[postRef].content+'</div><div class="tabPanel tab2">'+casestudy+'</div><div class="tabPanel tab3">'+datasheet+'</div><div class="tabPanel tab4">'+whitepaper+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
       }else{
-        link = '<a class="promotionsFindOutMore" href="'+data.posts[postRef].custom_fields.Promotion_link[0]+'">Find out more</a>'
       }
 
-      $('.postContainer').html('<div class="postInner"><div class="promotionsTopBar"><div class="promotionsAvTo"><p class="promotionsTitles">Available To</p>'+data.posts[postRef].custom_fields.Promotion_availableto[0]+'</div><div class="promotionsValFrom"><p class="promotionsTitles">Valid From</p>'+data.posts[postRef].custom_fields.Promotion_valid_from[0]+'</div><div class="promotionsValTo"><p class="promotionsTitles">Valid To</p>'+data.posts[postRef].custom_fields.Promotion_valid_to[0]+'</div></div><div class="promotionsDetails">'+data.posts[postRef].custom_fields.Promotion_details[0]+'</div>'+data.posts[postRef].content+link+'</div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
-      $('.socialStrip').show()
-      $('.actions').hide()
+    //UK
     }else{
-      $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      //Check which type of post we're generating
+      if (parentCat == 4){
+        //Events
+        $('.postContainer').html('<div class="postInner"><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle googleMapTab" data-tab="2"><p>'+core.languageContent.inapp_content[0].location[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1"><h5>'+completeddatestring+'</h5><h6>'+data.posts[postRef].custom_fields.Event_Location[0]+'</h6>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+registerLink+eventFullLink+'</div></div><div class="tabPanel tab2"><div id="map-canvas"></div><p>'+data.posts[postRef].custom_fields.Event_Location[0]+'</p></div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('<i class="fa fa-calendar-o listCalendarIcon"></i>','').replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      }else if (parentCat == 7){
+        $('.actions').hide()
+        //Collateral
+        $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="2"><p>'+core.languageContent.inapp_content[0].case_studies[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="3"><p>'+core.languageContent.inapp_content[0].data_sheets[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="4"><p>'+core.languageContent.inapp_content[0].white_papers[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1">'+data.posts[postRef].content+'</div><div class="tabPanel tab2">'+casestudy+'</div><div class="tabPanel tab3">'+datasheet+'</div><div class="tabPanel tab4">'+whitepaper+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      }else if (parentCat == 2){
+        //eShot / recent communications
+        $('.postContainer').html('<div class="postInner eshot"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-envelope-square'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+        $('.socialStrip').show()
+        $('.actions').hide()
+      }else if (parentCat == 9){
+        //Contact
+        $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div><div class="postContactHeadshot"><img src="'+data.posts[postRef].custom_fields.Contact_Avatar[0]+'"></div><div class="postContactName"><h4>'+data.posts[postRef].title+'</h4><p>'+data.posts[postRef].custom_fields.Contact_Job_Title[0]+'</p></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-phone'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      }else if (parentCat == 6){
+        //Quick Enablement
+        $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div>'+data.posts[postRef].content+'</div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-graduation-cap'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      }else if (parentCat == 3){
+        //Promotions
+        var link = ""
+         if (data.posts[postRef].custom_fields.Promotion_link == undefined ){
+          link =  ""
+        }else{
+          link = '<a class="promotionsFindOutMore" href="'+data.posts[postRef].custom_fields.Promotion_link[0]+'">Find out more</a>'
+        }
+
+        $('.postContainer').html('<div class="postInner"><div class="promotionsTopBar"><div class="promotionsAvTo"><p class="promotionsTitles">Available To</p>'+data.posts[postRef].custom_fields.Promotion_availableto[0]+'</div><div class="promotionsValFrom"><p class="promotionsTitles">Valid From</p>'+data.posts[postRef].custom_fields.Promotion_valid_from[0]+'</div><div class="promotionsValTo"><p class="promotionsTitles">Valid To</p>'+data.posts[postRef].custom_fields.Promotion_valid_to[0]+'</div></div><div class="promotionsDetails">'+data.posts[postRef].custom_fields.Promotion_details[0]+'</div>'+data.posts[postRef].content+link+'</div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+        $('.socialStrip').show()
+        $('.actions').hide()
+      }else{
+        $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      }
+
     }
-
-
 
     $('.postContainer').show()
     $('.postThumbnail').css({background:'url('+thumbnail+')','background-size':'cover', 'background-position':'center'})
@@ -593,9 +823,10 @@ Core.prototype.appCoreClickEvents = function () {
 //Set container heights to 100vh (without using VH because VH sucks)
 Core.prototype.setContainerHeight = function(){
   var core = this
- // console.log('setting container height')
+  console.log('setting container height')
   var docHeight = $(document).height()
   var maths = docHeight-120
+
   $('.appContainer').css({height:maths+"px"})
   $('.contentContainer').css({height:maths+"px"})
   $('.postContainer').css({height:maths+"px"})
@@ -683,7 +914,7 @@ Core.prototype.getContactTeam = function(category,triggerElement,contact){
   })
 }
 
-//third level menu generated for contacts list
+//third level menu generator
 Core.prototype.getEnablements = function(category,triggerElement,topic){
   var core = this;
   //console.log('getting enablements...')
@@ -691,16 +922,47 @@ Core.prototype.getEnablements = function(category,triggerElement,topic){
   //console.log(data)
   core.$renderList = $('<div/>')
 
-  for (i = 0; i < data.count; i++) {
-    if (data.posts[i].tags[0].title == topic){
-      core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
-      core.$renderList.append(core.$listParent)
+  //If FR app
+  if (localStorage.getItem('language') == 'fr'){
+    //If promotions category that includes a sub category...
+    if (category == 3){
+      for (i = 0; i < data.count; i++) {
+        if (data.posts[i].custom_fields.promotions_sub_category == topic){
+          core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+          core.$renderList.append(core.$listParent)
+        }
+      }
+      core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+      core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><img src="img/promotionsIcon.png" class="menuIcon">'+core.$grandparentReturn.html()+'</a></li>'+core.$renderList.html());
+      $('.thirdLevelContainer').html(core.$childSections).show()
+      $('.contentContainer').hide()
+    }else if (category == 6){
+      for (i = 0; i < data.count; i++) {
+        if (data.posts[i].custom_fields.formations_sub_category == topic){
+          core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+          core.$renderList.append(core.$listParent)
+        }
+      }
+      core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+      core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-graduation-cap"></i></div>'+core.$grandparentReturn.html()+'</a></li>'+core.$renderList.html());
+      $('.thirdLevelContainer').html(core.$childSections).show()
+      $('.contentContainer').hide()
     }
+  //If UK app
+  }else{
+    for (i = 0; i < data.count; i++) {
+      if (data.posts[i].tags[0].title == topic){
+        core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
+    }
+    core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+    core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-graduation-cap"></i></div>'+core.$grandparentReturn.html()+'</a></li>'+core.$renderList.html());
+    $('.thirdLevelContainer').html(core.$childSections).show()
+    $('.contentContainer').hide()
   }
-  core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
-  core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-graduation-cap"></i></div>'+core.$grandparentReturn.html()+'</a></li>'+core.$renderList.html());
-  $('.thirdLevelContainer').html(core.$childSections).show()
-  $('.contentContainer').hide()
+
+
 
   $('.thirdLevelAnchor').click(function(){
     $('.thirdLevelContainer').hide()
@@ -712,7 +974,7 @@ Core.prototype.getEnablements = function(category,triggerElement,topic){
 //
 Core.prototype.getCategory = function(category,triggerElement){
   var core = this;
- // console.log('getting the category...')
+  console.log('getting the category... '+category)
   $('.postContainer').hide()
   var data = JSON.parse(window.localStorage.getItem('category'+category))
   //console.log('category: '+category)
@@ -721,66 +983,144 @@ Core.prototype.getCategory = function(category,triggerElement){
   $('.thirdLevelContainer').hide()
   //Remove any additional styling classes added to content container before we possibly add new ones.
   $('.contentContainer').removeClass('calendarContainer')
-
+  console.log(data)
   //If events calendar, append large calendar as first list element after the parent return
-  if (category == 4){
-    $('.contentContainer').addClass('calendarContainer')
+  //formatting for single items based on category
+  if (localStorage.getItem('language') == 'fr'){
+    if (category == 4){
+      $('.contentContainer').addClass('calendarContainer')
 
-    core.$renderList.prepend('<li class="listCalendar"><div id="interactiveCalendar"></li>')
-    for (i = 0; i < data.count; i++) {
-      //console.log(data.posts[i].custom_fields.Event_Start_Date)
-      var startConvertDate = '/'+data.posts[i].custom_fields.Event_Start_Date.toString()
-      var startEventDay    = startConvertDate.substr(0, 3).replace('/0','').replace('/1','1').replace('/2','2').replace('/3','3')
-      var startEventMonth  = startConvertDate.substr(3, 3).replace('/0','').replace('/1','1')
-      var startEventYear   = startConvertDate.substr(7, 4);
-      //var startdate = new Date(startEventMonth+'/'+startEventDay+'/'+startEventYear) //As date
-      var endConvertDate = '/'+data.posts[i].custom_fields.Event_End_Date.toString()
-      var endEventDay    = endConvertDate.substr(0, 3).replace('/0','').replace('/1','1').replace('/2','2').replace('/3','3')
-      var endEventMonth  = endConvertDate.substr(3, 3).replace('/0','').replace('/1','1')
-      var endEventYear   = endConvertDate.substr(7, 4);
-      //var enddate = new Date(endEventMonth+'/'+endEventDay+'/'+endEventYear) //As date
-      //console.log(startEventMonth,endEventMonth)
-      core.$listParent = $('<li/>', {
-        'class':'listParent calDate hidden',
-        'data-post':i,
-        'data-startday':startEventDay,
-        'data-startmonth':startEventMonth,
-        'data-startyear':startEventYear,
-        'data-endday':endEventDay,
-        'data-endmonth':endEventMonth,
-        'data-endyear':endEventYear,
-         }).append('<a href="#" class="listParentAnchor"><i class="fa fa-calendar-o listCalendarIcon"></i><h2>'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
-      core.$renderList.append(core.$listParent)
-    }
-  //Contact
-  }else if(category == 9){
-    core.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>'+core.languageContent.inapp_content[0].my_arrow_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>'+core.languageContent.inapp_content[0].my_netapp_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>'+core.languageContent.inapp_content[0].my_bdm_contact[0][window.localStorage.getItem('language')]+'</h2><i class="fa fa-chevron-right"></i></a></li>')
-  //Quick Enablement
-  }else if(category == 6){
-    var firstLevelItems = []
-    var firstLevelDescription = []
-    //console.log(data)
-    for (i = 0; i < data.count; i++) {
-      var title = data.posts[i].tags[0].title
-      var description = data.posts[i].tags[0].description
-      if ($.inArray(title,firstLevelItems) == -1){
-        firstLevelItems.push(title)
-        firstLevelDescription.push(description)
+      core.$renderList.prepend('<li class="listCalendar"><div id="interactiveCalendar"></li>')
+      for (i = 0; i < data.count; i++) {
+        //console.log(data.posts[i].custom_fields.start_date[0])
+        var startConvertDate = '/'+data.posts[i].custom_fields.start_date[0].toString()
+        var startEventDay    = startConvertDate.substr(0, 3).replace('/0','').replace('/1','1').replace('/2','2').replace('/3','3')
+        var startEventMonth  = startConvertDate.substr(3, 3).replace('/0','').replace('/1','1')
+        var startEventYear   = startConvertDate.substr(7, 4);
+        //var startdate = new Date(startEventMonth+'/'+startEventDay+'/'+startEventYear) //As date
+        var endConvertDate = '/'+data.posts[i].custom_fields.end_date[0].toString()
+        var endEventDay    = endConvertDate.substr(0, 3).replace('/0','').replace('/1','1').replace('/2','2').replace('/3','3')
+        var endEventMonth  = endConvertDate.substr(3, 3).replace('/0','').replace('/1','1')
+        var endEventYear   = endConvertDate.substr(7, 4);
+        //var enddate = new Date(endEventMonth+'/'+endEventDay+'/'+endEventYear) //As date
+        //console.log(startEventMonth,endEventMonth)
+        core.$listParent = $('<li/>', {
+          'class':'listParent calDate hidden',
+          'data-post':i,
+          'data-startday':startEventDay,
+          'data-startmonth':startEventMonth,
+          'data-startyear':startEventYear,
+          'data-endday':endEventDay,
+          'data-endmonth':endEventMonth,
+          'data-endyear':endEventYear,
+           }).append('<a href="#" class="listParentAnchor"><i class="fa fa-calendar-o listCalendarIcon"></i><h2>'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
+    //Contact
+    }else if(category == 9){
+      core.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>'+core.languageContent.inapp_content[0].my_arrow_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>'+core.languageContent.inapp_content[0].my_netapp_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>'+core.languageContent.inapp_content[0].my_bdm_contact[0][window.localStorage.getItem('language')]+'</h2><i class="fa fa-chevron-right"></i></a></li>')
+    }else if(category == 6){
+      //FORMATIONS CAT
+
+      var firstLevelItems = []
+      var firstLevelDescription = []
+      //console.log(data)
+      for (i = 0; i < data.posts.length; i++) {
+        var title = data.posts[i].custom_fields.formations_sub_category
+        if ($.inArray(title,firstLevelItems) == -1){
+          firstLevelItems.push(title)
+          firstLevelDescription.push(title)
+        }
+      }
+      for (x = 0; x < firstLevelItems.length; x++) {
+        core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>'+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
+    }else if(category == 3){
+      //PROMOTIONS CAT
+
+      var firstLevelItems = []
+      var firstLevelDescription = []
+      //console.log(data)
+      for (i = 0; i < data.posts.length; i++) {
+        var title = data.posts[i].custom_fields.promotions_sub_category
+        if ($.inArray(title,firstLevelItems) == -1){
+          firstLevelItems.push(title)
+          firstLevelDescription.push(title)
+        }
+      }
+      for (x = 0; x < firstLevelItems.length; x++) {
+        core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>Toutes les promotions sur la '+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
+
+    }else{
+      for (i = 0; i < data.count; i++) {
+        core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2>'+data.posts[i].excerpt+'<i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
       }
     }
-    for (x = 0; x < firstLevelItems.length; x++) {
-      core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>'+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
-      core.$renderList.append(core.$listParent)
-    }
-  }else if(category == 3){
-    for (i = 0; i < data.count; i++) {
-      core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2 class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
-      core.$renderList.append(core.$listParent)
-    }
+  //IF UK
   }else{
-    for (i = 0; i < data.count; i++) {
-      core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2>'+data.posts[i].excerpt+'<i class="fa fa-chevron-right"></i></a>')
-      core.$renderList.append(core.$listParent)
+    if (category == 4){
+      $('.contentContainer').addClass('calendarContainer')
+
+      core.$renderList.prepend('<li class="listCalendar"><div id="interactiveCalendar"></li>')
+      for (i = 0; i < data.count; i++) {
+        console.log(data.posts[i].custom_fields.Event_Start_Date)
+        var startConvertDate = '/'+data.posts[i].custom_fields.Event_Start_Date.toString()
+        var startEventDay    = startConvertDate.substr(0, 3).replace('/0','').replace('/1','1').replace('/2','2').replace('/3','3')
+        var startEventMonth  = startConvertDate.substr(3, 3).replace('/0','').replace('/1','1')
+        var startEventYear   = startConvertDate.substr(7, 4);
+        //var startdate = new Date(startEventMonth+'/'+startEventDay+'/'+startEventYear) //As date
+        var endConvertDate = '/'+data.posts[i].custom_fields.Event_End_Date.toString()
+        var endEventDay    = endConvertDate.substr(0, 3).replace('/0','').replace('/1','1').replace('/2','2').replace('/3','3')
+        var endEventMonth  = endConvertDate.substr(3, 3).replace('/0','').replace('/1','1')
+        var endEventYear   = endConvertDate.substr(7, 4);
+        //var enddate = new Date(endEventMonth+'/'+endEventDay+'/'+endEventYear) //As date
+        //console.log(startEventMonth,endEventMonth)
+        core.$listParent = $('<li/>', {
+          'class':'listParent calDate hidden',
+          'data-post':i,
+          'data-startday':startEventDay,
+          'data-startmonth':startEventMonth,
+          'data-startyear':startEventYear,
+          'data-endday':endEventDay,
+          'data-endmonth':endEventMonth,
+          'data-endyear':endEventYear,
+           }).append('<a href="#" class="listParentAnchor"><i class="fa fa-calendar-o listCalendarIcon"></i><h2>'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
+    //Contact
+    }else if(category == 9){
+      core.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>'+core.languageContent.inapp_content[0].my_arrow_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>'+core.languageContent.inapp_content[0].my_netapp_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>'+core.languageContent.inapp_content[0].my_bdm_contact[0][window.localStorage.getItem('language')]+'</h2><i class="fa fa-chevron-right"></i></a></li>')
+    //Quick Enablement
+    }else if(category == 6){
+      var firstLevelItems = []
+      var firstLevelDescription = []
+      //console.log(data)
+      for (i = 0; i < data.count; i++) {
+        var title = data.posts[i].tags[0].title
+        var description = data.posts[i].tags[0].description
+        if ($.inArray(title,firstLevelItems) == -1){
+          firstLevelItems.push(title)
+          firstLevelDescription.push(description)
+        }
+      }
+      for (x = 0; x < firstLevelItems.length; x++) {
+        core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>'+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
+    }else if(category == 3){
+      for (i = 0; i < data.count; i++) {
+        core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2 class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
+    }else{
+      for (i = 0; i < data.count; i++) {
+        core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2>'+data.posts[i].excerpt+'<i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
     }
   }
 
@@ -1191,7 +1531,7 @@ Core.prototype.generateCookie = function (nonce,username,password) {
   		contentType: 'application/json',
   		success: function(data){
   			var arr = [data]
-  			////console.log(arr)
+  			console.log(arr)
   			if (arr[0].status == 'ok'){
   				//console.log[arr]
   				window.localStorage.setItem('loggedIn', '1');
@@ -1201,10 +1541,8 @@ Core.prototype.generateCookie = function (nonce,username,password) {
   				window.localStorage.setItem("auth", arr[0].cookie);
   				var authenticate = window.localStorage.getItem("auth")
         	var auth = core.getUserMeta(authenticate)
-  				$('.appContainer').load("home.html",function(){
-            //NOTE: LOADING THE MAIN MENU
-            core.getInAppLanguageContent()
-          })
+
+  				core.loadLanguageGrandparentMenu()
   				//BDM Data load
           core.getBdmData()
           core.initPushwoosh(window.localStorage.getItem('user'), 'register')
@@ -1218,7 +1556,8 @@ Core.prototype.generateCookie = function (nonce,username,password) {
             }
           }
 
-          navigator.notification.confirm('Your username or password is incorrect', onRetry, 'Error', ['Retry','Ok'])
+          console.log('error username or password might be wrong')
+          //navigator.notification.confirm('Your username or password is incorrect', onRetry, 'Error', ['Retry','Ok'])
 
   				return false;
   			}
@@ -1249,7 +1588,7 @@ Core.prototype.generateRegisterNonce = function (firstname,lastname,username,pas
 		success: function(data){
 			var arr = [data]
 				nonce = arr[0].nonce;
-			////console.log(nonce)
+			//console.log(nonce)
 			core.registerNewUser(nonce,firstname,lastname,username,password,email)
 		},
 		error: function (data){
@@ -1301,22 +1640,22 @@ Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,pas
 
 //Not sure if we're even using this anymore, I don't think we are. Delete this if we don't need it
 Core.prototype.createPushRegister = function (ID){
-  var core = this;
-  console.log('pushing register')
-	console.log(ID)
-	$.ajax({
-		url: "http://"+core.wordpressVersion+"/pnfw/register/?token="+ID+"&os=iOS",
-		type: "POST",
-		contentType: 'application/x-www-form-urlencoded',
-		success: function(data){
-			var arr = JSON.stringify(data)
-			//console.log('I think this worked?'+arr)
-		},
-		error: function (data){
-			var arr = JSON.stringify(data)
-			//console.log('This did not work.'+arr)
-		}
-	});
+  // var core = this;
+  // console.log('pushing register')
+	// console.log(ID)
+	// $.ajax({
+	// 	url: "http://"+core.wordpressVersion+"/pnfw/register/?token="+ID+"&os=iOS",
+	// 	type: "POST",
+	// 	contentType: 'application/x-www-form-urlencoded',
+	// 	success: function(data){
+	// 		var arr = JSON.stringify(data)
+	// 		//console.log('I think this worked?'+arr)
+	// 	},
+	// 	error: function (data){
+	// 		var arr = JSON.stringify(data)
+	// 		//console.log('This did not work.'+arr)
+	// 	}
+	// });
 
 }
 
@@ -1345,12 +1684,13 @@ Core.prototype.getUserMeta = function (cookie){
   //Get user data from wordpress by passing it the cookie generated at login
 	var toreturn = []
 	$.ajax({
-		url: "http://"+core.wordpressVersion+"/api/user/get_currentuserinfo/?cookie="+cookie,
+		url: "http://"+core.wordpressVersion+"/api/user/get_currentuserinfo/?cookie="+cookie+'&insecure=cool',
 		type: "GET",
 		dataType: "jsonp",
 		contentType: 'application/json',
 		success: function(data){
 			var arr = JSON.stringify(data)
+      //console.log(arr)
 
 			var user = data.user.username
 			var firstname = data.user.firstname
@@ -1365,14 +1705,18 @@ Core.prototype.getUserMeta = function (cookie){
 			var afterAt = '@'+splitEmail[1]
 			var notbusiness = ['@hotmail.com','@hotmail.co.uk']
 			var appleprint = ['@appleprint.co.uk']
-			var craigrobertson = ['@bytes.co.uk','@qassociates.co.uk','@softcat.com','@proact.co.uk']
-			var timshaw = ['@bell-integration.com','@brighter-connections.com','@cetus-solutions.com','@concordeitgroup.com','@eacs.com','@gardsys.co.uk','@it-ps.com','@limanetworks.com','@majentasolutions.com','@phoenixs.co.uk','@silverbug.com','@ultimabusiness.com']
-			var simongow = ['@mhra.gsi.gov.uk','@acr-its.com','@agailitydatasolutions.com','@amorgroup.com','@asmtech.com','@bluelogic.co.uk','@bramattcomputing.co.uk','@brendata.co.uk','@e-business.com','@centralis.co.uk','@chilli-it.co.uk','@csc.com','@dacoll.co.uk','@datrix.co.uk','@dsiltd.co.uk','@enforcetechnology.com','@esteem.co.uk','@eci.com','@ezecastle.com','@frontiertechnology.co.uk','@highlandercomputing.com','@hp.com','@infosys.com','@innov8.co.uk','@isl.com','@misco.co.uk','@richardsoneyres.co.uk','@ntsols.com','@openreality.co.uk','@quadsys.co.uk','@r-comconsulting.com','@redstor.com','@skanco.co.uk','@sys-pro.co.uk','@tdmgroup.net','@tectrade.co.uk','@tet.co.uk','@tgccomputers.co.uk','@trilogytechnologies.com','@trustsystems.co.uk','@unisys.com','@vohkus.com','@wipro.com','@zero20.net','@bluecoffeenetworks.com','@doherty.co.uk','@e-know.net','@keyzone.com','@lombard.co.uk','@pstg.co.uk','@puredatasolutions.co.uk','@seric.co.uk','@stoneleigh.co.uk','@ukbackup.com']
-			var robwarner = ['@bt.com','@capita.co.uk','@dimensiondata.com','@uk.logicalis.com','@s3.co.uk','@scc.com','@virginmedia.co.uk']
-			var dominicvincent = ['@7tech.ltd.uk','@acs365.co.uk','@apsu.com','@autodata.co.uk','@bull.co.uk','@celerity-uk.com','@cloudxl.co.uk','@comparex.co.uk','@controlcircle.com','@eurotech-computers.com','@fordway.com','@highpoint.com','@instantonit.com','@isnsolutions.co.uk','@jcom.co.uk','@jesfertechnology.com','@kcom.com','@maplecom.co.uk','@netcentrix.co.uk','@netplan.co.uk','@nettitude.com','@network-interlinks.com','@nouveau.co.uk','@onx.com ','@gcicom.net','@server-link.co.uk','@psu.co.uk','@redpalm.co.uk','@thinks3.co.uk','@shi.com','@strawberrygt.com','@tmcs.co.uk','@tek-nologysolutions.co.uk','@tig.co.uk','@unionsolutions.co.uk','@Viadex.com','@ware247.co.uk','@ansecurity.com','@chase-security.com','@du360.com','@forfusion.com','@themavingroup.com','@northdoor.co.uk','@itspecialists.uk.com','@systemsexpress.com','@qual.co.uk']
+			var craigrobertson = []
+			var danielwidger = ['@virginmedia.co.uk']
+			var ajay = ['@advatek.co.uk', '@qa.com','@theblueprint-it.co.uk','@acr-its.com','@acs365.co.uk','@amorgroup.com','@asmtech.com','@bluecoffeenetworks.com','@centralis.co.uk','@chase-security.com','@cloudxl.co.uk','@dsiltd.co.uk','@doherty.co.uk','@eurotech-computers.com','@fordway.com','@forsythe.com','@frontiertechnology.co.uk','@gardsys.co.uk','@instantonit.com','@themavingroup.com','@netcentrix.co.uk','@netplan.co.uk','@network-interlinks.com','@openreality.co.uk','@gcicom.net','@server-link.co.uk','@psu.co.uk','@quadsys.co.uk','@qual.co.uk','@r-comconsulting.com','@itspecialists.uk.com','@stoneleigh.co.uk','@strawberrygt.com','@sys-pro.co.uk','@tek-nologysolutions.co.uk','@tig.co.uk','@nettitude.com']
+			var timshaw = ['@bell-integration.com','@brighter-connections.com','@cetus-solutions.com','@concordeitgroup.com','@eacs.com','@it-ps.com','@limanetworks.com','@majentasolutions.com','@phoenixs.co.uk','@silverbug.com','@ultimabusiness.com','@highpointsolutions.com','@softcat.com']
+			var simongow = ['@mhra.gsi.gov.uk','@agailitydatasolutions.com','@bluelogic.co.uk','@bramattcomputing.co.uk','@brendata.co.uk','@e-business.com','@chilli-it.co.uk','@csc.com','@dacoll.co.uk','@datrix.co.uk','@enforcetechnology.com','@esteem.co.uk','@eci.com','@ezecastle.com','@highlandercomputing.com','@hp.com','@infosys.com','@innov8.co.uk','@isl.com','@misco.co.uk','@richardsoneyres.co.uk','@ntsols.com','@redstor.com','@skanco.co.uk','@tdmgroup.net','@tectrade.co.uk','@tet.co.uk','@tgccomputers.co.uk','@trilogytechnologies.com','@trustsystems.co.uk','@unisys.com','@vohkus.com','@wipro.com','@zero20.net','@e-know.net','@keyzone.com','@lombard.co.uk','@pstg.co.uk','@puredatasolutions.co.uk','@seric.co.uk','@ukbackup.com','@qassociates.co.uk']
+			var robwarner = ['@bt.com','@capita.co.uk','@dimensiondata.com','@uk.logicalis.com','@s3.co.uk','@scc.com']
+			var dominicvincent = ['@7tech.ltd.uk','@apsu.com','@autodata.co.uk','@bull.co.uk','@celerity-uk.com','@comparex.co.uk','@highpoint.com','@isnsolutions.co.uk','@jcom.co.uk','@jesfertechnology.com','@kcom.com','@maplecom.co.uk','@nouveau.co.uk','@onx.com ','@redpalm.co.uk','@thinks3.co.uk','@shi.com','@tmcs.co.uk','@unionsolutions.co.uk','@Viadex.com','@ware247.co.uk','@ansecurity.com','@du360.com','@forfusion.com','@northdoor.co.uk','@systemsexpress.com','@rtptech.com','@proact.co.uk','@bytes.co.uk']
 
-			if ($.inArray( afterAt, craigrobertson) >= 0){
-				 window.localStorage.setItem("bdm", "Craig Robertson")
+			if ($.inArray( afterAt, ajay) >= 0){
+				window.localStorage.setItem("bdm", "Ajay Klair")
+			}else if ($.inArray( afterAt, danielwidger) >= 0){
+				window.localStorage.setItem("bdm", "Daniel Widger")
 			}else if ($.inArray( afterAt, timshaw) >= 0){
 				window.localStorage.setItem("bdm", "Tim Shaw")
 			}else if ($.inArray( afterAt, simongow) >= 0){
@@ -1384,10 +1728,10 @@ Core.prototype.getUserMeta = function (cookie){
 			}else if ($.inArray( afterAt, notbusiness) >= 0){
 				//console.log("Not a business address")
 			}else if ($.inArray( afterAt, appleprint) >= 0){
-				window.localStorage.setItem("bdm", "Craig Robertson")
+				window.localStorage.setItem("bdm", "Ajay Klair")
 				//console.log('setting item')
 			}else{
-				window.localStorage.setItem("bdm", "Craig Robertson")
+				window.localStorage.setItem("bdm", "Ajay Klair")
 				//console.log('Doesn\'t match any condition '+afterAt)
 			}
 		},
@@ -1429,17 +1773,33 @@ Core.prototype.loadCoreData = function (){
   //console.log('Load core data')
   //Run loop of all post data and store that as JSON string in localstorage
   //This will reduce load times later.
+
+  //To get custom post type content!
+  //id is the category id
+  //post_type is the new post type set up in the functions file in wordpress
+  //http://netappyeu.apple-dev.co.uk/api/get_category_posts/?id=2&post_type=germany
+
   console.log('core version: '+ core.wordpressVersion)
   core.areWeConnected()
+
+  //This is used to get wordpress to look at the extra posts types added - if you don't specify your posttype..
+  //.. it won't load the content for that section.
+  if (localStorage.getItem('language') == 'fr'){
+    var langCore = '&post_type=france'
+  }else{
+    var langCore = ''
+  }
+
+
   for (i = 1; i < 10; i++) {
     (function (i) {
       $.ajax({
-        url: "http://"+core.wordpressVersion+"/api/core/get_category_posts/?id="+i,
+        url: "http://"+core.wordpressVersion+"/api/core/get_category_posts/?id="+i+langCore,
         type: "GET",
         dataType: "jsonp",
         contentType: 'application/json',
         success: function(data){
-        	////console.log(data)
+        	//console.log(data)
 
         	window.localStorage.removeItem('category'+i);
         	window.localStorage.setItem('category'+i, JSON.stringify(data));
@@ -1484,81 +1844,81 @@ Core.prototype.addDirectEvent = function (startDate,endDate,title,eventLocation,
 
 //Log content with our ajax service
 Core.prototype.logContent = function (action,toLog,source){
-  console.log('I\'m a lumberjack...')
-  var fullName = window.localStorage.getItem('userName')
-  var empty = false
-  fullName = fullName.split(' ');
-  console.log(source)
-  // console.log(action) //Action to log
-
-  var id    = '21';                                         // ID 21 assigned to NetHappy in DB // REQUIRED
-  var fn    = fullName[0];                                  //First Name
-  var ln    = fullName[1];                                  //Last Name
-  var em    = window.localStorage.getItem('email');         //Email Address
-  var ph    = null;                                         //Phone Number
-  var rec   = '';                                           //Data
-
-  if (action == 'external'){
-    rec = 'External Website '+toLog+' opened from tab '+source
-  }else if (action == 'findoutmore'){
-    rec = 'Find Out More clicked on '+source
-  }else if (action == 'addtocalendar'){
-    rec = 'Event added to calender: '+source
-  }else if (action == 'registerforevent'){
-    rec = 'Register for event Clicked: '+source
-  }else if (action == 'downloadcollateral'){
-    rec = 'Collateral: '+toLog+' downloaded on '+source
-  }else if (action == 'sharedcollateral'){
-    rec = 'Collateral: '+toLog+' shared on '+source
-  }else if (action == 'dealreg'){
-    rec = 'User clicked '+source
-  }else if (action == 'viewprofile'){
-    rec = 'User viewed their BDM profile '+source
-  }else if (action == 'twitter'){
-    rec = 'User clicked Twitter share';
-  }else if (action == 'facebook'){
-    rec = 'User clicked facebook share';
-  }else if (action == 'linkedin'){
-    rec = 'User clicked Linked-In share';
-  }else if (action == 'logoff'){
-    rec = 'User Logged off';
-  }else if (action == 'communicationsExternal'){
-    rec = 'Communications External Link: '+source
-  }else if (action == 'dateAnchor'){
-    rec = 'Event opened: '+source
-  }else if (action == 'settings'){
-    rec = 'Opened settings';
-  }else if (action == 'anchor'){
-    if (source == ''){
-      //If there's nothing to take not of, don't log it.
-      empty = true;
-    }else{
-      rec = source+' clicked';
-    }
-  }else{
-
-  }
-
-  var dataStr = 'id='+id+'&fn='+fn+'&ln='+ln+'&em='+em+'&ph='+ph+'&rec='+rec
-
-  if (empty == false){
-    //console.log(dataStr)
-    $.ajax({
-      url: "http://landingpageservice.apple-dev.co.uk/Ajax/ghRecordStuff.ashx",
-      type: "GET",
-      data: dataStr,
-      dataType: "jsonp",
-      contentType: 'application/json',
-      success: function(data){
-        //console.log(data)
-      },
-      error: function (data){
-        console.log('Error ' + data);
-      }
-    });
-  }else{
-
-  }
+  // console.log('I\'m a lumberjack...')
+  // var fullName = window.localStorage.getItem('userName')
+  // var empty = false
+  // fullName = fullName.split(' ');
+  // console.log(source)
+  // // console.log(action) //Action to log
+  //
+  // var id    = '21';                                         // ID 21 assigned to NetHappy in DB // REQUIRED
+  // var fn    = fullName[0];                                  //First Name
+  // var ln    = fullName[1];                                  //Last Name
+  // var em    = window.localStorage.getItem('email');         //Email Address
+  // var ph    = null;                                         //Phone Number
+  // var rec   = '';                                           //Data
+  //
+  // if (action == 'external'){
+  //   rec = 'External Website '+toLog+' opened from tab '+source
+  // }else if (action == 'findoutmore'){
+  //   rec = 'Find Out More clicked on '+source
+  // }else if (action == 'addtocalendar'){
+  //   rec = 'Event added to calender: '+source
+  // }else if (action == 'registerforevent'){
+  //   rec = 'Register for event Clicked: '+source
+  // }else if (action == 'downloadcollateral'){
+  //   rec = 'Collateral: '+toLog+' downloaded on '+source
+  // }else if (action == 'sharedcollateral'){
+  //   rec = 'Collateral: '+toLog+' shared on '+source
+  // }else if (action == 'dealreg'){
+  //   rec = 'User clicked '+source
+  // }else if (action == 'viewprofile'){
+  //   rec = 'User viewed their BDM profile '+source
+  // }else if (action == 'twitter'){
+  //   rec = 'User clicked Twitter share';
+  // }else if (action == 'facebook'){
+  //   rec = 'User clicked facebook share';
+  // }else if (action == 'linkedin'){
+  //   rec = 'User clicked Linked-In share';
+  // }else if (action == 'logoff'){
+  //   rec = 'User Logged off';
+  // }else if (action == 'communicationsExternal'){
+  //   rec = 'Communications External Link: '+source
+  // }else if (action == 'dateAnchor'){
+  //   rec = 'Event opened: '+source
+  // }else if (action == 'settings'){
+  //   rec = 'Opened settings';
+  // }else if (action == 'anchor'){
+  //   if (source == ''){
+  //     //If there's nothing to take not of, don't log it.
+  //     empty = true;
+  //   }else{
+  //     rec = source+' clicked';
+  //   }
+  // }else{
+  //
+  // }
+  //
+  // var dataStr = 'id='+id+'&fn='+fn+'&ln='+ln+'&em='+em+'&ph='+ph+'&rec='+rec
+  //
+  // if (empty == false){
+  //   //console.log(dataStr)
+  //   $.ajax({
+  //     url: "http://landingpageservice.apple-dev.co.uk/Ajax/ghRecordStuff.ashx",
+  //     type: "GET",
+  //     data: dataStr,
+  //     dataType: "jsonp",
+  //     contentType: 'application/json',
+  //     success: function(data){
+  //       //console.log(data)
+  //     },
+  //     error: function (data){
+  //       console.log('Error ' + data);
+  //     }
+  //   });
+  // }else{
+  //
+  // }
 
 
 
@@ -1568,7 +1928,6 @@ Core.prototype.logContent = function (action,toLog,source){
 Core.prototype.initPushwoosh = function(username, action){
   var core = this
   console.log('PUSHWOOSH INIT'+'_'+action+'_'+username)
-  console.log()
 
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
 
@@ -1582,6 +1941,7 @@ Core.prototype.initPushwoosh = function(username, action){
     pushNotification.setTags(
     {
       "username":username,
+      "nethappy_language":localStorage.getItem('language'),
     },
       function(status) {
           console.log('setTags success '+status);
