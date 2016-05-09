@@ -1936,13 +1936,13 @@ Core.prototype.initPushwoosh = function(username, action){
     pw_appid : "5093D-320F3" // PUSHWOOSH_APP_ID
   });
 
-  function setTagsFunc(username){
-    var appLang = localStorage.getItem('language')
+  function setTagsFunc(username,lang){
     console.log('Attempting tag setting of username:'+username)
+    console.log('Attempting tag setting of language:'+lang)
     pushNotification.setTags(
     {
       "username":username,
-      "nhappylang":appLang
+      "nhappylang":lang
     },
       function(status) {
           console.log('setTags success '+status);
@@ -1989,7 +1989,8 @@ Core.prototype.initPushwoosh = function(username, action){
         window.localStorage.setItem('reg', "2")
         var deviceToken = status['deviceToken'];
         console.log('registerDevice: ' + deviceToken);
-        setTagsFunc(username)
+        var appLang = localStorage.getItem('language')
+        setTagsFunc(username,appLang)
       },
       function(status) {
         //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
