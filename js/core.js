@@ -1937,11 +1937,12 @@ Core.prototype.initPushwoosh = function(username, action){
   });
 
   function setTagsFunc(username){
+    var appLang = localStorage.getItem('language')
     console.log('Attempting tag setting of username:'+username)
     pushNotification.setTags(
     {
       "username":username,
-      "nethappy_language":localStorage.getItem('language'),
+      "nhappylang":appLang,
     },
       function(status) {
           console.log('setTags success '+status);
