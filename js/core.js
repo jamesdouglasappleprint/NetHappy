@@ -1942,7 +1942,7 @@ Core.prototype.initPushwoosh = function(username, action){
     pushNotification.setTags(
     {
       "username":username,
-      "nhappylang":appLang,
+      "nhappylang":appLang
     },
       function(status) {
           console.log('setTags success '+status);
