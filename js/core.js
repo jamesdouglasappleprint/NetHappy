@@ -1603,7 +1603,7 @@ Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,pas
   var core = this
   	//console.log(nonce)
   	$.ajax({
-  		url: "http://"+core.wordpressVersion+"/api/user/register/?username="+username+"&display_name="+email+"&email="+email+"&nonce="+nonce+"&first_name="+firstname+"&last_name="+lastname+"&user_pass="+password+"&seconds=100",
+  		url: "http://"+core.wordpressVersion+"/api/user/register/?username="+username+"&display_name="+email+"&email="+email+"&nonce="+nonce+"&first_name="+firstname+"&last_name="+lastname+"&user_pass="+password+"&seconds=100&insecure=cool",
   		type: "GET",
   		dataType: "jsonp",
   		contentType: 'application/json',
@@ -1666,7 +1666,7 @@ Core.prototype.recoverPassword = function (user){
 	//recoverYourPassword
 
 	$.ajax({
-		url: "http://"+core.wordpressVersion+"/api/user/retrieve_password/?user_login="+user,
+		url: "http://"+core.wordpressVersion+"/api/user/retrieve_password/?user_login="+user+'&insecure=cool',
 		type: "GET",
 		dataType: "jsonp",
 		contentType: 'application/json',
