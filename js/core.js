@@ -361,7 +361,7 @@ Core.prototype.appCoreClickEvents = function () {
     }
 
 
-    //console.log('parent clicked')
+    console.log('parent clicked')
     var that = $(this).html()
     var parentCat = $(this).parent().parent().attr('data-category')
     var img = $(this).parent().parent().find('.listParent>.listGrandParentAnchorReturn>img').attr('src')
@@ -503,7 +503,7 @@ Core.prototype.appCoreClickEvents = function () {
       //Count how many case studies there are, search the attachments for the corrosponding data - export that into an array, then append it.
       //But only if its cat 7, because breaks otherwise...
       if (data.category.id == 7){
-        if (data.posts[postRef].custom_fields.case_studies[0] > 0){
+        if (data.posts[postRef].custom_fields.case_studies > 0){
           var casestudies = ''
           var casestudies_items = []
           for (i = 0; i < data.posts[postRef].custom_fields.case_studies[0]; i++) {
@@ -642,6 +642,10 @@ Core.prototype.appCoreClickEvents = function () {
         $('.actions').hide()
         //Collateral
         $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="2"><p>'+core.languageContent.inapp_content[0].case_studies[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="3"><p>'+core.languageContent.inapp_content[0].data_sheets[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="4"><p>'+core.languageContent.inapp_content[0].white_papers[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1">'+data.posts[postRef].content+'</div><div class="tabPanel tab2">'+casestudy+'</div><div class="tabPanel tab3">'+datasheet+'</div><div class="tabPanel tab4">'+whitepaper+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+      }else if (parentCat == 9){
+        console.warn('here')
+        //Contact
+        $('.postContainer').html('<div class="postInner"><div class="postThumbnail"></div><div class="postContactHeadshot"><img src="'+data.posts[postRef].attachments[0].images.full.url+'"></div><div class="postContactName"><h4>'+data.posts[postRef].title+'</h4><p>'+data.posts[postRef].custom_fields.job_title[0]+'</p></div>'+data.posts[postRef].content+'<div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-phone'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
       }else{
       }
 
@@ -948,7 +952,21 @@ Core.prototype.getEnablements = function(category,triggerElement,topic){
       core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-graduation-cap"></i></div>'+core.$grandparentReturn.html()+'</a></li>'+core.$renderList.html());
       $('.thirdLevelContainer').html(core.$childSections).show()
       $('.contentContainer').hide()
+    }else if (category == 9){
+      for (i = 0; i < data.count; i++) {
+        if (data.posts[i].custom_fields.contact_sub_category == topic){
+          core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+          core.$renderList.append(core.$listParent)
+        }
+      }
+      core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+      core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-phone"></i></div>'+core.$grandparentReturn.html()+'</a></li>'+core.$renderList.html());
+      $('.thirdLevelContainer').html(core.$childSections).show()
+      $('.contentContainer').hide()
+    }else{
+
     }
+
   //If UK app
   }else{
     for (i = 0; i < data.count; i++) {
@@ -1019,7 +1037,20 @@ Core.prototype.getCategory = function(category,triggerElement){
       }
     //Contact
     }else if(category == 9){
-      core.$renderList.append('<li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="Arrow"><h2>'+core.languageContent.inapp_content[0].my_arrow_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/arrowLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent"><a href="#" class="contactAnchor" data-contact="NetApp"><h2>'+core.languageContent.inapp_content[0].my_netapp_contacts[0][window.localStorage.getItem('language')]+'</h2><img class="contactLogo" src="./img/netAppLogo.png"><i class="fa fa-chevron-right"></i></a></li><li class="listParent contactParent bdmcontactparent"><a href="#" class="contactAnchor" data-contact="mybdm"><h2>'+core.languageContent.inapp_content[0].my_bdm_contact[0][window.localStorage.getItem('language')]+'</h2><i class="fa fa-chevron-right"></i></a></li>')
+
+      var firstLevelItems = []
+      var firstLevelDescription = []
+      for (i = 0; i < data.posts.length; i++) {
+        var title = data.posts[i].custom_fields.contact_sub_category[0]
+        if ($.inArray(title,firstLevelItems) == -1){
+          firstLevelItems.push(title)
+          firstLevelDescription.push(title)
+        }
+      }
+      for (x = 0; x < firstLevelItems.length; x++) {
+        core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p></p><i class="fa fa-chevron-right"></i></a>')
+        core.$renderList.append(core.$listParent)
+      }
     }else if(category == 6){
       //FORMATIONS CAT
 
@@ -1131,6 +1162,7 @@ Core.prototype.getCategory = function(category,triggerElement){
 
   //go to quick enablement third level menu
   $('.enableAnchor').click(function(){
+    console.log('enabled')
     var topic = $(this).find('h2').text()
     var newtrigger = $(this).html()
     core.getEnablements(category,newtrigger,topic)
@@ -1432,8 +1464,12 @@ Core.prototype.logIn = function (x) {
 
     var source = $(this).find('h2').text()
     //core.logContent('dealreg',null, source);
+    if (localStorage.getItem('language') == 'fr'){
+      window.open('http://'+core.wordpressVersion+'/reg_redirect_fr/', '_system')
+    }else{
+      window.open('http://'+core.wordpressVersion+'/reg_redirect/', '_system')
+    }
 
-    window.open('http://'+core.wordpressVersion+'/reg_redirect/', '_system')
     $('.appContainer').show()
     $('.contentContainer').hide()
   })
@@ -1749,14 +1785,18 @@ Core.prototype.getUserMeta = function (cookie){
 					window.localStorage.setItem("mybdmdata",jsonstring)
 				}
 			}
-			var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
-      $('.postContactHeadshot').html('<img src="'+mybdm.custom_fields.Contact_Avatar[0]+'">')
-      $('.postContactName h4').html(mybdm.title)
-      $('.postContactName p').html(mybdm.custom_fields.Contact_Job_Title[0])
-      $('.myBdmMenu .postInner').append(mybdm.content)
-      var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
-      $('.myBdmName').html(mybdm.title)
-      $('.myBdmEmail').html(mybdm.custom_fields.Contact_Email[0])
+      if (localStorage.getItem('language') == 'fr'){
+      }else{
+        var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
+        $('.postContactHeadshot').html('<img src="'+mybdm.custom_fields.Contact_Avatar[0]+'">')
+        $('.postContactName h4').html(mybdm.title)
+        $('.postContactName p').html(mybdm.custom_fields.Contact_Job_Title[0])
+        $('.myBdmMenu .postInner').append(mybdm.content)
+        var mybdm = JSON.parse(window.localStorage.getItem("mybdmdata"))
+        $('.myBdmName').html(mybdm.title)
+        $('.myBdmEmail').html(mybdm.custom_fields.Contact_Email[0])
+      }
+
 
 			//console.log(toreturn)
       window.localStorage.setItem("userName", toreturn[0]+' '+toreturn[1])
@@ -1800,7 +1840,7 @@ Core.prototype.loadCoreData = function (){
         dataType: "jsonp",
         contentType: 'application/json',
         success: function(data){
-        	//console.log(data)
+        //	console.log(data)
 
         	window.localStorage.removeItem('category'+i);
         	window.localStorage.setItem('category'+i, JSON.stringify(data));
