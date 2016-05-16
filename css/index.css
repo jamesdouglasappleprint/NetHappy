@@ -88,7 +88,7 @@ ul {
 
 h1 {
 }
-
+.registerForm {position: relative;}
 .image100 {width: 80%;padding-left: 10%;position: relative;}
 .paddingContainer{margin:0px 10%;}
 .appContainer {
@@ -208,7 +208,7 @@ form>.flag-icon {
 .loginOptions a {text-decoration: none;color: #c0c0c0;cursor: pointer;}
 .actionButtons .noSecondaryButton {width: 100% !important;background-color: #fff !important;z-index: 16;display: block;position: relative;border-radius: 9px;}
 .createAccount{cursor: pointer;}
-.createAccountForm{width: 100%;height: 50px;border-radius: 3px;border: 0;background-color: rgb(194, 213, 45);margin-top: 5px;font-size: 18px;}
+.createAccountForm{width: 100%;height: 50px;border-radius: 3px;border: 0;background-color: rgb(194, 213, 45);margin-top: 10px;font-size: 18px;}
 
 /*main Menu */
 .menuIcon {
