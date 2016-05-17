@@ -952,10 +952,11 @@ Core.prototype.getEnablements = function(category,triggerElement,topic){
       core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent thirdLevelAnchor enablementsThirdLevel"><a href="#" class="listChild"><div class="menuIcon"><i class="fa fa-graduation-cap"></i></div>'+core.$grandparentReturn.html()+'</a></li>'+core.$renderList.html());
       $('.thirdLevelContainer').html(core.$childSections).show()
       $('.contentContainer').hide()
+    //Contacts
     }else if (category == 9){
       for (i = 0; i < data.count; i++) {
         if (data.posts[i].custom_fields.contact_sub_category == topic){
-          core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
+          core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2  class="menuTitleSpacing">'+data.posts[i].title+'</h2><p>'+data.posts[i].custom_fields.job_title[0]+'</p><i class="fa fa-chevron-right"></i></a>')
           core.$renderList.append(core.$listParent)
         }
       }
@@ -1042,13 +1043,14 @@ Core.prototype.getCategory = function(category,triggerElement){
       var firstLevelDescription = []
       for (i = 0; i < data.posts.length; i++) {
         var title = data.posts[i].custom_fields.contact_sub_category[0]
+        var descr = data.posts[i].custom_fields.job_title[0]
         if ($.inArray(title,firstLevelItems) == -1){
           firstLevelItems.push(title)
-          firstLevelDescription.push(title)
+          firstLevelDescription.push(descr)
         }
       }
       for (x = 0; x < firstLevelItems.length; x++) {
-        core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p></p><i class="fa fa-chevron-right"></i></a>')
+        core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><i class="fa fa-chevron-right"></i></a>')
         core.$renderList.append(core.$listParent)
       }
     }else if(category == 6){
@@ -1058,7 +1060,7 @@ Core.prototype.getCategory = function(category,triggerElement){
       var firstLevelDescription = []
       //console.log(data)
       for (i = 0; i < data.posts.length; i++) {
-        var title = data.posts[i].custom_fields.formations_sub_category
+        var title = data.posts[i].custom_fields.formations_sub_category[0]
         if ($.inArray(title,firstLevelItems) == -1){
           firstLevelItems.push(title)
           firstLevelDescription.push(title)
@@ -1075,10 +1077,14 @@ Core.prototype.getCategory = function(category,triggerElement){
       var firstLevelDescription = []
       //console.log(data)
       for (i = 0; i < data.posts.length; i++) {
-        var title = data.posts[i].custom_fields.promotions_sub_category
+        var title = data.posts[i].custom_fields.promotions_sub_category[0]
         if ($.inArray(title,firstLevelItems) == -1){
+          console.log('is in array')
+          console.log(firstLevelItems)
           firstLevelItems.push(title)
           firstLevelDescription.push(title)
+        }else{
+          console.log('is not in array')
         }
       }
       for (x = 0; x < firstLevelItems.length; x++) {
