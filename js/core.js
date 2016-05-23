@@ -1898,7 +1898,15 @@ Core.prototype.logContent = function (action,toLog,source){
   //console.log(source)
   // console.log(action) //Action to log
 
-  var id    = '21';                                         // ID 21 assigned to NetHappy in DB // REQUIRED
+                                     // ID 21 assigned to NetHappy in DB // REQUIRED
+
+  if (localStorage.getItem('language') == 'gb'){
+    var id    = '21'; //uk
+    //6EACD047-6F40-41C9-A9BE-E1023E99D6C4
+  }else{
+    var id    = '22'; //FR
+    //5CFA6DB3-D81C-492C-B1FF-B8ED988215ED
+  }
   var fn    = fullName[0];                                  //First Name
   var ln    = fullName[1];                                  //Last Name
   var em    = window.localStorage.getItem('email');         //Email Address
