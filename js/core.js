@@ -26,7 +26,7 @@ function Core(){
   var core = this;
 
   core.languageContent = []
-  core.debug = 1; //if 1, disable cordova functionality
+  core.debug = 0; //if 1, disable cordova functionality
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -62,7 +62,7 @@ function Core(){
   //This flag is set in the pushwoosh register at the bottom of this document.
 
   if (core.debug == 0){
-    if (window.localStorage.getItem('reg') == "5"){
+    if (window.localStorage.getItem('reg') == "6"){
 
     }else{
       console.log('user not registered, registering...')
@@ -2034,7 +2034,7 @@ Core.prototype.initPushwoosh = function(username, action){
     pushNotification.registerDevice(
       function(status) {
         //Flag for updates - set this incrementally to force users to re-register for notifications
-        window.localStorage.setItem('reg', "5")
+        window.localStorage.setItem('reg', "6")
         var deviceToken = status['deviceToken'];
         console.log('registerDevice: ' + deviceToken);
         var appLang = localStorage.getItem('language')
