@@ -467,7 +467,7 @@ Core.prototype.appCoreClickEvents = function () {
             //Item isn't an image, so it SHOULD be a PDF or other file attached.
             var attachmentURL = data.posts[postRef].attachments[i].url
             $('.downloadResource').show()
-            var eventLink = '<a href="'+data.posts[postRef].attachments[i].url+'" class="addPostEvent"><i class="fa fa-download"></i> '+core.languageContent.download[0].download[0][window.localStorage.getItem('language')]+'</a>'
+            var eventLink = '<a href="'+data.posts[postRef].attachments[i].url+'" class="promotionsFindOutMore"><i class="fa fa-download"></i> '+core.languageContent.download[0].download[0][window.localStorage.getItem('language')]+'</a>'
           }else{
             //item must be an image, so ignore it because it's probably the header image.
           }
