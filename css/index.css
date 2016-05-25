@@ -457,6 +457,11 @@ th {
   margin: 0;
   padding: 0;
 }
+.additionalLinks .promotionsFindOutMore {
+    width: 200px;
+    margin-left: 0;
+    left: 0;
+}
 a.listChild {
     height: 100%;
     display: block;
