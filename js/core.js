@@ -26,7 +26,7 @@ function Core(){
   var core = this;
 
   core.languageContent = []
-  core.debug = 1; //if 1, disable cordova functionality
+  core.debug = 0; //if 1, disable cordova functionality
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
