@@ -118,7 +118,7 @@ button{cursor: pointer;}
     margin-top: 10px;
     font-size: 18px;
 }
-.recoverYourPassword{width: 100%;height: 50px;border-radius: 3px;border: 0;background-color: rgb(194, 213, 45);margin-top: 5px;font-size: 18px;}
+.recoverYourPassword{width: 100%;height: 50px;border-radius: 3px;border: 0;background-color: rgb(194, 213, 45);margin-top: 10px;font-size: 18px;}
 .registerForm div {position: relative;}
 form.loginForm {position: relative;}
 .bypasslogin{display:none;}

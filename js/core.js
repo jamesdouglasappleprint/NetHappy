@@ -1343,7 +1343,12 @@ Core.prototype.logIn = function (x) {
   $(document).on("click",".recoverYourPassword",function(e){
     var user = $('.recoveryForm #email').val()
     core.recoverPassword(user)
-    navigator.notification.alert('Password recovery email sent!', null, 'Email sent', 'Ok')
+      if (core.debug == 0){
+        navigator.notification.alert('Password recovery email sent!', null, 'Email sent', 'Ok')
+      }else{
+        alert('Recovery email sent')
+      }
+
   })
 
    //'Navigate back buttons'
@@ -1656,7 +1661,15 @@ Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,pas
   				$('.appContainer').load("login.html")
   				$('#userName').val(username)
   				$('#password').val(password)
-          navigator.notification.alert('Registration complete! You will receive your login details via email after you have been successfully approved by one of our team.', null, 'Registration Complete!', 'Ok')
+
+
+          if (localStorage.getItem('language') == 'fr'){
+            navigator.notification.alert('Inscription complète! Vous recevrez vos informations de connexion par e-mail une fois que vous avez été approuvé avec succès par l\'un de notre équipe.', null, 'Registration Complete!', 'Ok')
+          }else{
+            navigator.notification.alert('Registration complete! You will receive your login details via email after you have been successfully approved by one of our team.', null, 'Registration Complete!', 'Ok')
+          }
+
+
 
   			}else if (arr[0].status == 'error'){
           function onRetry(buttonIndex){
@@ -1665,8 +1678,11 @@ Core.prototype.registerNewUser = function (nonce,firstname,lastname,username,pas
             }
           }
 
-          navigator.notification.confirm('Username already exists', onRetry, 'Error', ['Retry','Ok'])
-
+          if (localStorage.getItem('language') == 'fr'){
+            navigator.notification.confirm('L\'adresse email est déjà enregistrée', onRetry, 'Error', ['Retry','Ok'])
+          }else{
+            navigator.notification.confirm('Email Address already registered', onRetry, 'Error', ['Retry','Ok'])
+          }
   			}
 
 
@@ -1714,7 +1730,7 @@ Core.prototype.recoverPassword = function (user){
 		contentType: 'application/json',
 		success: function(data){
 			var arr = [data]
-			//console.log(arr)
+			console.log(arr)
 		},
 		error: function (data){
 			//console.log('Error ' + data);
