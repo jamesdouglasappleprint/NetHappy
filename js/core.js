@@ -31,23 +31,24 @@ function Core(){
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
     core.languageContent = data
-    console.log(core.languageContent)
+    //console.log(core.languageContent)
     core.wordpressVersion = 'velocity.apple-dev.co.uk'
+    //If the language was set from a previous load, keep it set to that language
+    if (window.localStorage.getItem('language') == null){
+      console.log('none selected, manually selecting')
+      window.localStorage.setItem('language','gb')
+    }else{
+
+    }
+
     core.reassignCoreVersion() //Check to see if we already have a version selected
     core.init();
     core.logIn();
     core.appCoreClickEvents();
     core.loadCoreData();
-
-    core.getInAppLanguageContent('gb')
+    core.getInAppLanguageContent(window.localStorage.getItem('language'))
     core.selectLanguage()
 
-    //If the language was set from a previous load, keep it set to that language
-    if (window.localStorage.getItem('language') == null){
-      window.localStorage.setItem('language','gb')
-    }else{
-
-    }
 
   });
 
