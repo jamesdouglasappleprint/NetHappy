@@ -173,7 +173,7 @@ Core.prototype.getInAppLanguageContent = function(language){
   $('.submitLoginFormData').html(core.languageContent.login_button[0][inAppLanguage])
   $('#userName').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_email[0][inAppLanguage])
   $('#password').attr('placeholder',core.languageContent.field_form_inputs[0].field_input_password[0][inAppLanguage])
-  $('.languageSelector').val(language)
+  //$('.languageSelector').val(language)
   $('.menuFlag').removeClass().addClass('flag-icon menuFlag flag-icon-'+language)
 
   //NOTE:: not sure we actually need the next bit since menu items are based off categories in the amended app, so the data
@@ -680,7 +680,12 @@ Core.prototype.appCoreClickEvents = function () {
           link = '<a class="promotionsFindOutMore" href="'+data.posts[postRef].custom_fields.Promotion_link[0]+'">Find out more</a>'
         }
 
-        $('.postContainer').html('<div class="postInner"><div class="promotionsTopBar"><div class="promotionsAvTo"><p class="promotionsTitles">Available To</p>'+data.posts[postRef].custom_fields.Promotion_availableto[0]+'</div><div class="promotionsValFrom"><p class="promotionsTitles">Valid From</p>'+data.posts[postRef].custom_fields.Promotion_valid_from[0]+'</div><div class="promotionsValTo"><p class="promotionsTitles">Valid To</p>'+data.posts[postRef].custom_fields.Promotion_valid_to[0]+'</div></div><div class="promotionsDetails">'+data.posts[postRef].custom_fields.Promotion_details[0]+'</div>'+data.posts[postRef].content+link+'</div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+        var availableTo = data.posts[postRef].custom_fields.Promotion_availableto
+        if (availableTo == undefined){
+          availableTo = "All"
+        }
+
+        $('.postContainer').html('<div class="postInner"><div class="promotionsTopBar"><div class="promotionsAvTo"><p class="promotionsTitles">Available To</p>'+availableTo+'</div><div class="promotionsValFrom"><p class="promotionsTitles">Valid From</p>'+data.posts[postRef].custom_fields.Promotion_valid_from[0]+'</div><div class="promotionsValTo"><p class="promotionsTitles">Valid To</p>'+data.posts[postRef].custom_fields.Promotion_valid_to[0]+'</div></div><div class="promotionsDetails">'+data.posts[postRef].custom_fields.Promotion_details[0]+'</div>'+data.posts[postRef].content+link+'</div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><img src="+img+" class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
         $('.socialStrip').show()
         $('.actions').hide()
       }else{
