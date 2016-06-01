@@ -1611,7 +1611,7 @@ Core.prototype.generateCookie = function (nonce,username,password) {
           }
 
           console.log('error username or password might be wrong')
-          //navigator.notification.confirm('Your username or password is incorrect', onRetry, 'Error', ['Retry','Ok'])
+          navigator.notification.confirm('Your username or password is incorrect', onRetry, 'Error', ['Retry','Ok'])
 
   				return false;
   			}
