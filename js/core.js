@@ -504,35 +504,13 @@ Core.prototype.appCoreClickEvents = function () {
       //Count how many case studies there are, search the attachments for the corrosponding data - export that into an array, then append it.
       //But only if its cat 7, because breaks otherwise...
       if (data.category.id == 7){
-        if (data.posts[postRef].custom_fields.case_studies > 0){
-          var casestudies = ''
-          var casestudies_items = []
-          for (i = 0; i < data.posts[postRef].custom_fields.case_studies[0]; i++) {
-            var str = 'case_studies_'+i+'_case_study'
-            var itemToFind = data.posts[postRef].custom_fields[str]
-
-            for (j = 0; j < data.posts[postRef].attachments.length; j++) {
-              if (data.posts[postRef].attachments[j].id == itemToFind){
-                var url = data.posts[postRef].attachments[j].url
-                var title = data.posts[postRef].attachments[j].title
-                casestudies_items.push({url:url,title:title})
-              }
-            }
-            casestudies+= '<li><p>'+casestudies_items[i].title+'</p><a href="#" class="dataSheetAnchor" data-url="'+casestudies_items[i].url+'"><i class="fa fa-eye"></i></a><a href="#" class="dataSheetShareAnchor" data-url="'+casestudies_items[i].url+'"><i class="fa fa-share-alt"></i></a></li>'
-          }
-
-          casestudy = "<ul class='customFieldDatasheets'>"+casestudies+"</ul>"
-        }else{
-          var casestudies = ''
-          casestudy = "<ul class='customFieldDatasheets'>"+casestudies+"</ul>"
-        }
 
         ///////////
-        if (data.posts[postRef].custom_fields.data_sheets[0] > 0){
+        if (data.posts[postRef].custom_fields.item[0] > 0){
           var datasheets = ''
           var datasheets_items = []
-          for (i = 0; i < data.posts[postRef].custom_fields.data_sheets[0]; i++) {
-            var str = 'data_sheets_'+i+'_data_sheet'
+          for (i = 0; i < data.posts[postRef].custom_fields.item[0]; i++) {
+            var str = 'item_'+i+'_single_item'
             var itemToFind = data.posts[postRef].custom_fields[str]
 
             for (j = 0; j < data.posts[postRef].attachments.length; j++) {
@@ -550,34 +528,19 @@ Core.prototype.appCoreClickEvents = function () {
           var datasheets = ''
           datasheet = "<ul class='customFieldDatasheets'>"+datasheets+"</ul>"
         }
-        ///////////////
-        if (data.posts[postRef].custom_fields.white_papers[0] > 0){
-          var whitepapers = ''
-          var whitepapers_items = []
-          for (i = 0; i < data.posts[postRef].custom_fields.white_papers[0]; i++) {
-            var str = 'white_papers_'+i+'_white_paper'
-            var itemToFind = data.posts[postRef].custom_fields[str]
-
-            for (j = 0; j < data.posts[postRef].attachments.length; j++) {
-              if (data.posts[postRef].attachments[j].id == itemToFind){
-                var url = data.posts[postRef].attachments[j].url
-                var title = data.posts[postRef].attachments[j].title
-                whitepapers_items.push({url:url,title:title})
-              }
-            }
-            console.log(whitepapers_items)
-            whitepapers+= '<li><p>'+whitepapers_items[i].title+'</p><a href="#" class="dataSheetAnchor" data-url="'+whitepapers_items[i].url+'"><i class="fa fa-eye"></i></a><a href="#" class="dataSheetShareAnchor" data-url="'+whitepapers_items[i].url+'"><i class="fa fa-share-alt"></i></a></li>'
-          }
-
-          whitepaper = "<ul class='customFieldDatasheets'>"+whitepapers+"</ul>"
-        }else{
-          var whitepapers = ''
-          var whitepaper = "<ul class='customFieldDatasheets'>"+whitepapers+"</ul>"
-        }
 
       }
 
-
+      console.log(data.posts[postRef].custom_fields.external_url )
+      //FR start date
+      if (data.posts[postRef].custom_fields.external_url != undefined && data.posts[postRef].custom_fields.external_url != ""){
+        //Item isn't an image, so it SHOULD be a PDF or other file attached.
+        var attachmentURL = data.posts[postRef].custom_fields.external_url[0]
+        $('.downloadResource').show()
+        var eventLink = '<a href="'+attachmentURL+'" class="promotionsFindOutMore"><i class="fa fa-share-square-o" aria-hidden="true"></i> '+core.languageContent.inapp_content[0].visit_website[0][window.localStorage.getItem('language')]+'</a>'
+      }else{
+        var eventFullLink = ''
+      }
 
     }
 
@@ -642,7 +605,9 @@ Core.prototype.appCoreClickEvents = function () {
       }else if (parentCat == 7){
         $('.actions').hide()
         //Collateral
-        $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabTitle tabSelected" data-tab="1"><p>'+core.languageContent.inapp_content[0].info[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="2"><p>'+core.languageContent.inapp_content[0].case_studies[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="3"><p>'+core.languageContent.inapp_content[0].data_sheets[0][window.localStorage.getItem('language')]+'</p></div><div class="tabTitle" data-tab="4"><p>'+core.languageContent.inapp_content[0].white_papers[0][window.localStorage.getItem('language')]+'</p></div><div class="tabPanel tab1">'+data.posts[postRef].content+'</div><div class="tabPanel tab2">'+casestudy+'</div><div class="tabPanel tab3">'+datasheet+'</div><div class="tabPanel tab4">'+whitepaper+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+
+        $('.postContainer').html('<div class="postInner collateralInner"><div class="postThumbnail"></div><div class="tabPanel tab3">'+datasheet+'</div><div class="additionalLinks">'+siteLink+eventLink+'</div></div>').prepend("<ul class='listParentReturn'><li class='listParent'><a href='#' class='listChild'><div class='menuIcon'><i class='fa fa-folder-open'></i></div>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+        $('.tabPanel').show()
       }else if (parentCat == 9){
         console.warn('here')
         //Contact
@@ -753,7 +718,6 @@ Core.prototype.appCoreClickEvents = function () {
       var parentItem = $(this).parent().prev().find('h2').text()
       var clickedItem = $(this).find('p').text();
       core.logContent('anchor',null, parentItem+': '+clickedItem);
-
     })
 
     $('.googleMapTab').click(function(){
@@ -1066,7 +1030,7 @@ Core.prototype.getCategory = function(category,triggerElement){
       var firstLevelDescription = []
       //console.log(data)
       for (i = 0; i < data.posts.length; i++) {
-        var title = data.posts[i].custom_fields.formations_sub_category[0]
+        var title = data.posts[i].custom_fields.formations_sub_category
         if ($.inArray(title,firstLevelItems) == -1){
           firstLevelItems.push(title)
           firstLevelDescription.push(title)
