@@ -576,7 +576,7 @@ Core.prototype.appCoreClickEvents = function () {
           link = '<a class="promotionsFindOutMore" href="'+data.posts[postRef].custom_fields.link+'">Find out more</a>'
         }
 
-        $('.postContainer').html('<div class="postInner"><div class="promotionsTopBar"><div class="promotionsAvTo"><p class="promotionsTitles">Available To</p>'+data.posts[postRef].custom_fields.available_to+'</div><div class="promotionsValFrom"><p class="promotionsTitles">Valid From</p>'+data.posts[postRef].custom_fields.valid_from+'</div><div class="promotionsValTo"><p class="promotionsTitles">Valid To</p>'+data.posts[postRef].custom_fields.valid_to+'</div></div><div class="promotionsDetails">'+data.posts[postRef].custom_fields.details+'</div>'+data.posts[postRef].content+link+'</div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><img src='img/promotionsIcon.png' class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
+        $('.postContainer').html('<div class="postInner"><div class="promotionsTopBar hideme"><div class="promotionsAvTo"><p class="promotionsTitles">Available To</p>'+data.posts[postRef].custom_fields.available_to+'</div><div class="promotionsValFrom"><p class="promotionsTitles">Valid From</p>'+data.posts[postRef].custom_fields.valid_from+'</div><div class="promotionsValTo"><p class="promotionsTitles">Valid To</p>'+data.posts[postRef].custom_fields.valid_to+'</div></div><div class="promotionsDetails">'+data.posts[postRef].custom_fields.details+'</div>'+data.posts[postRef].content+link+'</div>').prepend("<ul class='listParentReturn'><li class='listParent thirdLevelReturn'><a href='#' class='listChild'><img src='img/promotionsIcon.png' class='menuIcon'>"+that.replace('fa-chevron-right','fa-chevron-left')+"</a></li></ul>")
         $('.socialStrip').show()
         $('.actions').hide()
 
@@ -726,8 +726,13 @@ Core.prototype.appCoreClickEvents = function () {
     })
 
     $('.registerForEvent').click(function(){
-      var url = data.posts[postRef].custom_fields.Event_Registration_Link[0]
+      if (localStorage.getItem('language') == 'fr'){
+        var url = data.posts[postRef].custom_fields.registration_link[0]
+      }else if (localStorage.getItem('language') == 'gb'){
+        var url = data.posts[postRef].custom_fields.Event_Registration_Link[0]
+      }else{
 
+      }
       var source = $(this).parent().parent().parent().prev().find('h2').text()
       core.logContent('registerforevent',url, source);
 
@@ -1057,8 +1062,10 @@ Core.prototype.getCategory = function(category,triggerElement){
           console.log('is not in array')
         }
       }
+      //Removed this, it's the subtitle should she want me to add it back.
+      //<p>Toutes les promotions sur la '+firstLevelDescription[x]+'</p>
       for (x = 0; x < firstLevelItems.length; x++) {
-        core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><p>Toutes les promotions sur la '+firstLevelDescription[x]+'</p><i class="fa fa-chevron-right"></i></a>')
+        core.$listParent = $('<li/>', {'class':'listParent'}).append('<a href="#" class="listParent enableAnchor"><h2>'+firstLevelItems[x]+'</h2><i class="fa fa-chevron-right"></i></a>')
         core.$renderList.append(core.$listParent)
       }
 

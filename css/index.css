@@ -511,3 +511,6 @@ table.ui-datepicker-calendar {width: 100%;border-spacing: 0;}
 
 .appError {font-size: 14px;}
 .appError a {color: #fff;border: 1px solid #fff;height: 44px;line-height: 44px;display: inline-block;width: 50%;text-align: center;float: right;position: relative;text-decoration: none;top: -14px;border-radius: 4px;}
+
+/* bodge for french app so i dont have to remove bits of the app that they'll blatantly want me to put back at some point */
+.hideme {display: none;}
