@@ -255,12 +255,12 @@
           </a>
         </li>
         <li class="heroes_menu_item">
-          <a href="#" class="heroes_menu_item_anchor_parent" data-panel="c">
+          <a href="#" class="heroes_menu_item_anchor_parent" data-panel="closed">
           Closed Revenue <i class="fa fa-chevron-right"></i>
           </a>
         </li>
         <li class="heroes_menu_item">
-          <a href="#" class="heroes_menu_item_anchor_parent" data-panel="c">
+          <a href="#" class="heroes_menu_item_anchor_parent" data-panel="event">
           Attended Event <i class="fa fa-chevron-right"></i>
           </a>
         </li>
@@ -281,7 +281,7 @@
 
 <div id="accepted" class="subitem_outer standard_form">
   <div class="subitem_container">
-    <ul class="heroes_returntomenu">
+    <ul class="heroes_returntomenu heroes_returnto_claim_menu">
       <li class="">
         <a href="#" class="">
             <img src="img/heroesIcon.png" class="">
@@ -297,21 +297,92 @@
       </p>
       <form method="post" class="loginForm">
           <div>
-              <label for="po">PO No</label>
-              <input type="text" id="po" autocomplete='off' placeholder="PO no"/>
+              <label for="dr">DR No.</label>
+              <input type="text" id="accepted_dr" autocomplete='off' placeholder="DR no."/>
           </div>
           <div>
               <label for="enduser">End User</label>
-              <input type="enduser" id="password" autocomplete='off' placeholder="End User"/>
+              <input type="text" id="accepted_enduser" autocomplete='off' placeholder="End User"/>
           </div>
           <div>
               <label for="value">Value</label>
-              <input type="value" id="password" autocomplete='off' placeholder="Value"/>
+              <input type="text" id="accepted_value" autocomplete='off' placeholder="Value"/>
           </div>
           <button class="submit_accepted_deal_reg" type="button">Submit</button>
       </form>
+      <a href="#" class="get_heroes_points">GET MAH POIWNTS</a>
+    </div>
+  </div>
+</div>
 
+<div id="closed" class="subitem_outer standard_form">
+  <div class="subitem_container">
+    <ul class="heroes_returntomenu heroes_returnto_claim_menu">
+      <li class="">
+        <a href="#" class="">
+            <img src="img/heroesIcon.png" class="">
+            Prizes
+            <i class="fa fa-chevron-left"></i>
+        </a>
+      </li>
+    </ul>
+    <div class="section_inner">
+      <p>
+        <strong>Make a claim</strong><br>
+        <em>Closed Revenue</em>
+      </p>
+      <form method="post" class="loginForm">
+          <div>
+              <label for="po">PO No</label>
+              <input type="text" id="closed_po" autocomplete='off' placeholder="PO no."/>
+          </div>
+          <div>
+              <label for="enduser">End User</label>
+              <input type="text" id="closed_enduser" autocomplete='off' placeholder="End User"/>
+          </div>
+          <div>
+              <label for="value">Value</label>
+              <input type="text" id="closed_value" autocomplete='off' placeholder="Value"/>
+          </div>
+          <button class="submit_closed_deal_reg standard_heroes_button" type="button">Submit</button>
+      </form>
+      <a href="#" class="get_heroes_points">GET MAH POIWNTS</a>
+    </div>
+  </div>
+</div>
 
+<div id="event" class="subitem_outer standard_form">
+  <div class="subitem_container">
+    <ul class="heroes_returntomenu heroes_returnto_claim_menu">
+      <li class="">
+        <a href="#" class="">
+            <img src="img/heroesIcon.png" class="">
+            Prizes
+            <i class="fa fa-chevron-left"></i>
+        </a>
+      </li>
+    </ul>
+    <div class="section_inner">
+      <p>
+        <strong>Make a claim</strong><br>
+        <em>Attended Event</em>
+      </p>
+      <form method="post" class="loginForm">
+          <div>
+              <label for="evname">Event Name</label>
+              <input type="text" id="events_evname" autocomplete='off' placeholder="Event Name"/>
+          </div>
+          <div>
+              <label for="evloc">Event Location</label>
+              <input type="text" id="events_evloc" autocomplete='off' placeholder="Event Location"/>
+          </div>
+          <div>
+              <label for="date">Date Attended</label>
+              <input type="date" id="events_date" autocomplete='off' placeholder="Date Attended"/>
+          </div>
+          <button class="submit_events_deal_reg standard_heroes_button" type="button">Submit</button>
+      </form>
+      <a href="#" class="get_heroes_points">GET MAH POIWNTS</a>
     </div>
   </div>
 </div>

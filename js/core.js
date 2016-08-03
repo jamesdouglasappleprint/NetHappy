@@ -1571,6 +1571,8 @@ Core.prototype.generateCookie = function (nonce,username,password) {
   				console.log(arr)
   				window.localStorage.setItem('loggedIn', '1');
   				window.localStorage.setItem('user', username);
+  				window.localStorage.setItem('fn', arr[0].user.firstname);
+  				window.localStorage.setItem('ln', arr[0].user.lastname);
   				$('.navigateBack').hide()
         	$('.prelaunchButtons').hide()
   				window.localStorage.setItem("auth", arr[0].cookie);

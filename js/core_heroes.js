@@ -24,6 +24,7 @@ function HeroesCore(){
 
   heroes_core.all_buttons()
   heroes_core.setContainerHeight()
+  heroes_core.registerUser()
 
   heroes_core.languageContent = []
   heroes_core.debug = 1; //if 1, disable cordova functionality
@@ -120,6 +121,54 @@ HeroesCore.prototype.all_buttons = function(){
     $('.about_container').show()
   });
 
+  $(document).on("click",".heroes_returntomenu.heroes_returnto_claim_menu a",function(e){
+    e.preventDefault()
+    $('.heroes_menu_container').hide()
+    $('#claim').show()
+  });
+
+  $(document).on("click",".get_heroes_points",function(e){
+    e.preventDefault()
+    heroes_core.getPoints();
+  });
+
+  $(document).on("click",".submit_accepted_deal_reg",function(e){
+    e.preventDefault()
+
+    var dealreg = $('#accepted_dr').val()
+    var enduser = $('#accepted_enduser').val()
+    var ponum = 0
+    var value = $('#accepted_value').val()
+    var username = localStorage.getItem('userName')
+    var stringToPass = 'dt=2'+'&dn='+dealreg+'&eu='+enduser+'&val='+value+'&un='+username
+
+    heroes_core.pointsmeanprizes(stringToPass);
+  });
+
+  $(document).on("click",".submit_closed_deal_reg",function(e){
+    e.preventDefault()
+
+    var ponum = $('#closed_po').val()
+    var enduser = $('#closed_enduser').val()
+    var value = $('#closed_value').val()
+    var username = localStorage.getItem('userName')
+    var stringToPass = 'dt=1'+'&po='+ponum+'&eu='+enduser+'&val='+value+'&un='+username
+
+    heroes_core.pointsmeanprizes(stringToPass);
+  });
+
+  $(document).on("click",".submit_events_deal_reg",function(e){
+    e.preventDefault()
+
+    var evname = $('#closed_evname').val()
+    var evloc = $('#closed_evloc').val()
+    var date = $('#closed_date').val()
+    var username = localStorage.getItem('userName')
+    var stringToPass = 'dt=4'+'&evname='+evname+'&evloc='+evloc+'&evdate='+date+'&un='+username
+
+    heroes_core.pointsmeanprizes(stringToPass);
+  });
+
 }
 
 HeroesCore.prototype.load_heroes_menu = function(){
@@ -130,47 +179,16 @@ HeroesCore.prototype.load_heroes_menu = function(){
 
 }
 
-HeroesCore.prototype.pointsmeanprizes = function(deal){
+HeroesCore.prototype.pointsmeanprizes = function(string){
   var heroes_core = this
-
-  //Accepted Deal Registration
-  if (deal == 'accepted'){
-    $.ajax({
-      type: 'POST',
-      data: 'uid='+localStorage.getItem('userID')+'&c='+toSend,
-      async: false,
-      dataType:'jsonp',
-      jsonp: 'callback',
-      url: 'http://netappyheroes.apple-dev.co.uk/',
-      success: function(data){
-        console.log(data)
-
-      },
-      error: function(){
-        console.log('Error registering user.')
-      }
-    });
-  }
-
-
-
-}
-
-HeroesCore.prototype.registerUser = function(info){
-  var heroes_core = this
-
-  var un = localStorage.getItem('userName')
-  var fn = localStorage.getItem('userName')
-  var ln = localStorage.getItem('userName')
-  var em = localStorage.getItem('email')
 
   $.ajax({
     type: 'POST',
-    data: 'uid='+localStorage.getItem('userID')+'&c='+toSend,
+    data: string,
     async: false,
     dataType:'jsonp',
     jsonp: 'callback',
-    url: 'http://netappyheroes.apple-dev.co.uk/ghRegisterUser.ashx',
+    url: 'http://netappyheroes.apple-dev.co.uk/ghRegisterDeal.ashx',
     success: function(data){
       console.log(data)
 
@@ -180,7 +198,54 @@ HeroesCore.prototype.registerUser = function(info){
     }
   });
 
+}
 
+HeroesCore.prototype.registerUser = function(info){
+  var heroes_core = this
+
+  var un = localStorage.getItem('userName')
+  var fn = localStorage.getItem('fn')
+  var ln = localStorage.getItem('ln')
+  var em = localStorage.getItem('email')
+
+  $.ajax({
+    type: 'POST',
+    data: 'un='+un+'&fn='+fn+'&ln='+ln+'&em='+em,
+    async: false,
+    dataType:'jsonp',
+    jsonp: 'callback',
+    url: 'http://netappyheroes.apple-dev.co.uk/ghRegisterUser.ashx',
+    success: function(data){
+      console.log('Heroes User Registered:',data)
+
+    },
+    error: function(data){
+      console.log('Error registering user.',data)
+    }
+  });
+
+
+
+}
+
+HeroesCore.prototype.getPoints = function(){
+  var heroes_core = this
+
+  $.ajax({
+    type: 'POST',
+    data: 'un='+localStorage.getItem('userName'),
+    async: false,
+    dataType:'jsonp',
+    jsonp: 'callback',
+    url: 'http://netappyheroes.apple-dev.co.uk/ghGetPoints.ashx',
+    success: function(data){
+      console.log('User Points =',data)
+
+    },
+    error: function(data){
+      console.log('Error getting user points.',data)
+    }
+  });
 
 }
 
