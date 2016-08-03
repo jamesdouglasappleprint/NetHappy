@@ -1,0 +1,129 @@
+/* APPLE PRINT & CREATIVE //////////////////////////////////////////////////////////////////////////////////////////////////
+// UPSCALE TEMPLATE ////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SITE: NAME OF SITE //////////////////////////////////////////////////////////////////////////////////////////////////////
+// DEV: JAMES DOUGLAS //////////////////////////////////////////////////////////////////////////////////////////////////////
+// BUILD: 2015 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////.d888888////////////////////dP//////////////888888ba///////////oo////////////dP//////dP////////d888888P/888888ba///////
+////d8'////88////////////////////88//////////////88////`8b////////////////////////88//////88///////////88////88////`8b//////
+////88aaaaa88a/88d888b./88d888b./88/.d8888b.////a88aaaa8P'/88d888b./dP/88d888b./d8888P////88///////////88////88/////88//////
+////88/////88//88'//`88/88'//`88/88/88ooood8/////88////////88'//`88/88/88'//`88///88//////88///////////88////88/////88//////
+////88/////88//88.//.88/88.//.88/88/88.//.../////88////////88///////88/88////88///88//////88///////////88////88////.8P//////
+////88/////88//88Y888P'/88Y888P'/dP/`88888P'/////dP////////dP///////dP/dP////dP///dP//////88888888P////dP////8888888P///////
+///////////////88///////88//////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////dP///////dP//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/*
+.keyframeExample {
+-webkit-animation: keyframeExample 1s linear infinite;
+animation: keyframeExample 1s linear infinite;
+-moz-animation: keyframeExample 1s linear infinite;
+
+-webkit-transition: left 500ms ease;
+-moz-transition: left 500ms ease;
+-o-transition: left 500ms ease;
+transition: left 500ms ease;
+}
+
+@-webkit-keyframes keyframeExample {0% {}50% {}100% {}}
+@-moz-keyframes keyframeExample {0% {}50% {}100% {}}
+@keyframes keyframeExample {0% {}50% {}100% {}}
+
+.flexBoxExample {
+display: flex;
+display: -webkit-flex;
+-webkit-box-pack: start;
+flex-direction: row;
+-webkit-flex-direction: row;
+flex-wrap: wrap;
+-webkit-flex-wrap: wrap;
+align-content: center;
+-webkit-align-content: center;
+justify-content: space-between;
+-webkit-justify-content: space-between;
+align-items: center;
+-webkit-align-items: center;
+}*/
+
+.heroes_container,.heroes_main_container {overflow-y: auto;position: absolute;top: 70px;width: 100%;display: block;z-index: -1;overflow: scroll;}
+.heroes_launcher {position: relative;}
+.toggleTermsAndConditions {display: inline-block;}
+.termstoggle.fa-square-o {display: inline-block;padding-left: 20px;font-size: 30px;position: relative;top: 7px;}
+.termstoggle.fa-check-square {display: inline-block;padding-left: 20px;font-size: 28px;position: relative;top: 5px;}
+.heroes_container .childSections{height: auto;}
+.heroes_termsandconditions_container {padding: 10px;}
+/* ------------------------------------------ */
+/* HEROES RETURN BUTTON --------------------- */
+/* ------------------------------------------ */
+.heroes_container .childSections .listParent::after {display:none;}
+.heroes_termsandconditions_container li {margin-bottom: 10px;font-size: 12px;}
+/* ------------------------------------------ */
+/* HEROES MAIN MENU ------------------------- */
+/* ------------------------------------------ */
+.heroes_return {color: #fff;text-decoration: none;display: block;position: relative;padding-left: 54px;width: calc(100% - 54px);}
+.heroes_return img {position: absolute;left: 8px;top: 5px;transform: none;}
+.heroes_return i {position: absolute;right: 12px;top: 16px;float: none;transform: none;}
+.heroes_menu_container{display:none;position: absolute;top: 50px;width: 100%;}
+.heroes_menu_item {height: 12.5%;display: block;position: relative;border-bottom: 1px solid #5b5b96;}
+.heroes_menu {padding: 0;margin: 0;height: 100%;}
+.heroes_menu_item_anchor_parent {color: #fff;font-size: 16px;text-decoration: none;display: block;height: 100%;padding-left: 10px;}
+.heroes_menu_item_anchor_parent .menuTitleSpacing {padding-left: 10px;}
+.heroes_menu_item_anchor_parent i {right: 10px;font-size: 20px;color: #fff;position: absolute;top: 0px;height: 100%;}
+/* ------------------------------------------ */
+/* CHILD MENU SECTIONS ---------------------- */
+/* ------------------------------------------ */
+#welcome, #about, #tandc, #inpartnership, .subitem_outer,#claim{position: absolute;top: 0px;width: 100%;display: none;z-index: 2;background: #fff;overflow-y: scroll;color: #333333;min-height: 100%;}
+#about,#claim {background: none;}
+.heroes_returntomenu li {list-style: none;height: 50px;line-height: 50px;display: block;margin-bottom: 10px;}
+.heroes_returntomenu li p {float: left;margin: 0;padding: 0;}
+.heroes_returntomenu img {width: 40px;float: left;padding-right: 5px;}
+.welcome_container ul {margin:0;padding:0;}
+.welcome_container {color: #333;}
+.heroes_returntomenu img {padding-right: 0;position: relative;top: 3px;padding-left: 9px;}
+.heroes_returntomenu a {display: block;text-decoration: none;color: #fff;}
+.heroes_returntomenu i {float: right;height: 50px;display: block;line-height: 50px;font-size: 20px;width: 38px;text-align: center;}
+.heroes_returntomenu {background: rgb(193, 214, 45);height: 50px;margin: 0;padding: 0;}
+.welcome_container .heroes_returntomenu li {height: 50px;line-height: 50px;}
+.heroes_returntomenu a {display: block;text-decoration: none;}
+.section_inner{padding: 10px;}
+.heroes_returntomenu img {width: 40px;float: left;margin-right: 5px;top: 5px;height: 40px;left: -1px;}
+.section_inner img {width: 40px;float: left;margin-right: 5px;top: 5px;height: 40px;left: -1px;}
+.welcome_container li {list-style: none;display: block;height: 40px;line-height: 40px;}
+.about_container .section_inner {padding: 0;}
+.claim_container .section_inner {padding: 0;}
+.list_bottom_margin li{margin-bottom: 10px;}
+.list_no_margin {
+margin: 0px;
+padding: 0;
+list-style: none;
+font-size: 14px;
+}
+.section_inner p {
+font-size: 14px;
+}
+.section_inner .fullwidth {
+width: 100%;
+height: auto;
+}
+/* ------------------------------------------ */
+/* STANDARD FORMS --------------------------- */
+/* ------------------------------------------ */
+.standard_form {
+background: #f5f5f5;
+}
+.standard_form input {
+background: #fff;
+padding-left: 10px;
+width: calc(100% - 10px);
+border-radius: 0;
+}
+button.submit_accepted_deal_reg {
+    width: 100%;
+    background: #c1d62d;
+    border: 0;
+    height: 50px;
+    padding: 0;
+    color: #fff;
+    margin: 5px 0px;
+    font-size: 18px;
+}

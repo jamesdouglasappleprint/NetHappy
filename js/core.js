@@ -26,7 +26,7 @@ function Core(){
   var core = this;
 
   core.languageContent = []
-  core.debug = 0; //if 1, disable cordova functionality
+  core.debug = 1; //if 1, disable cordova functionality
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -974,6 +974,7 @@ Core.prototype.getCategory = function(category,triggerElement){
   var data = JSON.parse(window.localStorage.getItem('category'+category))
   //console.log('category: '+category)
   //console.log(data)
+
   core.$renderList = $('<div/>')
   $('.thirdLevelContainer').hide()
   //Remove any additional styling classes added to content container before we possibly add new ones.
@@ -1131,6 +1132,8 @@ Core.prototype.getCategory = function(category,triggerElement){
         core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2 class="menuTitleSpacing">'+data.posts[i].title+'</h2><i class="fa fa-chevron-right"></i></a>')
         core.$renderList.append(core.$listParent)
       }
+    }else if (category == 'heroes'){
+
     }else{
       for (i = 0; i < data.count; i++) {
         core.$listParent = $('<li/>', {'class':'listParent', 'data-post':i}).append('<a href="#" class="listParentAnchor"><h2>'+data.posts[i].title+'</h2>'+data.posts[i].excerpt+'<i class="fa fa-chevron-right"></i></a>')
@@ -1139,9 +1142,16 @@ Core.prototype.getCategory = function(category,triggerElement){
     }
   }
 
-  core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
-  core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent listParentReturn">'+core.$grandparentReturn.html()+'</li>'+core.$renderList.html());
-  $('.contentContainer').html(core.$childSections)
+  //If heroes section, don't append the return link to the main container - append it to the heroes one instead.
+  if (category == 'heroes'){
+
+  }else{
+    core.$grandparentReturn = $('<a/>', {'class':'grandparentReturn','href':'#'}).html(triggerElement.replace('fa-chevron-right','fa-chevron-left'));
+    core.$childSections = $('<ul/>', {'class':'childSections','data-category':category}).append('<li class="listParent listParentReturn">'+core.$grandparentReturn.html()+'</li>'+core.$renderList.html());
+    $('.contentContainer').html(core.$childSections)
+  }
+
+
 
   //go to quick enablement third level menu
   $('.enableAnchor').click(function(){
@@ -1558,7 +1568,7 @@ Core.prototype.generateCookie = function (nonce,username,password) {
   			var arr = [data]
   			console.log(arr)
   			if (arr[0].status == 'ok'){
-  				//console.log[arr]
+  				console.log(arr)
   				window.localStorage.setItem('loggedIn', '1');
   				window.localStorage.setItem('user', username);
   				$('.navigateBack').hide()

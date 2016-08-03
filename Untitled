@@ -1,0 +1,58 @@
+<?php
+
+ini_set( 'display_errors', true );
+	error_reporting( E_ALL );
+
+defined('_JEXEC') or die('Restricted access');?>
+<!DOCTYPE html>
+<html xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>" >
+<?php $doc = JFactory::getDocument(); ?>
+<?php
+
+ini_set( 'display_errors', true );
+	error_reporting( E_ALL );
+
+//Get page alias for content inclusions
+function getCurrentAlias(){
+   $path = &JFactory::getURI()->getPath();
+   $length = strlen($path);
+
+	for ($i = $length; $i >= 0 ; $i--)
+		if ($path[$i] == '/')
+		return substr($path, $i + 1, $length - $i - 1);
+
+	return $path;
+}
+//set alias of index page to index, if you land on the straight URL since it doesn't give an alias to the default page. No idea why.
+$app = JFactory::getApplication();
+$menu = $app->getMenu();
+if ($menu->getActive() == $menu->getDefault()) {
+	$homepage = 'index';
+}else{
+	$homepage = str_replace(".php", "",getCurrentAlias());
+}
+//Get page title
+$page_title = $doc->getTitle();
+?>
+
+<?php include 'header.php';?>
+	<body id="<?php echo $homepage;?>" data-tite="<?php echo $page_title; ?>">
+		<div class="navMegaMenu">
+			<div class="container">
+				<jdoc:include type="module" name="menu" title="Main Menu" />
+			</div>
+		</div>
+		<?php
+			if($page_title == 'Aquatec Group Ltd - Home'){
+				include('home.php');
+			}elseif($page_title == 'Aquatec Group Ltd - News'){
+				include('newsandevents.php');
+			}elseif($page_title == 'Aquatec Group Ltd - Events'){
+				include('events.php');
+			}else{
+				include('singlePage.php');
+			}
+		?>
+	</body>
+<?php include 'footer.php'; //Include Footer?>
+</html>
