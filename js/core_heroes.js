@@ -85,11 +85,11 @@ HeroesCore.prototype.all_buttons = function(){
   //TERMS AND CONDITIONS USER AGREEMENT
   //Accept user agreement
   $(document).on("click",".termstoggle",function(e){
-    if ($(this).hasClass('fa-check-square')){
-      $(this).removeClass('fa-check-square').addClass('fa-square-o')
+    if ($(this).find('i').hasClass('fa-check-square')){
+      $(this).find('i').removeClass('fa-check-square').addClass('fa-square-o')
       window.localStorage.removeItem("termsandconditions");
     }else{
-      $(this).removeClass('fa-square-o').addClass('fa-check-square')
+      $(this).find('i').removeClass('fa-square-o').addClass('fa-check-square')
       window.localStorage.setItem("termsandconditions", 1);
       $('.heroes_termsandconditions_container').hide()
       console.log('load heroes menu')
