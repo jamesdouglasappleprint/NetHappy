@@ -119,6 +119,15 @@ background: #f5f5f5;
   color: black;
   min-width: 95%;
 }
+.standard_form label {
+    display: block;
+    color: #333;
+    padding: 0px;
+    height: 23px;
+    line-height: 23px;
+    font-size: 12px;
+    text-align: center;
+}
 .standard_heroes_button {
   width: 100%;
   background: #c1d62d;
