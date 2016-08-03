@@ -112,20 +112,21 @@ height: auto;
 background: #f5f5f5;
 }
 .standard_form input {
-    background: #fff;
-    padding-left: 10px;
-    width: calc(100% - 10px);
-    border-radius: 0;
-    color: black;
-    -webkit-appearance: none;
+  background: #fff;
+  padding-left: 10px;
+  width: calc(100% - 10px);
+  border-radius: 0;
+  color: black;
+  -webkit-appearance: textfield;
+    -moz-appearance: textfield;
 }
 .standard_heroes_button {
-    width: 100%;
-    background: #c1d62d;
-    border: 0;
-    height: 50px;
-    padding: 0;
-    color: #fff;
-    margin: 5px 0px;
-    font-size: 18px;
+  width: 100%;
+  background: #c1d62d;
+  border: 0;
+  height: 50px;
+  padding: 0;
+  color: #fff;
+  margin: 5px 0px;
+  font-size: 18px;
 }
