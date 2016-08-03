@@ -47,7 +47,7 @@
   <gap:plugin name="cordova-plugin-network-information" source="pgb" /><!-- Celluar info (offline//online) -->
   <gap:plugin name="com.indigoway.cordova.whitelist.whitelistplugin" version="1.1.1" source="pgb"/><!-- needed for Android Whitelisting -->
   <gap:plugin name="pushwoosh-pgb-plugin" source="npm" /><!--Pushwoosh plugin-->
-  <gap:plugin name="nl.x-services.plugins.socialsharing" spec="4.3.8" source="pgb" /><!-- Social Sharing -->
+  <gap:plugin name="nl.x-services.plugins.socialsharing" source="pgb" /><!-- Social Sharing -->
   <gap:plugin name="de.appplant.cordova.plugin.badge" source="pgb" />
   <gap:plugin name="org.apache.cordova.device" source="pgb" />
   <gap:plugin name="nl.x-services.plugins.calendar" source="pgb" /><!-- Publish events to device calender -->
