@@ -82,6 +82,56 @@
   </div>
 </div>
 
+<div id="deadlines">
+  <div class="welcome_container">
+    <ul class="heroes_returntomenu">
+      <li class="">
+        <a href="#" class="">
+            <img src="img/heroesIcon.png" class="">
+            Deadlines
+            <i class="fa fa-chevron-left"></i>
+        </a>
+      </li>
+    </ul>
+    <div class="section_inner">
+      <p><strong>Deadlines</strong></p>
+      <p>The NetApp Sales Hero Academy campaign will run quarterly, along with NetApp’s quarters. The first quarter is 1st August – 31st October, which is NetApp’s Q2.</p>
+      <p>Make sure all your claims are for activity between those dates.</p>
+    </div>
+  </div>
+</div>
+
+<div id="powerpoints">
+  <div class="welcome_container">
+    <ul class="heroes_returntomenu">
+      <li class="">
+        <a href="#" class="">
+            <img src="img/heroesIcon.png" class="">
+            My Power Points
+            <i class="fa fa-chevron-left"></i>
+        </a>
+      </li>
+    </ul>
+    <div class="section_inner">
+      <p><strong>My Power Points</strong></p>
+      <div class="powerpoints_section">
+        <img src="./img/icons/trophy.png">
+        <span class="powerPointsTotal">000</span>
+        <span class="powerPointsTitle">Power Points</span>
+      </div>
+      <div class="powerpoints_section">
+        <img class="powerpoints_level_image" src="./img/icons/apprentice_large.png">
+        <span class="heroskillslevel">Hero skills level:</span>
+        <span class="heroskillslevel_text">INITIATE</span>
+      </div>
+      <div class="powerpoints_section heroes_next_level">
+        <img class="powerpoints_next_level_image" src="./img/icons/apprentice_large.png">
+        <span class="next_heroes_level_text">Only <span class="next_heroes_points_total">0</span> points from becoming the <span class="next_heroes_next_level_text">APPRENTICE</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="about">
   <div class="about_container">
     <ul class="heroes_returntomenu">
@@ -265,12 +315,12 @@
           </a>
         </li>
         <li class="heroes_menu_item">
-          <a href="#" class="heroes_menu_item_anchor_parent" data-panel="c">
+          <a href="#" class="heroes_menu_item_anchor_parent" data-panel="flash">
           Closed Flash Deal <i class="fa fa-chevron-right"></i>
           </a>
         </li>
         <li class="heroes_menu_item">
-          <a href="#" class="heroes_menu_item_anchor_parent" data-panel="c">
+          <a href="#" class="heroes_menu_item_anchor_parent" data-panel="marketing">
           Marketing Campaign <i class="fa fa-chevron-right"></i>
           </a>
         </li>
@@ -308,9 +358,8 @@
               <label for="value">Value</label>
               <input type="text" id="accepted_value" autocomplete='off'/>
           </div>
-          <button class="submit_accepted_deal_reg" type="button">Submit</button>
+          <button class="submit_accepted_deal_reg standard_heroes_button" type="button">Submit</button>
       </form>
-      <a href="#" class="get_heroes_points">GET MAH POIWNTS</a>
     </div>
   </div>
 </div>
@@ -346,7 +395,6 @@
           </div>
           <button class="submit_closed_deal_reg standard_heroes_button" type="button">Submit</button>
       </form>
-      <a href="#" class="get_heroes_points">GET MAH POIWNTS</a>
     </div>
   </div>
 </div>
@@ -382,7 +430,87 @@
           </div>
           <button class="submit_events_deal_reg standard_heroes_button" type="button">Submit</button>
       </form>
+    </div>
+  </div>
+</div>
+
+<div id="flash" class="subitem_outer standard_form">
+  <div class="subitem_container">
+    <ul class="heroes_returntomenu heroes_returnto_claim_menu">
+      <li class="">
+        <a href="#" class="">
+            <img src="img/heroesIcon.png" class="">
+            Prizes
+            <i class="fa fa-chevron-left"></i>
+        </a>
+      </li>
+    </ul>
+    <div class="section_inner">
+      <p>
+        <strong>Make a claim</strong><br>
+        <em>Closed Flash Deal</em>
+      </p>
+      <form method="post" class="loginForm">
+          <div>
+              <label for="po">PO No</label>
+              <input type="text" id="flash_po" autocomplete='off'/>
+          </div>
+          <div>
+              <label for="enduser">End User</label>
+              <input type="text" id="flash_enduser" autocomplete='off'/>
+          </div>
+          <div>
+              <label for="value">Value</label>
+              <input type="text" id="flash_value" autocomplete='off'/>
+          </div>
+          <button class="submit_flash_deal_reg standard_heroes_button" type="button">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="marketing" class="subitem_outer standard_form">
+  <div class="subitem_container">
+    <ul class="heroes_returntomenu heroes_returnto_claim_menu">
+      <li class="">
+        <a href="#" class="">
+            <img src="img/heroesIcon.png" class="">
+            Prizes
+            <i class="fa fa-chevron-left"></i>
+        </a>
+      </li>
+    </ul>
+    <div class="section_inner">
+      <p>
+        <strong>Make a claim</strong><br>
+        <em>Marketing Campaign</em>
+        <p>Please email details of the marketing campaign that you ran through Arrow’s Virtual Marketing Manager, or NetApp’s Grid to Laura.Stewart@Arrow.com and points will be added to your NetApp Hero Academy Account.</p>
+      </p>
       <a href="#" class="get_heroes_points">GET MAH POIWNTS</a>
+    </div>
+  </div>
+</div>
+
+<div id="claim_thanks" class="subitem_outer claim_thanks_container">
+  <div class="subitem_container">
+    <div class="section_inner">
+      <p class="hero_thankyou_title">Thank you<br> for making a claim</p>
+      <p class="heroes_center_text">Check back later to find out if you’ve done enough to increase your hero level</p>
+      <span><a href="#" class="close_claim_window"><i class="fa fa-times" aria-hidden="true"></i></a></span>
+      <button class="standard_heroes_button my_power_points" type="button">MY POWER POINTS</button>
+    </div>
+  </div>
+</div>
+
+<div id="levelup" class="subitem_outer levelup_container">
+  <div class="subitem_container">
+    <div class="section_inner">
+      <p class="levelup_line1">Congratulations!</p>
+      <p class="levelup_line2">You are now the</p>
+      <span class="levelup_line3">APPRENTICE</span>
+      <span class="level_up_icon"><img src="./img/icons/apprentice_large_white.png" class="level_up_icon_img"></span>
+      <span><a href="#" class="close_congrats_window"><i class="fa fa-times" aria-hidden="true"></i></a></span>
+      <button class="standard_heroes_button my_power_points" type="button">MY POWER POINTS</button>
     </div>
   </div>
 </div>

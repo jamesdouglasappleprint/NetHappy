@@ -25,6 +25,7 @@ function HeroesCore(){
   heroes_core.all_buttons()
   heroes_core.setContainerHeight()
   heroes_core.registerUser()
+  heroes_core.firstLoad()
 
   heroes_core.languageContent = []
   heroes_core.debug = 1; //if 1, disable cordova functionality
@@ -72,6 +73,8 @@ HeroesCore.prototype.all_buttons = function(){
         //Dont skip terms and conditions
         $('.heroes_termsandconditions_container').show()
       }
+
+      heroes_core.getPoints()
 
     })
   })
@@ -132,6 +135,19 @@ HeroesCore.prototype.all_buttons = function(){
     heroes_core.getPoints();
   });
 
+  $(document).on("click",".my_power_points",function(e){
+    e.preventDefault()
+    $('#claim_thanks').hide()
+    $('.subitem_outer').hide()
+    $('#powerpoints').show()
+    $('#claim').hide()
+  });
+
+  $(document).on("click",".close_claim_window",function(e){
+    e.preventDefault()
+    $('#claim_thanks').hide()
+  });
+
   $(document).on("click",".submit_accepted_deal_reg",function(e){
     e.preventDefault()
 
@@ -169,6 +185,18 @@ HeroesCore.prototype.all_buttons = function(){
     heroes_core.pointsmeanprizes(stringToPass);
   });
 
+  $(document).on("click",".submit_flash_deal_reg",function(e){
+    e.preventDefault()
+
+    var ponum = $('#flash_po').val()
+    var enduser = $('#flash_enduser').val()
+    var value = $('#flash_value').val()
+    var username = localStorage.getItem('userName')
+    var stringToPass = 'dt=3'+'&po='+ponum+'&eu='+enduser+'&val='+value+'&un='+username
+
+    heroes_core.pointsmeanprizes(stringToPass);
+  });
+
 }
 
 HeroesCore.prototype.load_heroes_menu = function(){
@@ -182,12 +210,14 @@ HeroesCore.prototype.load_heroes_menu = function(){
 HeroesCore.prototype.pointsmeanprizes = function(string){
   var heroes_core = this
 
+  $('#claim_thanks').show()
+
   $.ajax({
     type: 'POST',
     data: string,
     async: false,
     dataType:'jsonp',
-    jsonp: 'callback',
+    jsonp: 'APICallBack',
     url: 'http://netappyheroes.apple-dev.co.uk/ghRegisterDeal.ashx',
     success: function(data){
       console.log(data)
@@ -213,7 +243,7 @@ HeroesCore.prototype.registerUser = function(info){
     data: 'un='+un+'&fn='+fn+'&ln='+ln+'&em='+em,
     async: false,
     dataType:'jsonp',
-    jsonp: 'callback',
+    jsonp: 'APICallBack',
     url: 'http://netappyheroes.apple-dev.co.uk/ghRegisterUser.ashx',
     success: function(data){
       console.log('Heroes User Registered:',data)
@@ -236,10 +266,31 @@ HeroesCore.prototype.getPoints = function(){
     data: 'un='+localStorage.getItem('userName'),
     async: false,
     dataType:'jsonp',
-    jsonp: 'callback',
+    jsonp: 'APICallBack',
     url: 'http://netappyheroes.apple-dev.co.uk/ghGetPoints.ashx',
     success: function(data){
       console.log('User Points =',data)
+      $('.levelup_line3').html(data.Level)
+      $('.heroskillslevel_text').html(data.Level)
+      $('.powerPointsTotal').html(data.Code)
+
+      localStorage.setItem('score',data.Level)
+
+      heroes_core.getNextLevel(data.Code)
+
+      if (data.Level == 'Initiate'){
+        $('.powerpoints_level_image').attr('src','./img/icons/initiate_large.png')
+      }else if(data.Level == 'Apprentice'){
+        $('.powerpoints_level_image').attr('src','./img/icons/apprentice_large.png')
+      }else if(data.Level == 'Side Kick'){
+        $('.powerpoints_level_image').attr('src','./img/icons/sidekick_large.png')
+      }else if(data.Level == 'Hero'){
+        $('.powerpoints_level_image').attr('src','./img/icons/hero_large.png')
+      }else if(data.Level == 'Super Hero'){
+        $('.powerpoints_level_image').attr('src','./img/icons/superhero_large.png')
+      }else{
+
+      }
 
     },
     error: function(data){
@@ -248,6 +299,79 @@ HeroesCore.prototype.getPoints = function(){
   });
 
 }
+
+HeroesCore.prototype.getNextLevel = function(points){
+  var heroes_core = this
+
+  console.log('p='+points)
+
+  $.ajax({
+    type: 'POST',
+    data: 'p='+points,
+    async: false,
+    dataType:'jsonp',
+    jsonp: 'APICallBack',
+    url: 'http://netappyheroes.apple-dev.co.uk/ghNextLevel.ashx',
+    success: function(data){
+      console.log('Next Level =',data)
+
+      $('.next_heroes_points_total').html(data.Code)
+      $('.next_heroes_next_level_text').html(data.Level)
+
+      if (data.Level == 'Initiate'){
+        $('.powerpoints_next_level_image').attr('src','./img/icons/initiate_large.png')
+      }else if(data.Level == 'Apprentice'){
+        $('.powerpoints_next_level_image').attr('src','./img/icons/apprentice_large.png')
+      }else if(data.Level == 'Side Kick'){
+        $('.powerpoints_next_level_image').attr('src','./img/icons/sidekick_large.png')
+      }else if(data.Level == 'Hero'){
+        $('.powerpoints_next_level_image').attr('src','./img/icons/hero_large.png')
+      }else if(data.Level == 'Super Hero'){
+        $('.powerpoints_next_level_image').attr('src','./img/icons/superhero_large.png')
+      }else{
+
+      }
+
+    },
+    error: function(data){
+      console.log('Error getting Next Level.',data)
+    }
+  });
+
+}
+
+HeroesCore.prototype.firstLoad = function(){
+  var heroes_core = this
+
+  $.ajax({
+    type: 'POST',
+    data: 'un='+localStorage.getItem('userName'),
+    async: false,
+    dataType:'jsonp',
+    jsonp: 'APICallBack',
+    url: 'http://netappyheroes.apple-dev.co.uk/ghGetPoints.ashx',
+    success: function(data){
+      console.log('User Points =',data)
+
+      if (localStorage.getItem('score') === null){
+        console.log('no variable set')
+      }else{
+        var previousTotal = localStorage.getItem('score')
+        var currentTotal = data.Code
+
+        if (previousTotal != currentTotal){
+          $('#levelup').show()
+        }
+      }
+
+    },
+    error: function(data){
+      console.log('Error getting user points.',data)
+    }
+  });
+
+}
+
 
 HeroesCore.prototype.x = function(){
   var heroes_core = this
