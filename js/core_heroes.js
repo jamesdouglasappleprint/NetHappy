@@ -176,9 +176,9 @@ HeroesCore.prototype.all_buttons = function(){
   $(document).on("click",".submit_events_deal_reg",function(e){
     e.preventDefault()
 
-    var evname = $('#closed_evname').val()
-    var evloc = $('#closed_evloc').val()
-    var date = $('#closed_date').val()
+    var evname = $('#events_evname').val()
+    var evloc = $('#events_evloc').val()
+    var date = $('#events_date').val()
     var username = localStorage.getItem('userName')
     var stringToPass = 'dt=4'+'&evname='+evname+'&evloc='+evloc+'&evdate='+date+'&un='+username
 
