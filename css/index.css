@@ -514,3 +514,24 @@ table.ui-datepicker-calendar {width: 100%;border-spacing: 0;}
 
 /* bodge for french app so i dont have to remove bits of the app that they'll blatantly want me to put back at some point */
 .hideme {display: none;}
+
+
+@media only screen and (min-device-width: 600px){
+  .listGrandParentAnchor h2, .grandparentReturn h2, .dealreglink h2 {font-size: 24px;}
+  .listGrandParentAnchor i, .grandparentReturn i, .listParent i, .dealreglink i {font-size: 40px;}
+  .menuIcon {width: 60px;height: 60px;}
+  .listGrandParentAnchor h2, .grandparentReturn h2, .dealreglink h2 {left: 80px;}
+  .listParent>.listGrandParentAnchor p, .listGrandParentAnchorReturn p, .listGrandParentAnchorReturn h2, .listChild p, .listChild h2 {left: 80px;}
+  .listGrandParent>a>.menuTitleSpacing {margin-top: -11.5px;}
+  .listParent h2 {font-size: 24px;}
+  .listGrandParentAnchorReturn>.menuTitleSpacing {margin-top: -11.5px;}
+  .listParent h2 {overflow: inherit;}
+  .listParent p {top: 61%;}
+  .postInner p {font-size: 20px;}
+  .contactMyBdm, .visitSiteLink, .addPostEvent, .addFullEvent, .registerForEvent, .promotionsFindOutMore {
+    font-size: 20px;}
+    .contactMyBdm {width: 300px;margin-left: -150px;}
+    .listParentReturn .listParent {height: 12.5%;}
+    .listParentReturn {height: 14%;}
+  body{font-size: 20px;}
+}

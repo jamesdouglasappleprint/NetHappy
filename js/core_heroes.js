@@ -25,7 +25,6 @@ function HeroesCore(){
   heroes_core.all_buttons()
   heroes_core.setContainerHeight()
   heroes_core.registerUser()
-  heroes_core.firstLoad()
 
   heroes_core.languageContent = []
   heroes_core.debug = 1; //if 1, disable cordova functionality
@@ -38,16 +37,28 @@ HeroesCore.prototype.setContainerHeight = function(){
   console.log('setting container height')
   var docHeight = $(document).height()
   var maths = docHeight-120
-  var maths2 = docHeight-120-50
+  var maths2 = docHeight-120-$('.heroes_menu_item').height()
 
   $('.heroes_container').css({height:maths+"px"})
   $('.heroes_menu_container').css({height:maths2+"px"})
   $('#welcome').css({height:maths+"px"})
   $('#about').css({height:maths+"px"})
 
+  $('.welcome_container .heroes_returntomenu li').css({'line-height':$('.heroes_menu_item').height()+'px'})
+  $('.claim_container .heroes_returntomenu li').css({'line-height':$('.heroes_menu_item').height()+'px'})
+  $('.subitem_container .heroes_returntomenu li').css({'line-height':$('.heroes_menu_item').height()+'px'})
+  $('.subitem_container .heroes_returnto_about_menu li').css({'line-height':$('.heroes_menu_item').height()+'px'})
+  $('.about_container .heroes_returntomenu li').css({'line-height':$('.heroes_menu_item').height()+'px'})
+  $('.welcome_container .heroes_returntomenu li').css({'height':$('.heroes_menu_item').height()+'px'})
+  $('.about_container .heroes_returntomenu li').css({'height':$('.heroes_menu_item').height()+'px'})
+  $('.heroes_returntomenu').css({'height':$('.heroes_menu_item').height()+'px'})
+  $('.heroes_return').css({'height':$('.heroes_menu_item').height()+'px'})
+  $('.heroes_container .listParent').css({'height':$('.heroes_menu_item').height()+'px'})
+
   $('.heroes_menu_item_anchor_parent').css({'line-height':$('.heroes_menu_item').height()+'px'})
   $('.heroes_menu_item_anchor_parent i').css({'line-height':$('.heroes_menu_item').height()+'px'})
   $('.heroes_return').css({'line-height':$('.heroes_return').height()+1+'px'})
+    $('.heroes_menu_container').css({'top':$('.heroes_menu_item').height()+'px'})
 }
 
 HeroesCore.prototype.all_buttons = function(){
@@ -73,7 +84,7 @@ HeroesCore.prototype.all_buttons = function(){
         //Dont skip terms and conditions
         $('.heroes_termsandconditions_container').show()
       }
-
+      heroes_core.firstLoad()
       heroes_core.getPoints()
 
     })
@@ -146,6 +157,11 @@ HeroesCore.prototype.all_buttons = function(){
   $(document).on("click",".close_claim_window",function(e){
     e.preventDefault()
     $('#claim_thanks').hide()
+  });
+
+  $(document).on("click",".close_congrats_window",function(e){
+    e.preventDefault()
+    $('#levelup').hide()
   });
 
   $(document).on("click",".submit_accepted_deal_reg",function(e){
@@ -222,6 +238,11 @@ HeroesCore.prototype.pointsmeanprizes = function(string){
     success: function(data){
       console.log(data)
 
+      //Clear all inputs once we've submitted a form
+      $('.section_inner input').each(function(){
+        $(this).val('')
+      })
+
     },
     error: function(){
       console.log('Error registering user.')
@@ -274,9 +295,8 @@ HeroesCore.prototype.getPoints = function(){
       $('.heroskillslevel_text').html(data.Level)
       $('.powerPointsTotal').html(data.Code)
 
-      localStorage.setItem('score',data.Level)
-
       heroes_core.getNextLevel(data.Code)
+
 
       if (data.Level == 'Initiate'){
         $('.powerpoints_level_image').attr('src','./img/icons/initiate_large.png')
@@ -357,11 +377,14 @@ HeroesCore.prototype.firstLoad = function(){
         console.log('no variable set')
       }else{
         var previousTotal = localStorage.getItem('score')
-        var currentTotal = data.Code
+        var currentTotal = data.Level
 
+        console.log(previousTotal,currentTotal)
         if (previousTotal != currentTotal){
           $('#levelup').show()
+          localStorage.setItem('score',data.Level)
         }
+
       }
 
     },
