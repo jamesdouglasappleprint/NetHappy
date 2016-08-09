@@ -27,7 +27,7 @@ function HeroesCore(){
   heroes_core.registerUser()
 
   heroes_core.languageContent = []
-  heroes_core.debug = 1; //if 1, disable cordova functionality
+  heroes_core.debug = 0; //if 1, disable cordova functionality
 
 }
 
