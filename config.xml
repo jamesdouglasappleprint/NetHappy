@@ -16,6 +16,8 @@
   <description>NetHappy</description>
 
   <author href="http://yoursite.com" email="you@youremail.com">Your Name</author>
+
+  <gap:plugin name="pushwoosh-pgb-plugin" source="npm" /><!--Pushwoosh plugin-->
   <access origin="*"/> <!-- allow all pages, use for development -->
   <access origin="*.pushwoosh.com"/> <!-- allow pushwoosh service -->
   <access origin="velocity.apple-dev.co.uk"/>
@@ -36,6 +38,7 @@
     <preference name="orientation" value="portrait" /><!--force portrait orientation-->
     <preference name="StatusBarOverlaysWebView" value="true" />
     <preference name="StatusBarStyle" value="lightcontent" />
+    <preference name="android-build-tool" value="gradle" />
   </platform>
 
   <platform name="android" >
@@ -48,7 +51,6 @@
   <gap:plugin name="cordova-plugin-dialogs" source="npm" /><!--Internal notifications -->
   <gap:plugin name="cordova-plugin-network-information" source="npm" /><!-- Celluar info (offline//online) -->
   <gap:plugin name="cordova-plugin-whitelist" source="npm" /><!-- needed for Android Whitelisting -->
-  <gap:plugin name="pushwoosh-pgb-plugin" source="npm" /><!--Pushwoosh plugin-->
   <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" /><!-- Social Sharing -->
   <!-- <gap:plugin name="de.appplant.cordova.plugin.badge" source="npm" /> -->
   <gap:plugin name="org.apache.cordova.device" source="npm" />

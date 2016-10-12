@@ -2021,17 +2021,6 @@ Core.prototype.initPushwoosh = function(username, action){
 
   pushNotification.registerDevice(
     function(status) {
-      var pushToken = status.pushToken;
-      console.log(pushToken)
-        // handle successful registration here
-    },
-    function(status) {
-      // handle registration error here
-    }
-  );
-
-  pushNotification.registerDevice(
-    function(status) {
       console.log('attempting to register...')
       //Flag for updates - set this incrementally to force users to re-register for notifications
       window.localStorage.setItem('reg', "7")
