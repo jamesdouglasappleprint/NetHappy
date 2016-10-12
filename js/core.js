@@ -1991,7 +1991,7 @@ Core.prototype.initPushwoosh = function(username, action){
   console.log('PUSHWOOSH INIT'+'_'+action+'_'+username)
 
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
-  console.log('getting this far 1')
+
 
   //IN app notifications
   document.addEventListener('push-notification',
@@ -2013,30 +2013,12 @@ Core.prototype.initPushwoosh = function(username, action){
           navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
       }
   );
-  console.log('getting this far 2')
+
   pushNotification.onDeviceReady({
     projectid: "888511028179", // GOOGLE_PROJECT_ID
     appid : "5093D-320F3", // PUSHWOOSH_APP_ID
     serviceName: ""
   });
-  console.log('getting this far 3')
-  pushNotification.registerDevice(
-    function(status) {
-      console.log('attempting to register...')
-      //Flag for updates - set this incrementally to force users to re-register for notifications
-      window.localStorage.setItem('reg', "7")
-      var deviceToken = status['deviceToken'];
-      console.log('registerDevice: ' + deviceToken);
-      var appLang = localStorage.getItem('language')
-      setTagsFunc(username,appLang)
-    },
-    function(status) {
-      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-      console.log('failed to register : ' + JSON.stringify(status));
-      alert(JSON.stringify(['failed to register ', status]));
-    }
-  );
-
 
   function setTagsFunc(username,lang){
     console.log('Attempting tag setting of username:'+username)
@@ -2065,21 +2047,37 @@ Core.prototype.initPushwoosh = function(username, action){
 
 
 
-  // if (action == 'register'){
-  //   console.log('attempting register')
-  //
-  //
-  // }else if (action == 'unregister'){
-  //   console.log('Unregistering Device')
-  //   //Unregister for push
-  //   pushNotification.unregisterDevice (
-  //     function(token){
-  //         console.log("unregistered success!" + token);
-  //     },
-  //     function(status){
-  //         console.log("unregistered failed!" + status);
-  //     }
-  //   )
+  if (action == 'register'){
+    console.log('attempting register')
+
+    pushNotification.registerDevice(
+      function(status) {
+        console.log('attempting to register...')
+        //Flag for updates - set this incrementally to force users to re-register for notifications
+        window.localStorage.setItem('reg', "7")
+        var deviceToken = status['deviceToken'];
+        console.log('registerDevice: ' + deviceToken);
+        var appLang = localStorage.getItem('language')
+        setTagsFunc(username,appLang)
+      },
+      function(status) {
+        //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+        console.log('failed to register : ' + JSON.stringify(status));
+        alert(JSON.stringify(['failed to register ', status]));
+      }
+    );
+
+  }else if (action == 'unregister'){
+    console.log('Unregistering Device')
+    //Unregister for push
+    pushNotification.unregisterDevice (
+      function(token){
+          console.log("unregistered success!" + token);
+      },
+      function(status){
+          console.log("unregistered failed!" + status);
+      }
+    )
   // }
 
 
