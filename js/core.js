@@ -1989,7 +1989,7 @@ Core.prototype.initPushwoosh = function(username, action){
   var core = this
   console.log('PUSHWOOSH INIT'+'_'+action+'_'+username)
 
-  var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
+  var pushwoosh = cordova.require("pushwoosh-cordova-plugin.PushNotification");
 
   //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
   document.addEventListener('push-notification', function(event) {
@@ -2004,7 +2004,7 @@ Core.prototype.initPushwoosh = function(username, action){
     // }
     //
     // alert(title);
-
+    console.log(notification.aps.alert)
     navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
     //pushNotification.setApplicationIconBadgeNumber(0);
 
@@ -2040,39 +2040,54 @@ Core.prototype.initPushwoosh = function(username, action){
     );
   }//end func
 
-  if (action == 'register'){
-    console.log('attempting register')
+  pushwoosh.registerDevice(
+    function(status) {
+      //Flag for updates - set this incrementally to force users to re-register for notifications
+      window.localStorage.setItem('reg', "7")
+      var deviceToken = status['deviceToken'];
+      console.log('registerDevice: ' + deviceToken);
+      var appLang = localStorage.getItem('language')
+      setTagsFunc(username,appLang)
+    },
+    function(status) {
+      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+      console.log('failed to register : ' + JSON.stringify(status));
+      alert(JSON.stringify(['failed to register ', status]));
+    }
+  );
 
-
-    //register for push
-    pushwoosh.registerDevice(
-      function(status) {
-        //Flag for updates - set this incrementally to force users to re-register for notifications
-        window.localStorage.setItem('reg', "7")
-        var deviceToken = status['deviceToken'];
-        console.log('registerDevice: ' + deviceToken);
-        var appLang = localStorage.getItem('language')
-        setTagsFunc(username,appLang)
-      },
-      function(status) {
-        //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-        console.log('failed to register : ' + JSON.stringify(status));
-        alert(JSON.stringify(['failed to register ', status]));
-      }
-    );
-
-  }else if (action == 'unregister'){
-    console.log('Unregistering Device')
-    //Unregister for push
-    pushNotification.unregisterDevice (
-      function(token){
-          console.log("unregistered success!" + token);
-      },
-      function(status){
-          console.log("unregistered failed!" + status);
-      }
-    )
-  }
+  // if (action == 'register'){
+  //   console.log('attempting register')
+  //
+  //   //register for push
+  //   pushwoosh.registerDevice(
+  //     function(status) {
+  //       //Flag for updates - set this incrementally to force users to re-register for notifications
+  //       window.localStorage.setItem('reg', "7")
+  //       var deviceToken = status['deviceToken'];
+  //       console.log('registerDevice: ' + deviceToken);
+  //       var appLang = localStorage.getItem('language')
+  //       setTagsFunc(username,appLang)
+  //     },
+  //     function(status) {
+  //       //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+  //       console.log('failed to register : ' + JSON.stringify(status));
+  //       alert(JSON.stringify(['failed to register ', status]));
+  //     }
+  //   );
+  //
+  // }else if (action == 'unregister'){
+  //   console.log('Unregistering Device')
+  //   //Unregister for push
+  //   pushNotification.unregisterDevice (
+  //     function(token){
+  //         console.log("unregistered success!" + token);
+  //     },
+  //     function(status){
+  //         console.log("unregistered failed!" + status);
+  //     }
+  //   )
+  // }
 
 
 
