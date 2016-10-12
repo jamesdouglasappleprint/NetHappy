@@ -142,7 +142,7 @@ Core.prototype.loadLanguageGrandparentMenu = function(){
     $('.appContainer').load("home.html", function(){
       core.getInAppLanguageContent(localStorage.getItem('language'))
       var grandParentMenu = $('.listGrandParent').length
-      console.log(grandParentMenu)
+      //console.log(grandParentMenu)
       var grandParentMenuMaths = 100 / grandParentMenu
       $('.sections li').css({height:grandParentMenuMaths+'%'})
     })
@@ -152,7 +152,7 @@ Core.prototype.loadLanguageGrandparentMenu = function(){
 //Get JSON containing all in APP text
 Core.prototype.getInAppLanguageContent = function(language){
   var core = this
-  console.warn(language)
+  console.warn('language is set as: ', language)
 
   var inAppLanguage = ''
 
@@ -2019,6 +2019,34 @@ Core.prototype.initPushwoosh = function(username, action){
     serviceName: ""
   });
 
+  pushNotification.registerDevice(
+    function(status) {
+      var pushToken = status.pushToken;
+      console.log(pushToken)
+        // handle successful registration here
+    },
+    function(status) {
+      // handle registration error here
+    }
+  );
+
+  pushNotification.registerDevice(
+    function(status) {
+      console.log('attempting to register...')
+      //Flag for updates - set this incrementally to force users to re-register for notifications
+      window.localStorage.setItem('reg', "7")
+      var deviceToken = status['deviceToken'];
+      console.log('registerDevice: ' + deviceToken);
+      var appLang = localStorage.getItem('language')
+      setTagsFunc(username,appLang)
+    },
+    function(status) {
+      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+      console.log('failed to register : ' + JSON.stringify(status));
+      alert(JSON.stringify(['failed to register ', status]));
+    }
+  );
+
   function setTagsFunc(username,lang){
     console.log('Attempting tag setting of username:'+username)
     console.log('Attempting tag setting of language:'+lang)
@@ -2044,22 +2072,7 @@ Core.prototype.initPushwoosh = function(username, action){
     );
   }//end func
 
-  pushNotification.registerDevice(
-    function(status) {
-      console.log('attempting to register...')
-      //Flag for updates - set this incrementally to force users to re-register for notifications
-      window.localStorage.setItem('reg', "7")
-      var deviceToken = status['deviceToken'];
-      console.log('registerDevice: ' + deviceToken);
-      var appLang = localStorage.getItem('language')
-      setTagsFunc(username,appLang)
-    },
-    function(status) {
-      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-      console.log('failed to register : ' + JSON.stringify(status));
-      alert(JSON.stringify(['failed to register ', status]));
-    }
-  );
+
 
   // if (action == 'register'){
   //   console.log('attempting register')
