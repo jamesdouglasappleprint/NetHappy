@@ -2019,6 +2019,24 @@ Core.prototype.initPushwoosh = function(username, action){
     serviceName: ""
   });
 
+  pushNotification.registerDevice(
+    function(status) {
+      console.log('attempting to register...')
+      //Flag for updates - set this incrementally to force users to re-register for notifications
+      window.localStorage.setItem('reg', "7")
+      var deviceToken = status['deviceToken'];
+      console.log('registerDevice: ' + deviceToken);
+      var appLang = localStorage.getItem('language')
+      setTagsFunc(username,appLang)
+    },
+    function(status) {
+      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+      console.log('failed to register : ' + JSON.stringify(status));
+      alert(JSON.stringify(['failed to register ', status]));
+    }
+  );
+
+
   function setTagsFunc(username,lang){
     console.log('Attempting tag setting of username:'+username)
     console.log('Attempting tag setting of language:'+lang)
@@ -2049,22 +2067,6 @@ Core.prototype.initPushwoosh = function(username, action){
   if (action == 'register'){
     console.log('attempting register')
 
-    pushNotification.registerDevice(
-      function(status) {
-        console.log('attempting to register...')
-        //Flag for updates - set this incrementally to force users to re-register for notifications
-        window.localStorage.setItem('reg', "7")
-        var deviceToken = status['deviceToken'];
-        console.log('registerDevice: ' + deviceToken);
-        var appLang = localStorage.getItem('language')
-        setTagsFunc(username,appLang)
-      },
-      function(status) {
-        //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-        console.log('failed to register : ' + JSON.stringify(status));
-        alert(JSON.stringify(['failed to register ', status]));
-      }
-    );
 
   }else if (action == 'unregister'){
     console.log('Unregistering Device')
