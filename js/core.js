@@ -2061,7 +2061,7 @@ Core.prototype.initPushwoosh = function(username, action){
       alert(JSON.stringify(['failed to register ', status]));
     }
   );
-  
+
   // if (action == 'register'){
   //   console.log('attempting register')
   //
