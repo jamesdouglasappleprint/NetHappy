@@ -2046,24 +2046,35 @@ Core.prototype.initPushwoosh = function(username, action){
   }//end func
 
   pushNotification.registerDevice(
-    function(status) {
-      console.log('firing register device')
-      //Flag for updates - set this incrementally to force users to re-register for notifications
-      window.localStorage.setItem('reg', "7")
-      var deviceToken = status['deviceToken'];
-      console.log('registerDevice: ' + deviceToken);
-      var appLang = localStorage.getItem('language')
-      setTagsFunc(username,appLang)
-    },
-    function(status) {
-      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-      console.log('failed to register : ' + JSON.stringify(status));
-      alert(JSON.stringify(['failed to register ', status]));
-    }
-  );
+  function(status) {
+    var pushToken = status.pushToken;
+    console.log(pushToken)
+      // handle successful registration here
+  },
+  function(status) {
+    // handle registration error here
+  }
+);
+
 
   // if (action == 'register'){
   //   console.log('attempting register')
+  //   pushNotification.registerDevice(
+  //     function(status) {
+  //       console.log('firing register device')
+  //       //Flag for updates - set this incrementally to force users to re-register for notifications
+  //       window.localStorage.setItem('reg', "7")
+  //       var deviceToken = status['deviceToken'];
+  //       console.log('registerDevice: ' + deviceToken);
+  //       var appLang = localStorage.getItem('language')
+  //       setTagsFunc(username,appLang)
+  //     },
+  //     function(status) {
+  //       //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+  //       console.log('failed to register : ' + JSON.stringify(status));
+  //       alert(JSON.stringify(['failed to register ', status]));
+  //     }
+  //   );
   //
   //
   //
