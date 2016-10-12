@@ -63,7 +63,7 @@ function Core(){
   //This flag is set in the pushwoosh register at the bottom of this document.
 
   if (core.debug == 0){
-    if (window.localStorage.getItem('reg') == "6"){
+    if (window.localStorage.getItem('reg') == "7"){
 
     }else{
       console.log('user not registered, registering...')
@@ -1991,9 +1991,28 @@ Core.prototype.initPushwoosh = function(username, action){
 
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
 
-  pushNotification.onDeviceReady({
+  //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
+  document.addEventListener('push-notification', function(event) {
+    var notification = event.notification;
+    console.log('push message recieved');
+
+    // var title = event.notification.title;
+    // var userData = event.notification.userdata;
+    //
+    // if(typeof(userData) != "undefined") {
+    //  console.warn('user data: ' + JSON.stringify(userData));
+    // }
+    //
+    // alert(title);
+
+    navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
+    //pushNotification.setApplicationIconBadgeNumber(0);
+
+  });
+
+  pushwoosh.onDeviceReady({
     projectid: "888511028179", // GOOGLE_PROJECT_ID
-    pw_appid : "5093D-320F3" // PUSHWOOSH_APP_ID
+    appid : "5093D-320F3" // PUSHWOOSH_APP_ID
   });
 
   function setTagsFunc(username,lang){
@@ -2024,30 +2043,12 @@ Core.prototype.initPushwoosh = function(username, action){
   if (action == 'register'){
     console.log('attempting register')
 
-    //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
-    document.addEventListener('push-notification', function(event) {
-      var notification = event.notification;
-      console.log('push message recieved');
-
-      // var title = event.notification.title;
-      // var userData = event.notification.userdata;
-      //
-      // if(typeof(userData) != "undefined") {
-      //  console.warn('user data: ' + JSON.stringify(userData));
-      // }
-      //
-      // alert(title);
-
-      navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
-      //pushNotification.setApplicationIconBadgeNumber(0);
-
-    });
 
     //register for push
-    pushNotification.registerDevice(
+    pushwoosh.registerDevice(
       function(status) {
         //Flag for updates - set this incrementally to force users to re-register for notifications
-        window.localStorage.setItem('reg', "6")
+        window.localStorage.setItem('reg', "7")
         var deviceToken = status['deviceToken'];
         console.log('registerDevice: ' + deviceToken);
         var appLang = localStorage.getItem('language')
