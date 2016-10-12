@@ -2039,7 +2039,7 @@ Core.prototype.initPushwoosh = function(username, action){
       // alert(title);
 
       navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
-      pushNotification.setApplicationIconBadgeNumber(0);
+      //pushNotification.setApplicationIconBadgeNumber(0);
 
     });
 
