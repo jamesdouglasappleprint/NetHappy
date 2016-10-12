@@ -2135,8 +2135,6 @@ document.addEventListener("deviceready", OnDeviceReady, false);
 function OnDeviceReady()    {
   console.log('device is ready')
   //window.plugin.notification.badge.clear();//clear notification badges
-  ////////BOOT CORE
-  var Core = new Core();
 }
 
 ////////FIRE ON DEVICE OFFLINE
@@ -2144,3 +2142,6 @@ document.addEventListener("offline", onOffline, false);
 function onOffline() {
   navigator.notification.alert('Uhoh, it looks like you\'re offline! Please re-connect to the internet!', null, 'Connectivity error', 'Continue')
 }
+
+////////BOOT CORE
+var Core = new Core();
