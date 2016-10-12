@@ -50,7 +50,7 @@
   <gap:plugin name="cordova-plugin-whitelist" source="npm" /><!-- needed for Android Whitelisting -->
   <gap:plugin name="pushwoosh-pgb-plugin" source="npm" /><!--Pushwoosh plugin-->
   <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" /><!-- Social Sharing -->
-  <gap:plugin name="de.appplant.cordova.plugin.badge" source="npm" />
+  <!-- <gap:plugin name="de.appplant.cordova.plugin.badge" source="npm" /> -->
   <gap:plugin name="org.apache.cordova.device" source="npm" />
   <gap:plugin name="cordova-plugin-calendar" /><!-- Publish events to device calender -->
   <gap:plugin name="cordova-plugin-inappbrowser" source="npm" /><!-- inapp browser -->
