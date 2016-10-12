@@ -63,6 +63,7 @@ function Core(){
   //This flag is set in the pushwoosh register at the bottom of this document.
 
   if (core.debug == 0){
+    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
     if (window.localStorage.getItem('reg') == "7"){
 
     }else{
@@ -1989,30 +1990,33 @@ Core.prototype.initPushwoosh = function(username, action){
   var core = this
   console.log('PUSHWOOSH INIT'+'_'+action+'_'+username)
 
-  var pushwoosh = cordova.require("pushwoosh-cordova-plugin.PushNotification");
+  var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
 
-  //TRIGGERED WHEN NOTIFICATIONS RECIEVED IN APP
-  document.addEventListener('push-notification', function(event) {
-    var notification = event.notification;
-    console.log('push message recieved');
+  //IN app notifications
+  document.addEventListener('push-notification',
+      function(event) {
+          console.log('push message recieved');
+          var notification = event.notification;
 
-    // var title = event.notification.title;
-    // var userData = event.notification.userdata;
-    //
-    // if(typeof(userData) != "undefined") {
-    //  console.warn('user data: ' + JSON.stringify(userData));
-    // }
-    //
-    // alert(title);
-    console.log(notification.aps.alert)
-    navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
-    //pushNotification.setApplicationIconBadgeNumber(0);
+          var message = notification.message;
+          var userData = notification.userdata;
 
-  });
+          console.log(message,userData)
 
-  pushwoosh.onDeviceReady({
+          //dump custom data to the console if it exists
+          if (typeof(userData) != "undefined") {
+              console.warn('user data: ' + JSON.stringify(userData));
+          }
+
+          console.log(notification.aps.alert)
+          navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
+      }
+  );
+
+  pushNotification.onDeviceReady({
     projectid: "888511028179", // GOOGLE_PROJECT_ID
-    appid : "5093D-320F3" // PUSHWOOSH_APP_ID
+    appid : "5093D-320F3", // PUSHWOOSH_APP_ID
+    serviceName: ""
   });
 
   function setTagsFunc(username,lang){
@@ -2040,8 +2044,9 @@ Core.prototype.initPushwoosh = function(username, action){
     );
   }//end func
 
-  pushwoosh.registerDevice(
+  pushNotification.registerDevice(
     function(status) {
+      console.log('attempting to register...')
       //Flag for updates - set this incrementally to force users to re-register for notifications
       window.localStorage.setItem('reg', "7")
       var deviceToken = status['deviceToken'];
@@ -2098,7 +2103,6 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
-        console.log('device initialise')
     },
     // Bind Event Listeners
     //
@@ -2110,10 +2114,10 @@ var app = {
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
+    // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
+        initPushwoosh();
         app.receivedEvent('deviceready');
-        console.log('device ready')
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -2132,7 +2136,7 @@ var app = {
 document.addEventListener("deviceready", OnDeviceReady, false);
 function OnDeviceReady()    {
   console.log('device is ready')
-  window.plugin.notification.badge.clear();//clear notification badges
+  //window.plugin.notification.badge.clear();//clear notification badges
 }
 
 ////////FIRE ON DEVICE OFFLINE
