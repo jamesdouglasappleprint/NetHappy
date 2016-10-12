@@ -4,8 +4,8 @@
        xmlns:gap   = "http://phonegap.com/ns/1.0"
        xmlns:android ="http://schemas.android.com/apk/res/android"
        id          = "com.net.happy"
-       version     = "2.1.1"
-       android-versionCode = "2189"
+       version     = "2.1.2"
+       android-versionCode = "2190"
        >
 
   <name>NetHappy</name>
@@ -45,16 +45,16 @@
 
   <preference name="DisallowOverscroll" value="true" /><!--disable overflow to stop window bounce-->
 
-  <gap:plugin name="cordova-plugin-dialogs" source="pgb" /><!--Internal notifications -->
-  <gap:plugin name="cordova-plugin-network-information" source="pgb" /><!-- Celluar info (offline//online) -->
+  <gap:plugin name="cordova-plugin-dialogs" source="npm" /><!--Internal notifications -->
+  <gap:plugin name="cordova-plugin-network-information" source="npm" /><!-- Celluar info (offline//online) -->
   <gap:plugin name="cordova-plugin-whitelist" source="npm" /><!-- needed for Android Whitelisting -->
   <gap:plugin name="pushwoosh-pgb-plugin" source="npm" /><!--Pushwoosh plugin-->
   <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" /><!-- Social Sharing -->
-  <gap:plugin name="de.appplant.cordova.plugin.badge" source="pgb" />
-  <gap:plugin name="org.apache.cordova.device" source="pgb" />
+  <gap:plugin name="de.appplant.cordova.plugin.badge" source="npm" />
+  <gap:plugin name="org.apache.cordova.device" source="npm" />
   <gap:plugin name="cordova-plugin-calendar" /><!-- Publish events to device calender -->
   <gap:plugin name="cordova-plugin-inappbrowser" source="npm" /><!-- inapp browser -->
-  <gap:plugin name="com.phonegap.plugin.statusbar" spec="1.1.0" source="pgb" />
+  <gap:plugin name="com.phonegap.plugin.statusbar" spec="1.1.0" source="npm" />
 
 
 
