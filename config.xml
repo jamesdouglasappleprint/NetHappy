@@ -54,7 +54,7 @@
   <gap:plugin name="org.apache.cordova.device" source="npm" />
   <gap:plugin name="cordova-plugin-calendar" /><!-- Publish events to device calender -->
   <gap:plugin name="cordova-plugin-inappbrowser" source="npm" /><!-- inapp browser -->
-  <gap:plugin name="com.phonegap.plugin.statusbar" spec="1.1.0" source="npm" />
+  <gap:plugin name="com.phonegap.plugin.statusbar" source="npm" />
 
 
 
