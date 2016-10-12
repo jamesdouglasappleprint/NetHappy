@@ -1991,7 +1991,7 @@ Core.prototype.initPushwoosh = function(username, action){
   console.log('PUSHWOOSH INIT'+'_'+action+'_'+username)
 
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
-
+  console.log(pushNotification)
 
   //IN app notifications
   document.addEventListener('push-notification',
@@ -2045,40 +2045,40 @@ Core.prototype.initPushwoosh = function(username, action){
     );
   }//end func
 
-
-
-  if (action == 'register'){
-    console.log('attempting register')
-
-    pushNotification.registerDevice(
-      function(status) {
-        console.log('attempting to register...')
-        //Flag for updates - set this incrementally to force users to re-register for notifications
-        window.localStorage.setItem('reg', "7")
-        var deviceToken = status['deviceToken'];
-        console.log('registerDevice: ' + deviceToken);
-        var appLang = localStorage.getItem('language')
-        setTagsFunc(username,appLang)
-      },
-      function(status) {
-        //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-        console.log('failed to register : ' + JSON.stringify(status));
-        alert(JSON.stringify(['failed to register ', status]));
-      }
-    );
-
-  }else if (action == 'unregister'){
-    console.log('Unregistering Device')
-    //Unregister for push
-    pushNotification.unregisterDevice (
-      function(token){
-          console.log("unregistered success!" + token);
-      },
-      function(status){
-          console.log("unregistered failed!" + status);
-      }
-    )
-  }
+  pushNotification.registerDevice(
+    function(status) {
+      console.log('firing register device')
+      //Flag for updates - set this incrementally to force users to re-register for notifications
+      window.localStorage.setItem('reg', "7")
+      var deviceToken = status['deviceToken'];
+      console.log('registerDevice: ' + deviceToken);
+      var appLang = localStorage.getItem('language')
+      setTagsFunc(username,appLang)
+    },
+    function(status) {
+      //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
+      console.log('failed to register : ' + JSON.stringify(status));
+      alert(JSON.stringify(['failed to register ', status]));
+    }
+  );
+  
+  // if (action == 'register'){
+  //   console.log('attempting register')
+  //
+  //
+  //
+  // }else if (action == 'unregister'){
+  //   console.log('Unregistering Device')
+  //   //Unregister for push
+  //   pushNotification.unregisterDevice (
+  //     function(token){
+  //         console.log("unregistered success!" + token);
+  //     },
+  //     function(status){
+  //         console.log("unregistered failed!" + status);
+  //     }
+  //   )
+  // }
 
 
 
@@ -2102,7 +2102,6 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        initPushwoosh();
         app.receivedEvent('deviceready');
     },
     // Update DOM on a Received Event
