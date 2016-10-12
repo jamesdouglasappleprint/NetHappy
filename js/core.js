@@ -2078,7 +2078,7 @@ Core.prototype.initPushwoosh = function(username, action){
           console.log("unregistered failed!" + status);
       }
     )
-  // }
+  }
 
 
 
