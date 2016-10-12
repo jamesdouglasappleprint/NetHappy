@@ -2048,7 +2048,9 @@ Core.prototype.initPushwoosh = function(username, action){
   pushNotification.registerDevice(
   function(status) {
     var pushToken = status.pushToken;
-    console.log(pushToken)
+    console.log('pushtokenis:'+pushToken)
+    var appLang = localStorage.getItem('language')
+    setTagsFunc(username,appLang)
       // handle successful registration here
   },
   function(status) {
