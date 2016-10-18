@@ -69,14 +69,13 @@ function Core(){
     //but the user hasn't logged out, we'll have a different version number
     //stored in local storage. If that's the case, re-register the user to
     //make sure we're registered for notifications. Boom.
-    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
-  //   if (core.versionNumber == window.localStorage.getItem('versionNumber')){
-  //
-  //   }else{
-  //     console.log('user not registered, registering...')
-  //     //window.localStorage.clear();
-  //     core.initPushwoosh(window.localStorage.getItem('user'), 'register')
-  //   }
+    if (core.versionNumber == window.localStorage.getItem('versionNumber')){
+
+    }else{
+      console.log('Core version is different to local storage version')
+      //window.localStorage.clear();
+      core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+    }
   }else{
 
   }
@@ -1516,7 +1515,7 @@ Core.prototype.logIn = function (x) {
     window.localStorage.removeItem("mybdmdata");
     window.localStorage.removeItem("userPass");
     window.location.replace('index.html')
-
+    window.localStorage.clear();
     core.logContent('logoff',null, null);
     core.initPushwoosh(null, "unregister")
 
