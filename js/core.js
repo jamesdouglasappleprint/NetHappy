@@ -25,8 +25,9 @@ function Core(){
   console.log('Core Loaded');
   var core = this;
 
-  core.languageContent = []
+  core.languageContent = [];
   core.debug = 0; //if 1, disable cordova functionality
+  core.versionNumber = '2.1.21';
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -63,8 +64,12 @@ function Core(){
   //This flag is set in the pushwoosh register at the bottom of this document.
 
   if (core.debug == 0){
-    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
-    if (window.localStorage.getItem('reg') == "7"){
+
+    //The core version is set during registration, so if the app is updated
+    //but the user hasn't logged out, we'll have a different version number
+    //stored in local storage. If that's the case, re-register the user to
+    //make sure we're registered for notifications. Boom.
+    if (core.versionNumber == window.localStorage.getItem('versionNumber')){
 
     }else{
       console.log('user not registered, registering...')
@@ -2036,6 +2041,7 @@ Core.prototype.initPushwoosh = function(username, action){
       var pushToken = status.pushToken;
       console.log('pushtokenis:'+pushToken)
       var appLang = localStorage.getItem('language')
+      localStorage.setItem('versionNumber',core.versionNumber)
       setTagsFunc(username,appLang)
         // handle successful registration here
     },
