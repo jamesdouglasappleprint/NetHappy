@@ -4,8 +4,8 @@
        xmlns:gap   = "http://phonegap.com/ns/1.0"
        xmlns:android ="http://schemas.android.com/apk/res/android"
        id          = "com.net.happy"
-       version     = "2.1.19"
-       android-versionCode = "2200"
+       version     = "2.1.20"
+       android-versionCode = "2201"
        >
 
   <name>NetHappy</name>
@@ -54,7 +54,7 @@
   <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" /><!-- Social Sharing -->
   <!-- <gap:plugin name="de.appplant.cordova.plugin.badge" source="npm" /> -->
   <gap:plugin name="org.apache.cordova.device" source="npm" />
-  <gap:plugin name="cordova-plugin-calendar" /><!-- Publish events to device calender -->
+  <gap:plugin name="cordova-plugin-calendar"  source="npm" /><!-- Publish events to device calender -->
   <gap:plugin name="cordova-plugin-inappbrowser" source="npm" /><!-- inapp browser -->
   <!-- <gap:plugin name="com.phonegap.plugin.statusbar" source="npm" /> -->
 
