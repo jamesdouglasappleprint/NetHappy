@@ -1999,27 +1999,6 @@ Core.prototype.initPushwoosh = function(username, action){
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
   console.log(pushNotification)
 
-  //IN app notifications
-  document.addEventListener('push-notification',
-      function(event) {
-          console.log('push message recieved');
-          var notification = event.notification;
-
-          var message = notification.message;
-          var userData = notification.userdata;
-
-          console.log(message,userData)
-
-          //dump custom data to the console if it exists
-          if (typeof(userData) != "undefined") {
-              console.warn('user data: ' + JSON.stringify(userData));
-          }
-
-          console.log(notification.aps.alert)
-          navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
-      }
-  );
-
   pushNotification.onDeviceReady({
     projectid: "888511028179", // GOOGLE_PROJECT_ID
     appid : "5093D-320F3", // PUSHWOOSH_APP_ID
@@ -2029,6 +2008,7 @@ Core.prototype.initPushwoosh = function(username, action){
   function setTagsFunc(username,lang){
     console.log('Attempting tag setting of username:'+username)
     console.log('Attempting tag setting of language:'+lang)
+
     pushNotification.setTags(
     {
       "username":username,
@@ -2058,6 +2038,27 @@ Core.prototype.initPushwoosh = function(username, action){
     var appLang = localStorage.getItem('language')
     setTagsFunc(username,appLang)
       // handle successful registration here
+
+    //IN app notifications
+    document.addEventListener('push-notification',
+        function(event) {
+            console.log('push message recieved');
+            var notification = event.notification;
+
+            var message = notification.message;
+            var userData = notification.userdata;
+
+            console.log(message,userData)
+
+            //dump custom data to the console if it exists
+            if (typeof(userData) != "undefined") {
+                console.warn('user data: ' + JSON.stringify(userData));
+            }
+
+            console.log(notification.aps.alert)
+            navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
+        }
+    );
   },
   function(status) {
     // handle registration error here
