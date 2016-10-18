@@ -27,7 +27,7 @@ function Core(){
 
   core.languageContent = [];
   core.debug = 0; //if 1, disable cordova functionality
-  core.versionNumber = '2.1.24';
+  core.versionNumber = '2.1.26';
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -293,7 +293,7 @@ Core.prototype.appCoreClickEvents = function () {
 
 
   $(document).on("click",".push",function(e){
-    console.log('attempting to push user registration...')
+    console.log('Manual Fire')
     core.initPushwoosh(window.localStorage.getItem('user'), 'register')
   });
 
@@ -2002,7 +2002,7 @@ Core.prototype.initPushwoosh = function(username, action){
   console.log('PUSHWOOSH INIT'+'_'+action+'_'+username)
 
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
-  console.log(pushNotification)
+  //console.log(pushNotification)
 
   pushNotification.onDeviceReady({
     projectid: "888511028179", // GOOGLE_PROJECT_ID
@@ -2046,6 +2046,7 @@ Core.prototype.initPushwoosh = function(username, action){
         // handle successful registration here
     },
     function(status) {
+      console.log('ERROR REGISTERING:'+status)
       // handle registration error here
     }
   );
