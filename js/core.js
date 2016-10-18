@@ -2048,15 +2048,11 @@ Core.prototype.initPushwoosh = function(username, action){
             var message = notification.message;
             var userData = notification.userdata;
 
-            console.log(message,userData)
+            console.log('message: '+message)
+            console.log('userData: '+userData)
 
-            //dump custom data to the console if it exists
-            if (typeof(userData) != "undefined") {
-                console.warn('user data: ' + JSON.stringify(userData));
-            }
 
-            console.log(notification.aps.alert)
-            navigator.notification.alert(notification.aps.alert, null, 'Hey there!', 'Continue')
+            navigator.notification.alert(notification.message, null, 'Hey there!', 'Continue')
         }
     );
   },
