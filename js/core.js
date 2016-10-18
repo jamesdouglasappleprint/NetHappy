@@ -295,7 +295,10 @@ Core.prototype.appCoreClickEvents = function () {
   $(document).on("click",".push",function(e){
     console.log('Manual Fire')
     core.initPushwoosh(null, "unregister")
-    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+    setTimeout(function(){
+      core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+    }, 5000)
+
   });
 
   //Return to parent item
