@@ -27,28 +27,28 @@ function Core(){
 
   core.languageContent = [];
   core.debug = 0; //if 1, disable cordova functionality
-  core.versionNumber = '2.1.21';
+  core.versionNumber = '2.1.22';
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
-    core.languageContent = data
+    core.languageContent = data;
     //console.log(core.languageContent)
-    core.wordpressVersion = 'velocity.apple-dev.co.uk'
+    core.wordpressVersion = 'velocity.apple-dev.co.uk';
     //If the language was set from a previous load, keep it set to that language
-    if (window.localStorage.getItem('language') == null){
-      console.log('none selected, manually selecting')
-      window.localStorage.setItem('language','gb')
+    if (window.localStorage.getItem('language') === null){
+      console.log('none selected, manually selecting');
+      window.localStorage.setItem('language','gb');
     }else{
 
     }
 
-    core.reassignCoreVersion() //Check to see if we already have a version selected
+    core.reassignCoreVersion(); //Check to see if we already have a version selected
     core.init();
     core.logIn();
     core.appCoreClickEvents();
     core.loadCoreData();
-    core.getInAppLanguageContent(window.localStorage.getItem('language'))
-    core.selectLanguage()
+    core.getInAppLanguageContent(window.localStorage.getItem('language'));
+    core.selectLanguage();
 
 
   });
