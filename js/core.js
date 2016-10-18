@@ -27,7 +27,7 @@ function Core(){
 
   core.languageContent = [];
   core.debug = 0; //if 1, disable cordova functionality
-  core.versionNumber = '2.1.27';
+  core.versionNumber = '2.1.30';
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -2037,6 +2037,7 @@ Core.prototype.initPushwoosh = function(username, action){
 
 
   if (action == 'register'){
+    console.log('got this far trying to register...')
     pushNotification.registerDevice(
       function(status) {
         var pushToken = status.pushToken;
