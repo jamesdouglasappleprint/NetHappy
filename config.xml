@@ -4,8 +4,8 @@
        xmlns:gap   = "http://phonegap.com/ns/1.0"
        xmlns:android ="http://schemas.android.com/apk/res/android"
        id          = "com.net.happy"
-       version     = "2.1.11"
-       android-versionCode = "2192"
+       version     = "2.1.12"
+       android-versionCode = "2193"
        >
 
   <name>NetHappy</name>
