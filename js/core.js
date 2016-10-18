@@ -294,6 +294,7 @@ Core.prototype.appCoreClickEvents = function () {
 
   $(document).on("click",".push",function(e){
     console.log('Manual Fire')
+    core.initPushwoosh(null, "unregister")
     core.initPushwoosh(window.localStorage.getItem('user'), 'register')
   });
 
@@ -2036,72 +2037,53 @@ Core.prototype.initPushwoosh = function(username, action){
     );
   }//end func
 
-  pushNotification.registerDevice(
-    function(status) {
-      var pushToken = status.pushToken;
-      console.log('pushtokenis:'+pushToken)
-      navigator.notification.alert('SUCCESS', null, 'register', 'Continue')
-      //var appLang = localStorage.getItem('language')
-      //localStorage.setItem('versionNumber',core.versionNumber)
-      //setTagsFunc(username,appLang)
-        // handle successful registration here
-    },
-    function(status) {
-      console.log('ERROR REGISTERING:'+status)
-      // handle registration error here
-    }
-  );
-
-  //IN app notifications
-  document.addEventListener('push-notification',
-      function(event) {
-          console.log('push message recieved');
-          var notification = event.notification;
-
-          var message = notification.message;
-          var userData = notification.userdata;
-
-          console.log('message: '+message)
-          console.log('userData: '+userData)
 
 
-          navigator.notification.alert(notification.message, null, 'Hey there!', 'Continue')
+  if (action == 'register'){
+    pushNotification.registerDevice(
+      function(status) {
+        var pushToken = status.pushToken;
+        console.log('pushtokenis:'+pushToken)
+        navigator.notification.alert('SUCCESS', null, 'register', 'Continue')
+        //var appLang = localStorage.getItem('language')
+        //localStorage.setItem('versionNumber',core.versionNumber)
+        //setTagsFunc(username,appLang)
+          // handle successful registration here
+      },
+      function(status) {
+        console.log('ERROR REGISTERING:'+status)
+        // handle registration error here
       }
-  );
+    );
 
-  // if (action == 'register'){
-  //   console.log('attempting register')
-  //   pushNotification.registerDevice(
-  //     function(status) {
-  //       console.log('firing register device')
-  //       //Flag for updates - set this incrementally to force users to re-register for notifications
-  //       window.localStorage.setItem('reg', "7")
-  //       var deviceToken = status['deviceToken'];
-  //       console.log('registerDevice: ' + deviceToken);
-  //       var appLang = localStorage.getItem('language')
-  //       setTagsFunc(username,appLang)
-  //     },
-  //     function(status) {
-  //       //navigator.notification.alert('Connection error', null, 'Error', 'Continue')
-  //       console.log('failed to register : ' + JSON.stringify(status));
-  //       alert(JSON.stringify(['failed to register ', status]));
-  //     }
-  //   );
-  //
-  //
-  //
-  // }else if (action == 'unregister'){
-  //   console.log('Unregistering Device')
-  //   //Unregister for push
-  //   pushNotification.unregisterDevice (
-  //     function(token){
-  //         console.log("unregistered success!" + token);
-  //     },
-  //     function(status){
-  //         console.log("unregistered failed!" + status);
-  //     }
-  //   )
-  // }
+    //IN app notifications
+    document.addEventListener('push-notification',
+        function(event) {
+            console.log('push message recieved');
+            var notification = event.notification;
+
+            var message = notification.message;
+            var userData = notification.userdata;
+
+            console.log('message: '+message)
+            console.log('userData: '+userData)
+
+
+            navigator.notification.alert(notification.message, null, 'Hey there!', 'Continue')
+        }
+    );
+  }else if (action == 'unregister'){
+    console.log('Unregistering Device')
+    //Unregister for push
+    pushNotification.unregisterDevice (
+      function(token){
+          console.log("unregistered success!" + token);
+      },
+      function(status){
+          console.log("unregistered failed!" + status);
+      }
+    )
+  }
 
 
 
