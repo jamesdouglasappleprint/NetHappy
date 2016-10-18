@@ -75,6 +75,12 @@ function Core(){
 
   }
 
+  $(document).on("change",".push",function(e){
+    console.log('attempting to push user registration...')
+    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+  }
+
+
 
   // console.log('Clearing Badges')
   // window.plugin.notification.badge.clear(); //clear badge notifications
