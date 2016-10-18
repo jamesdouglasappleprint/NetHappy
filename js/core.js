@@ -2038,27 +2038,28 @@ Core.prototype.initPushwoosh = function(username, action){
     var appLang = localStorage.getItem('language')
     setTagsFunc(username,appLang)
       // handle successful registration here
-
-    //IN app notifications
-    document.addEventListener('push-notification',
-        function(event) {
-            console.log('push message recieved');
-            var notification = event.notification;
-
-            var message = notification.message;
-            var userData = notification.userdata;
-
-            console.log('message: '+message)
-            console.log('userData: '+userData)
-
-
-            navigator.notification.alert(notification.message, null, 'Hey there!', 'Continue')
-        }
-    );
   },
   function(status) {
     // handle registration error here
   }
+
+  //IN app notifications
+  document.addEventListener('push-notification',
+      function(event) {
+          console.log('push message recieved');
+          var notification = event.notification;
+
+          var message = notification.message;
+          var userData = notification.userdata;
+
+          console.log('message: '+message)
+          console.log('userData: '+userData)
+
+
+          navigator.notification.alert(notification.message, null, 'Hey there!', 'Continue')
+      }
+  );
+
 );
 
 
