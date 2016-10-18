@@ -27,7 +27,7 @@ function Core(){
 
   core.languageContent = [];
   core.debug = 0; //if 1, disable cordova functionality
-  core.versionNumber = '2.1.26';
+  core.versionNumber = '2.1.27';
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -2040,9 +2040,10 @@ Core.prototype.initPushwoosh = function(username, action){
     function(status) {
       var pushToken = status.pushToken;
       console.log('pushtokenis:'+pushToken)
-      var appLang = localStorage.getItem('language')
-      localStorage.setItem('versionNumber',core.versionNumber)
-      setTagsFunc(username,appLang)
+      navigator.notification.alert('SUCCESS', null, 'register', 'Continue')
+      //var appLang = localStorage.getItem('language')
+      //localStorage.setItem('versionNumber',core.versionNumber)
+      //setTagsFunc(username,appLang)
         // handle successful registration here
     },
     function(status) {
