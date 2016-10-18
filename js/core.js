@@ -27,7 +27,7 @@ function Core(){
 
   core.languageContent = [];
   core.debug = 0; //if 1, disable cordova functionality
-  core.versionNumber = '2.1.23';
+  core.versionNumber = '2.1.24';
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -70,7 +70,6 @@ function Core(){
     //stored in local storage. If that's the case, re-register the user to
     //make sure we're registered for notifications. Boom.
     core.initPushwoosh(window.localStorage.getItem('user'), 'register')
-
   //   if (core.versionNumber == window.localStorage.getItem('versionNumber')){
   //
   //   }else{
@@ -78,9 +77,9 @@ function Core(){
   //     //window.localStorage.clear();
   //     core.initPushwoosh(window.localStorage.getItem('user'), 'register')
   //   }
-  // }else{
-  //
-  // }
+  }else{
+
+  }
 
 
   // console.log('Clearing Badges')
