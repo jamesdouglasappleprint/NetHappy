@@ -75,12 +75,6 @@ function Core(){
 
   }
 
-  $(document).on("click",".push",function(e){
-    console.log('attempting to push user registration...')
-    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
-  });
-
-
 
   // console.log('Clearing Badges')
   // window.plugin.notification.badge.clear(); //clear badge notifications
@@ -291,6 +285,12 @@ Core.prototype.appCoreClickEvents = function () {
     var clickedItem = $(this).find('h2').text();
     core.logContent('anchor',null, clickedItem);
   })
+
+
+  $(document).on("click",".push",function(e){
+    console.log('attempting to push user registration...')
+    core.initPushwoosh(window.localStorage.getItem('user'), 'register')
+  });
 
   //Return to parent item
   $(document).on("click",".listGrandParentAnchorReturn",function(e){
