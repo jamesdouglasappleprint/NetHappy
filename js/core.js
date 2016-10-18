@@ -2008,12 +2008,6 @@ Core.prototype.initPushwoosh = function(username, action){
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
   //console.log(pushNotification)
 
-  pushNotification.onDeviceReady({
-    projectid: "888511028179", // GOOGLE_PROJECT_ID
-    appid : "5093D-320F3", // PUSHWOOSH_APP_ID
-    serviceName: ""
-  });
-
   function setTagsFunc(username,lang){
     console.log('Attempting tag setting of username:'+username)
     console.log('Attempting tag setting of language:'+lang)
@@ -2088,7 +2082,11 @@ Core.prototype.initPushwoosh = function(username, action){
     )
   }
 
-
+  pushNotification.onDeviceReady({
+    projectid: "888511028179", // GOOGLE_PROJECT_ID
+    appid : "5093D-320F3", // PUSHWOOSH_APP_ID
+    serviceName: ""
+  });
 
 }
 
