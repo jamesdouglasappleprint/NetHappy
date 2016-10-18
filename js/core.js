@@ -2032,16 +2032,17 @@ Core.prototype.initPushwoosh = function(username, action){
   }//end func
 
   pushNotification.registerDevice(
-  function(status) {
-    var pushToken = status.pushToken;
-    console.log('pushtokenis:'+pushToken)
-    var appLang = localStorage.getItem('language')
-    setTagsFunc(username,appLang)
-      // handle successful registration here
-  },
-  function(status) {
-    // handle registration error here
-  }
+    function(status) {
+      var pushToken = status.pushToken;
+      console.log('pushtokenis:'+pushToken)
+      var appLang = localStorage.getItem('language')
+      setTagsFunc(username,appLang)
+        // handle successful registration here
+    },
+    function(status) {
+      // handle registration error here
+    }
+  );
 
   //IN app notifications
   document.addEventListener('push-notification',
@@ -2059,9 +2060,6 @@ Core.prototype.initPushwoosh = function(username, action){
           navigator.notification.alert(notification.message, null, 'Hey there!', 'Continue')
       }
   );
-
-);
-
 
   // if (action == 'register'){
   //   console.log('attempting register')
