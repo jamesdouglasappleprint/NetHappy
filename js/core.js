@@ -2043,9 +2043,9 @@ Core.prototype.initPushwoosh = function(username, action){
         var pushToken = status.pushToken;
         console.log('pushtokenis:'+pushToken)
         navigator.notification.alert('SUCCESS', null, 'register', 'Continue')
-        //var appLang = localStorage.getItem('language')
-        //localStorage.setItem('versionNumber',core.versionNumber)
-        //setTagsFunc(username,appLang)
+        var appLang = localStorage.getItem('language')
+        localStorage.setItem('versionNumber',core.versionNumber)
+        setTagsFunc(username,appLang)
           // handle successful registration here
       },
       function(status) {
