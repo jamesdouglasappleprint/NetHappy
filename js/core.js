@@ -27,7 +27,7 @@ function Core(){
 
   core.languageContent = [];
   core.debug = 0; //if 1, disable cordova functionality
-  core.versionNumber = '2.1.31';
+  core.versionNumber = '2.1.32';
 
   //NOTE: here is where alllllll the InAPP data is loaded
   $.getJSON( "js/inapplanguage.json", function( data ) {
@@ -2005,8 +2005,12 @@ Core.prototype.initPushwoosh = function(username, action){
   var core = this
   console.log('PUSHWOOSH INIT'+'_'+action+'_'+username)
 
+
   var pushNotification = cordova.require("pushwoosh-cordova-plugin.PushNotification");
   //console.log(pushNotification)
+
+  //Reset badge count
+  pushNotification.setApplicationIconBadgeNumber(0)
 
   pushNotification.onDeviceReady({
     projectid: "888511028179", // GOOGLE_PROJECT_ID
