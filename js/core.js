@@ -73,7 +73,7 @@ function Core(){
 
     }else{
       console.log('Core version is different to local storage version')
-      //window.localStorage.clear();
+      window.localStorage.clear();
       core.initPushwoosh(window.localStorage.getItem('user'), 'register')
     }
   }else{
